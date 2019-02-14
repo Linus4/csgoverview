@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
+	// "time"
 
+	dem "github.com/markus-wa/demoinfocs-golang"
+	event "github.com/markus-wa/demoinfocs-golang/events"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -35,7 +40,48 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	surface, err := img.Load("de_cache.jpg")
+	// First pass to get round starts, half starts and header info
+	demo, err := os.Open("test.dem")
+	if err != nil {
+		log.Println("Could not open test.dem")
+		log.Println(err)
+		return
+	}
+	defer demo.Close()
+
+	// MatchStart + GameHalfEnd
+	halfStarts := make([]int, 0)
+	roundStarts := make([]int, 0)
+
+	// find round starts and half starts
+	parser := dem.NewParser(demo)
+	h1 := parser.RegisterEventHandler(func(event.MatchStart) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	h2 := parser.RegisterEventHandler(func(event.RoundStart) {
+		roundStarts = append(roundStarts, parser.CurrentFrame())
+	})
+	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
+		parser.UnregisterEventHandler(h1)
+		parser.UnregisterEventHandler(h2)
+		parser.UnregisterEventHandler(h3)
+
+	})
+	// RoundEndOfficial / reason
+
+	err = parser.ParseToEnd()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	frameTime := parser.Header().FrameTime()
+	mapName := parser.Header().MapName
+
+	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
 	if err != nil {
 		log.Println(err)
 		return
@@ -48,12 +94,32 @@ func main() {
 	}
 	defer texture.Destroy()
 
-	// nil, nil stretches texture to fill the screen
 	// err
 	renderer.Clear()
+	// nil, nil stretches texture to fill the screen
 	// err
 	renderer.Copy(texture, nil, nil)
 	renderer.Present()
+
+	// parser = dem.NewParser(demo)
+
+	// states := make([]dem.IGameState, 0)
+
+	// parse and present demo frame by frame (positions)
+
+	// translate coordinates
+
+	// draw the things
+
+	fmt.Println("Time per frame: %v", frameTime)
+	fmt.Println("Round starts:")
+	for i, tick := range roundStarts {
+		fmt.Printf("Round %v:\t%v\n", i, tick)
+	}
+	fmt.Println("Half starts:")
+	for i, tick := range halfStarts {
+		fmt.Printf("Half %v:\t%v\n", i, tick)
+	}
 
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -65,38 +131,4 @@ func main() {
 		sdl.Delay(32)
 	}
 
-	/*
-		demo, err := os.Open("test.dem")
-		if err != nil {
-			log.Println("Could not open test.dem")
-			log.Println(err)
-			return
-		}
-		defer demo.Close()
-
-		parser := dem.NewParser(demo)
-		fmt.Println("Created parser")
-
-		states := make([]dem.IGameState, 0)
-		b := true
-		for b {
-			// err!
-			b, _ = parser.ParseNextFrame()
-			states = append(states, parser.GameState())
-		}
-		for i, gs := range states {
-			fmt.Printf("Frame %v: Grenades: %v\n", i, gs.TotalRoundsPlayed())
-		}
-		fmt.Println("Finished parsing the demo")
-	*/
-
-	// get information from header (map, tickrate)
-
-	// find matchstart, round strats, half-time, overtime half starts
-
-	// parse and present demo frame by frame (positions)
-
-	// translate coordinates
-
-	// draw entities
 }
