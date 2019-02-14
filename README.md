@@ -6,6 +6,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [SDL2](https://wiki.libsdl.org/Introduction)
 * [go-sdl2](https://github.com/veandco/go-sdl2)
 * [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang)
+* [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
 # Roadmap
 
