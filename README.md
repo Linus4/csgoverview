@@ -14,19 +14,17 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Demo playback
 
-[x] Map
-
-* Playerpositions
-* Playernames
-* Playernumbers
-* Player-line of vision
+* Map 🗹
+* Playerpositions 🗹
+* Playernames 🗹
+* Player-line of vision 🗹
 * Shots
 * Grenades during flight
 * NadeTails
 * Effects for grenades
 * Fade-out effect for smokes
 * Timer for mollys and smokes
-* `x` at places where players died
+* `x` at places where players died 🗹
 * Indicator for flash-effect / -duration
 
 ### Keybinds
@@ -39,11 +37,11 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * s -> hold to slow down to 0.5 x
 * W -> toggle 2 x speed
 * S -> toggle 0.33 x speed
-* q -> round backwards
-* e -> round forwards
+* q -> round backwards 🗹
+* e -> round forwards 🗹
 * Q -> to start of last half
 * E -> to start of next half
-* space -> toggle pause
+* space -> toggle pause 🗹
 * [num]g -> go to round [num]
 * o -> open demo
 * p -> take screenshot
@@ -63,6 +61,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * Killfeed
 * Player details (left/right)
     - Name
+    - Hp
     - Armor
     - Helmet
     - Primary
