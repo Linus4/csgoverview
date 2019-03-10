@@ -32,6 +32,7 @@ var (
 	halfStarts  []int
 	roundStarts []int
 	curFrame    int = 0
+	frameRate   int
 )
 
 type OverviewState struct {
@@ -99,8 +100,7 @@ func main() {
 		return
 	}
 
-	// frametime or frames per second?
-	frameTime := parser.Header().FrameTime()
+	frameRate = int(parser.Header().FrameRate())
 	mapName = parser.Header().MapName
 
 	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
@@ -156,7 +156,6 @@ func main() {
 	}
 	fmt.Printf("Got %v frames\n", len(states))
 
-	fmt.Println("Time per frame: %v", frameTime)
 	fmt.Println("Round starts:")
 	for i, tick := range roundStarts {
 		fmt.Printf("Round %v:\t%v\n", i, tick)
@@ -185,6 +184,11 @@ func main() {
 					set := false
 					for i, frame := range roundStarts {
 						if curFrame < frame {
+							if i > 1 && curFrame < roundStarts[i-1]+frameRate/2 {
+								curFrame = roundStarts[i-2]
+								set = true
+								break
+							}
 							curFrame = roundStarts[i-1]
 							set = true
 							break
@@ -192,7 +196,11 @@ func main() {
 					}
 					// not set -> last round of match
 					if !set {
-						curFrame = roundStarts[len(roundStarts)-1]
+						if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRate/2 {
+							curFrame = roundStarts[len(roundStarts)-2]
+						} else {
+							curFrame = roundStarts[len(roundStarts)-1]
+						}
 					}
 				}
 
