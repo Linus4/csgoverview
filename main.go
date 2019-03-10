@@ -28,7 +28,10 @@ const (
 )
 
 var (
-	mapName string
+	mapName     string
+	halfStarts  []int
+	roundStarts []int
+	curFrame    int = 0
 )
 
 type OverviewState struct {
@@ -66,11 +69,10 @@ func main() {
 	}
 	defer demo.Close()
 
-	curFrame := 0
-
 	// MatchStart + GameHalfEnd
-	halfStarts := make([]int, 0)
-	roundStarts := make([]int, 0)
+	halfStarts = make([]int, 0)
+	roundStarts = make([]int, 0)
+	roundStarts = append(roundStarts, 0)
 
 	// find round starts and half starts
 	parser := dem.NewParser(demo)
@@ -107,18 +109,18 @@ func main() {
 		return
 	}
 
-	texture, err := renderer.CreateTextureFromSurface(surface)
+	mapTexture, err := renderer.CreateTextureFromSurface(surface)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	defer texture.Destroy()
+	defer mapTexture.Destroy()
 
 	// err
 	renderer.Clear()
 	// nil, nil stretches texture to fill the screen
 	// err
-	renderer.Copy(texture, nil, nil)
+	renderer.Copy(mapTexture, nil, nil)
 	renderer.Present()
 
 	_, err = demo.Seek(0, 0)
@@ -173,9 +175,34 @@ func main() {
 			switch eventT := event.(type) {
 			case *sdl.QuitEvent:
 				return
+
 			case *sdl.KeyboardEvent:
 				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
 					paused = !paused
+				}
+
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
+					set := false
+					for i, frame := range roundStarts {
+						if curFrame < frame {
+							curFrame = roundStarts[i-1]
+							set = true
+							break
+						}
+					}
+					// not set -> last round of match
+					if !set {
+						curFrame = roundStarts[len(roundStarts)-1]
+					}
+				}
+
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
+					for _, frame := range roundStarts {
+						if curFrame < frame {
+							curFrame = frame
+							break
+						}
+					}
 				}
 			}
 		}
@@ -186,17 +213,13 @@ func main() {
 		}
 
 		renderer.Clear()
-		renderer.Copy(texture, nil, nil)
+		renderer.Copy(mapTexture, nil, nil)
 
 		players := states[curFrame].Players
 
 		for _, player := range players {
 			DrawPlayer(renderer, &player)
 		}
-
-		// translate coordinates
-
-		// draw the things
 
 		fmt.Printf("Frame %v\n", curFrame)
 		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
