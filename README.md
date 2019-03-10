@@ -10,7 +10,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 # Roadmap
 
-## Milestone v1.0.0
+## Milestone v0.1.0
 
 ### Demo playback
 
@@ -80,9 +80,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * Multi-platform
 * Additional information about players optional - instead letters for weapons
   instead of playernumbers?
-* tickrate <-> framerate <-> real time?
 
-## Milestone v2.0.0
+## Milestone v0.2.0
 
 ### Screenshot export
 
@@ -98,7 +97,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * take Screenshot
 * export Gif
 
-## Milestone v3.0.0
+## Milestone v0.3.0
 
 ### Configurable keybinds and scaling
 
@@ -122,6 +121,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 * twiddla
 * paint
+* live overlay ?
 
 ### Analysis
 
