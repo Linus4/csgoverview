@@ -180,6 +180,38 @@ func main() {
 					paused = !paused
 				}
 
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
+					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+						if curFrame < frameRate*30 {
+							curFrame = 0
+						} else {
+							curFrame -= frameRate * 30
+						}
+					} else {
+						if curFrame < frameRate*10 {
+							curFrame = 0
+						} else {
+							curFrame -= frameRate * 10
+						}
+					}
+				}
+
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
+					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+						if curFrame+frameRate*30 > len(states)-1 {
+							curFrame = len(states) - 1
+						} else {
+							curFrame += frameRate * 30
+						}
+					} else {
+						if curFrame+frameRate*10 > len(states)-1 {
+							curFrame = len(states) - 1
+						} else {
+							curFrame += frameRate * 10
+						}
+					}
+				}
+
 				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
 					set := false
 					for i, frame := range roundStarts {
