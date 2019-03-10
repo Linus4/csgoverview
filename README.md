@@ -14,7 +14,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Demo playback
 
-* Map
+[x] Map
+
 * Playerpositions
 * Playernames
 * Playernumbers
