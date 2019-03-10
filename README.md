@@ -29,10 +29,10 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Keybinds
 
-* a -> 10 s backwards
-* d -> 10 s forwards
-* A -> 30 s backwards
-* D -> 30 s forwards
+* a -> 10 s backwards 🗹
+* d -> 10 s forwards 🗹
+* A -> 30 s backwards 🗹
+* D -> 30 s forwards 🗹
 * w -> hold to speed up 10 x
 * s -> hold to slow down to 0.5 x
 * W -> toggle 2 x speed
