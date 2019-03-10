@@ -16,8 +16,19 @@ import (
 )
 
 const (
-	winHeight int32 = 1024
-	winWidth  int32 = 1024
+	winHeight    int32 = 1024
+	winWidth     int32 = 1024
+	terrorR      uint8 = 252
+	terrorG      uint8 = 176
+	terrorB      uint8 = 12
+	counterR     uint8 = 89
+	counterG     uint8 = 206
+	counterB     uint8 = 200
+	radiusPlayer int32 = 10
+)
+
+var (
+	mapName string
 )
 
 type OverviewState struct {
@@ -88,7 +99,7 @@ func main() {
 
 	// frametime or frames per second?
 	frameTime := parser.Header().FrameTime()
-	mapName := parser.Header().MapName
+	mapName = parser.Header().MapName
 
 	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
 	if err != nil {
@@ -155,6 +166,8 @@ func main() {
 
 	paused := false
 
+	// MAIN GAME LOOP
+
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch eventT := event.(type) {
@@ -178,12 +191,7 @@ func main() {
 		players := states[curFrame].Players
 
 		for _, player := range players {
-			pos := player.Position
-			scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-			var scaledXInt int32 = int32(scaledX)
-			var scaledYInt int32 = int32(scaledY)
-			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, 200, 200, 200, 200)
-			//fmt.Printf("(%v, %v)\n", scaledXInt, scaledYInt)
+			DrawPlayer(renderer, &player)
 		}
 
 		// translate coordinates
@@ -194,9 +202,45 @@ func main() {
 		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
-		//sdl.Delay(32)
+		sdl.Delay(32)
 		if curFrame < len(states)-1 {
 			curFrame++
+		}
+	}
+
+}
+
+func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
+	pos := player.LastAlivePosition
+
+	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	var scaledXInt int32 = int32(scaledX)
+	var scaledYInt int32 = int32(scaledY)
+
+	if player.Team == common.TeamTerrorists {
+		if player.Hp > 0 {
+			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, terrorR, terrorG, terrorB, 255)
+			viewAngle := -int32(player.ViewDirectionX)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, terrorR, terrorG, terrorB, 255)
+		} else {
+			//gfx.SetFont(fontdata, 10, 10)
+			gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', terrorR, terrorG, terrorB, 150)
+		}
+	} else if player.Team == common.TeamCounterTerrorists {
+		if player.Hp > 0 {
+			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, counterR, counterG, counterB, 255)
+			viewAngle := -int32(player.ViewDirectionX)
+			fmt.Printf("%v %v\n", player.Name, viewAngle)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+			gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, counterR, counterG, counterB, 255)
+		} else {
+			//gfx.SetFont(fontdata, 10, 10)
+			gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', counterR, counterG, counterB, 150)
 		}
 	}
 
