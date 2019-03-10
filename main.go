@@ -18,12 +18,6 @@ import (
 const (
 	winHeight int32 = 1024
 	winWidth  int32 = 1024
-	terrorR   int8  = 252
-	terrorG   int8  = 176
-	terrorB   int8  = 12
-	counterR  int8  = 89
-	rounderG  int8  = 206
-	counterB  int8  = 200
 )
 
 type OverviewState struct {
@@ -184,7 +178,12 @@ func main() {
 		players := states[curFrame].Players
 
 		for _, player := range players {
-			DrawPlayer(renderer, player)
+			pos := player.Position
+			scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+			var scaledXInt int32 = int32(scaledX)
+			var scaledYInt int32 = int32(scaledY)
+			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, 200, 200, 200, 200)
+			//fmt.Printf("(%v, %v)\n", scaledXInt, scaledYInt)
 		}
 
 		// translate coordinates
@@ -199,21 +198,6 @@ func main() {
 		if curFrame < len(states)-1 {
 			curFrame++
 		}
-	}
-
-}
-
-func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
-	pos := player.Position
-
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
-
-	if player.Team == TeamTerrorists {
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, terrorR, terrorG, terrorB, 255)
-	} else if player.Team == TeamCounterTerrorists {
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, counterR, counterG, counterB, 255)
 	}
 
 }
