@@ -216,32 +216,29 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
 	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
+	var colorR, colorG, colorB uint8
 
 	if player.Team == common.TeamTerrorists {
-		if player.Hp > 0 {
-			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, terrorR, terrorG, terrorB, 255)
-			viewAngle := -int32(player.ViewDirectionX)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, terrorR, terrorG, terrorB, 255)
-		} else {
-			//gfx.SetFont(fontdata, 10, 10)
-			gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', terrorR, terrorG, terrorB, 150)
-		}
-	} else if player.Team == common.TeamCounterTerrorists {
-		if player.Hp > 0 {
-			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, counterR, counterG, counterB, 255)
-			viewAngle := -int32(player.ViewDirectionX)
-			fmt.Printf("%v %v\n", player.Name, viewAngle)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-			gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, counterR, counterG, counterB, 255)
-		} else {
-			//gfx.SetFont(fontdata, 10, 10)
-			gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', counterR, counterG, counterB, 150)
-		}
+		colorR = terrorR
+		colorG = terrorG
+		colorB = terrorB
+	} else { // if player.Team == common.TeamCounterTerrorists {
+		colorR = counterR
+		colorG = counterG
+		colorB = counterB
+	}
+
+	if player.Hp > 0 {
+		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, colorR, colorG, colorB, 255)
+		gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
+
+		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
+		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
+		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, 200, 200, 200, 255)
+		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, 200, 200, 200, 255)
+	} else {
+		//gfx.SetFont(fontdata, 10, 10)
+		gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', colorR, colorG, colorB, 150)
 	}
 
 }
