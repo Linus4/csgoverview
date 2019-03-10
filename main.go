@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	winHeight int32 = 926
-	winWidth  int32 = 926
+	winHeight int32 = 1024
+	winWidth  int32 = 1024
 )
 
 type OverviewState struct {
@@ -48,9 +48,8 @@ func main() {
 	defer renderer.Destroy()
 
 	// First pass to get round starts, half starts and header info
-	demo, err := os.Open("test.dem")
+	demo, err := os.Open("test_cache.dem")
 	if err != nil {
-		log.Println("Could not open test.dem")
 		log.Println(err)
 		return
 	}
