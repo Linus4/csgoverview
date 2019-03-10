@@ -153,12 +153,23 @@ func main() {
 		fmt.Printf("Half %v:\t%v\n", i, tick)
 	}
 
+	paused := false
+
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch event.(type) {
+			switch eventT := event.(type) {
 			case *sdl.QuitEvent:
 				return
+			case *sdl.KeyboardEvent:
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
+					paused = !paused
+				}
 			}
+		}
+
+		if paused {
+			sdl.Delay(32)
+			continue
 		}
 
 		renderer.Clear()
