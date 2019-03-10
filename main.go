@@ -7,7 +7,10 @@ import (
 	// "time"
 
 	dem "github.com/markus-wa/demoinfocs-golang"
+	common "github.com/markus-wa/demoinfocs-golang/common"
 	event "github.com/markus-wa/demoinfocs-golang/events"
+	meta "github.com/markus-wa/demoinfocs-golang/metadata"
+	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -16,6 +19,11 @@ const (
 	winHeight int32 = 926
 	winWidth  int32 = 926
 )
+
+type OverviewState struct {
+	IngameTick int
+	Players    []common.Player
+}
 
 func main() {
 	err := sdl.Init(sdl.INIT_EVERYTHING)
@@ -26,7 +34,6 @@ func main() {
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winHeight, winWidth, sdl.WINDOW_SHOWN)
-
 	if err != nil {
 		log.Println(err)
 		return
@@ -48,6 +55,8 @@ func main() {
 		return
 	}
 	defer demo.Close()
+
+	curFrame := 0
 
 	// MatchStart + GameHalfEnd
 	halfStarts := make([]int, 0)
@@ -78,6 +87,7 @@ func main() {
 		return
 	}
 
+	// frametime or frames per second?
 	frameTime := parser.Header().FrameTime()
 	mapName := parser.Header().MapName
 
@@ -101,15 +111,38 @@ func main() {
 	renderer.Copy(texture, nil, nil)
 	renderer.Present()
 
-	// parser = dem.NewParser(demo)
+	_, err = demo.Seek(0, 0)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	// states := make([]dem.IGameState, 0)
+	parser = dem.NewParser(demo)
 
-	// parse and present demo frame by frame (positions)
+	states := make([]OverviewState, 0)
 
-	// translate coordinates
+	// parse demo and save GameStates in slice
 
-	// draw the things
+	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
+		if err != nil {
+			log.Println(err)
+			// return here or not?
+		}
+
+		players := make([]common.Player, 0)
+
+		for _, player := range parser.GameState().Participants().Playing() {
+			players = append(players, *player)
+		}
+
+		state := OverviewState{
+			IngameTick: parser.GameState().IngameTick(),
+			Players:    players,
+		}
+
+		states = append(states, state)
+	}
+	fmt.Printf("Got %v frames\n", len(states))
 
 	fmt.Println("Time per frame: %v", frameTime)
 	fmt.Println("Round starts:")
@@ -128,7 +161,31 @@ func main() {
 				return
 			}
 		}
+
+		renderer.Clear()
+		renderer.Copy(texture, nil, nil)
+
+		players := states[curFrame].Players
+
+		for _, player := range players {
+			pos := player.Position
+			scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+			var scaledXInt int32 = int32(scaledX)
+			var scaledYInt int32 = int32(scaledY)
+			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, 200, 200, 200, 200)
+			fmt.Printf("(%v, %v)\n", scaledXInt, scaledYInt)
+		}
+
+		// translate coordinates
+
+		// draw the things
+
+		fmt.Printf("Frame %v\n", curFrame)
+		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
+		renderer.Present()
+
 		sdl.Delay(32)
+		curFrame++
 	}
 
 }
