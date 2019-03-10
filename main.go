@@ -173,7 +173,7 @@ func main() {
 			var scaledXInt int32 = int32(scaledX)
 			var scaledYInt int32 = int32(scaledY)
 			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 10, 200, 200, 200, 200)
-			fmt.Printf("(%v, %v)\n", scaledXInt, scaledYInt)
+			//fmt.Printf("(%v, %v)\n", scaledXInt, scaledYInt)
 		}
 
 		// translate coordinates
@@ -184,8 +184,10 @@ func main() {
 		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
-		sdl.Delay(32)
-		curFrame++
+		//sdl.Delay(32)
+		if curFrame < len(states)-1 {
+			curFrame++
+		}
 	}
 
 }
