@@ -14,11 +14,11 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Demo playback
 
-* Map 🗹
+* [X] Map 🗹
 * Playerpositions 🗹
 * Playernames 🗹
 * Player-line of vision 🗹
-* Shots
+* [ ] Shots
 * Grenades during flight
 * NadeTails
 * Effects for grenades
