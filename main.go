@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
-	// "time"
+	"time"
 
 	dem "github.com/markus-wa/demoinfocs-golang"
 	common "github.com/markus-wa/demoinfocs-golang/common"
@@ -28,11 +29,12 @@ const (
 )
 
 var (
-	mapName     string
-	halfStarts  []int
-	roundStarts []int
-	curFrame    int = 0
-	frameRate   int
+	mapName          string
+	halfStarts       []int
+	roundStarts      []int
+	curFrame         int = 0
+	frameRate        float64
+	frameRateRounded int
 )
 
 type OverviewState struct {
@@ -100,7 +102,8 @@ func main() {
 		return
 	}
 
-	frameRate = int(parser.Header().FrameRate())
+	frameRate = parser.Header().FrameRate()
+	frameRateRounded = int(math.Round(frameRate))
 	mapName = parser.Header().MapName
 
 	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
@@ -170,6 +173,8 @@ func main() {
 	// MAIN GAME LOOP
 
 	for {
+		frameStart := time.Now()
+
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch eventT := event.(type) {
 			case *sdl.QuitEvent:
@@ -182,32 +187,32 @@ func main() {
 
 				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
 					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						if curFrame < frameRate*30 {
+						if curFrame < frameRateRounded*30 {
 							curFrame = 0
 						} else {
-							curFrame -= frameRate * 30
+							curFrame -= frameRateRounded * 30
 						}
 					} else {
-						if curFrame < frameRate*10 {
+						if curFrame < frameRateRounded*10 {
 							curFrame = 0
 						} else {
-							curFrame -= frameRate * 10
+							curFrame -= frameRateRounded * 10
 						}
 					}
 				}
 
 				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
 					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						if curFrame+frameRate*30 > len(states)-1 {
+						if curFrame+frameRateRounded*30 > len(states)-1 {
 							curFrame = len(states) - 1
 						} else {
-							curFrame += frameRate * 30
+							curFrame += frameRateRounded * 30
 						}
 					} else {
-						if curFrame+frameRate*10 > len(states)-1 {
+						if curFrame+frameRateRounded*10 > len(states)-1 {
 							curFrame = len(states) - 1
 						} else {
-							curFrame += frameRate * 10
+							curFrame += frameRateRounded * 10
 						}
 					}
 				}
@@ -216,7 +221,7 @@ func main() {
 					set := false
 					for i, frame := range roundStarts {
 						if curFrame < frame {
-							if i > 1 && curFrame < roundStarts[i-1]+frameRate/2 {
+							if i > 1 && curFrame < roundStarts[i-1]+frameRateRounded/2 {
 								curFrame = roundStarts[i-2]
 								set = true
 								break
@@ -228,7 +233,7 @@ func main() {
 					}
 					// not set -> last round of match
 					if !set {
-						if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRate/2 {
+						if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRateRounded/2 {
 							curFrame = roundStarts[len(roundStarts)-2]
 						} else {
 							curFrame = roundStarts[len(roundStarts)-1]
@@ -265,7 +270,9 @@ func main() {
 		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
-		sdl.Delay(32)
+		// frameDuration is in ms
+		frameDuration := float64(time.Since(frameStart) / 1000000)
+		sdl.Delay(uint32(frameRate - frameDuration))
 		if curFrame < len(states)-1 {
 			curFrame++
 		}
