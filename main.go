@@ -40,6 +40,7 @@ var (
 type OverviewState struct {
 	IngameTick int
 	Players    []common.Player
+	Grenades   []common.GrenadeProjectile
 }
 
 func main() {
@@ -150,9 +151,16 @@ func main() {
 			players = append(players, *player)
 		}
 
+		grenades := make([]common.GrenadeProjectile, 0)
+
+		for _, grenade := range parser.GameState().GrenadeProjectiles() {
+			grenades = append(grenades, *grenade)
+		}
+
 		state := OverviewState{
 			IngameTick: parser.GameState().IngameTick(),
 			Players:    players,
+			Grenades:   grenades,
 		}
 
 		states = append(states, state)
@@ -254,6 +262,7 @@ func main() {
 
 		if paused {
 			sdl.Delay(32)
+			// draw?
 			continue
 		}
 
@@ -266,7 +275,12 @@ func main() {
 			DrawPlayer(renderer, &player)
 		}
 
-		fmt.Printf("Frame %v\n", curFrame)
+		grenades := states[curFrame].Grenades
+
+		for _, grenade := range grenades {
+			DrawGrenade(renderer, &grenade)
+		}
+
 		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
@@ -319,4 +333,46 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
 		//gfx.SetFont(fontdata, 10, 10)
 		gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', colorR, colorG, colorB, 150)
 	}
+}
+
+func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile) {
+	pos := grenade.Position
+
+	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	var scaledXInt int32 = int32(scaledX)
+	var scaledYInt int32 = int32(scaledY)
+	var colorR, colorG, colorB uint8
+
+	switch grenade.Weapon {
+	case common.EqDecoy:
+		colorR = 102
+		colorG = 34
+		colorB = 0
+	case common.EqMolotov:
+		colorR = 255
+		colorG = 153
+		colorB = 0
+	case common.EqIncendiary:
+		colorR = 255
+		colorG = 153
+		colorB = 0
+	case common.EqFlash:
+		colorR = 128
+		colorG = 170
+		colorB = 255
+	case common.EqSmoke:
+		colorR = 153
+		colorG = 153
+		colorB = 153
+	case common.EqHE:
+		colorR = 85
+		colorG = 150
+		colorB = 0
+	}
+
+	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
+
+	// trajectory
+	// not drawing trajectories at the moment
+
 }
