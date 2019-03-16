@@ -65,7 +65,7 @@ func main() {
 	defer renderer.Destroy()
 
 	// First pass to get round starts, half starts and header info
-	demo, err := os.Open("test_cache.dem")
+	demo, err := os.Open("test_mirage.dem")
 	if err != nil {
 		log.Println(err)
 		return
@@ -306,9 +306,17 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
 		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
 		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, 200, 200, 200, 255)
 		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, 200, 200, 200, 255)
+
+		// FlashDuration is not the time remaining but always the total amount of time flashed from a single flashbang
+		if player.FlashDuration > 0.8 {
+			gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-5, 200, 200, 200, 200)
+		}
+
+		if player.IsDefusing {
+			gfx.CharacterRGBA(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', counterR, counterG, counterB, 200)
+		}
 	} else {
 		//gfx.SetFont(fontdata, 10, 10)
 		gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', colorR, colorG, colorB, 150)
 	}
-
 }
