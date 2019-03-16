@@ -14,38 +14,38 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Demo playback
 
-* Map 🗹
-* Playerpositions 🗹
-* Playernames 🗹
-* Player-line of vision 🗹
-* Shots
-* Grenades during flight
-* NadeTails
-* Effects for grenades
-* Fade-out effect for smokes
-* Timer for mollys and smokes
-* `x` at places where players died 🗹
-* Indicator for flash-effect / -duration
+* [X] Map
+* [X] Playerpositions
+* [X] Playernames
+* [X] Player-line of vision
+* [ ] Shots
+* [ ] Grenades during flight
+* [ ] NadeTails
+* [ ] Effects for grenades
+* [ ] Fade-out effect for smokes
+* [ ] Timer for mollys and smokes
+* [X] `x` at places where players died 🗹
+* [ ] Indicator for flash-effect / -duration
 
 ### Keybinds
 
-* a -> 10 s backwards 🗹
-* d -> 10 s forwards 🗹
-* A -> 30 s backwards 🗹
-* D -> 30 s forwards 🗹
-* w -> hold to speed up 10 x
-* s -> hold to slow down to 0.5 x
-* W -> toggle 2 x speed
-* S -> toggle 0.33 x speed
-* q -> round backwards 🗹
-* e -> round forwards 🗹
-* Q -> to start of last half
-* E -> to start of next half
-* space -> toggle pause 🗹
-* [num]g -> go to round [num]
-* o -> open demo
-* p -> take screenshot
-* i -> export gif
+* [X] a -> 10 s backwards
+* [X] d -> 10 s forwards
+* [X] A -> 30 s backwards
+* [X] D -> 30 s forwards
+* [ ] w -> hold to speed up 10 x
+* [ ] s -> hold to slow down to 0.5 x
+* [ ] W -> toggle 2 x speed
+* [ ] S -> toggle 0.33 x speed
+* [X] q -> round backwards
+* [X] e -> round forwards
+* [ ] Q -> to start of last half
+* [ ] E -> to start of next half
+* [X] space -> toggle pause
+* [ ] [num]g -> go to round [num]
+* [ ] o -> open demo
+* [ ] p -> take screenshot
+* [ ] i -> export gif
 
 ### Additional information about round and players
 
