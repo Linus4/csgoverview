@@ -19,8 +19,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Playernames
 * [X] Player-line of vision
 * [ ] Shots
-* [ ] Grenades during flight
-* [ ] NadeTails
+* [X] Grenades during flight
+* [ ] ~~NadeTails~~
 * [ ] Effects for grenades
 * [ ] Fade-out effect for smokes
 * [ ] Timer for mollys and smokes

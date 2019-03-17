@@ -32,6 +32,7 @@ var (
 	mapName          string
 	halfStarts       []int
 	roundStarts      []int
+	shots            map[int]event.WeaponFire
 	curFrame         int = 0
 	frameRate        float64
 	frameRateRounded int
@@ -76,6 +77,7 @@ func main() {
 	// MatchStart + GameHalfEnd
 	halfStarts = make([]int, 0)
 	roundStarts = make([]int, 0)
+	shots = make(map[int]event.WeaponFire)
 	roundStarts = append(roundStarts, 0)
 
 	// find round starts and half starts
@@ -94,6 +96,9 @@ func main() {
 		parser.UnregisterEventHandler(h2)
 		parser.UnregisterEventHandler(h3)
 
+	})
+	parser.RegisterEventHandler(func(e event.WeaponFire) {
+		shots[parser.CurrentFrame()] = e
 	})
 	// RoundEndOfficial / reason
 
@@ -371,6 +376,8 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile) {
 	}
 
 	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
+
+	// GenadeEvent SmokeExpired SmokeStart InfernoStart InfernoExpired HeExplode GrenadeProjectileDestroy FlashExplode
 
 	// trajectory
 	// not drawing trajectories at the moment
