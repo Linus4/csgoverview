@@ -17,15 +17,16 @@ import (
 )
 
 const (
-	winHeight    int32 = 1024
-	winWidth     int32 = 1024
-	terrorR      uint8 = 252
-	terrorG      uint8 = 176
-	terrorB      uint8 = 12
-	counterR     uint8 = 89
-	counterG     uint8 = 206
-	counterB     uint8 = 200
-	radiusPlayer int32 = 10
+	winHeight           int32 = 1024
+	winWidth            int32 = 1024
+	terrorR             uint8 = 252
+	terrorG             uint8 = 176
+	terrorB             uint8 = 12
+	counterR            uint8 = 89
+	counterG            uint8 = 206
+	counterB            uint8 = 200
+	radiusPlayer        int32 = 10
+	flashEffectLifetime int32 = 10
 )
 
 var (
@@ -101,20 +102,8 @@ func main() {
 		halfStarts = append(halfStarts, parser.CurrentFrame())
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
-		lifetime := 10
 		frame := parser.CurrentFrame()
-		for i := 0; i < lifetime; i++ {
-			effect := GrenadeEffect{
-				GrenadeEvent: e.GrenadeEvent,
-				Lifetime:     int32(i),
-			}
-			effects, ok := grenadeEffects[frame+i]
-			if ok {
-				grenadeEffects[frame+i] = append(effects, effect)
-			} else {
-				grenadeEffects[frame+i] = []GrenadeEffect{effect}
-			}
-		}
+		AddGrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
@@ -450,4 +439,19 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 	}
 
 	gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorR, colorG, colorB, 255)
+}
+
+func AddGrenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent) {
+	for i := 0; i < int(lifetime); i++ {
+		effect := GrenadeEffect{
+			GrenadeEvent: e,
+			Lifetime:     int32(i),
+		}
+		effects, ok := grenadeEffects[frame+i]
+		if ok {
+			grenadeEffects[frame+i] = append(effects, effect)
+		} else {
+			grenadeEffects[frame+i] = []GrenadeEffect{effect}
+		}
+	}
 }
