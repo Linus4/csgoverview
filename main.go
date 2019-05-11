@@ -44,7 +44,12 @@ type OverviewState struct {
 }
 
 func main() {
-	err := sdl.Init(sdl.INIT_EVERYTHING)
+	if len(os.Args) < 2 {
+		fmt.Println("Usage: ./csgoverview [demoname]")
+		return
+	}
+
+	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
 		log.Println(err)
 	}
@@ -66,7 +71,7 @@ func main() {
 	defer renderer.Destroy()
 
 	// First pass to get round starts, half starts and header info
-	demo, err := os.Open("test_mirage.dem")
+	demo, err := os.Open(os.Args[1])
 	if err != nil {
 		log.Println(err)
 		return
