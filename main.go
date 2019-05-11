@@ -456,8 +456,12 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 	case common.EqHE:
 		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
 	case common.EqSmoke:
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
 		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
+		// Smoke is not fading
+		if effect.Lifetime < 15*smokeEffectLifetime/18 {
+			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
+		}
+		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/smokeEffectLifetime), 630, colorR, colorG, colorB, 255)
 	}
 }
 

@@ -24,13 +24,14 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Effects for flashbangs and hes
 * [X] Effects for smokes
 * [ ] Effects for mollys
-* [ ] Smoke radius scaling (map metadata)
-* [ ] Fade-out effect for smokes
-* [ ] Timer for mollys and smokes
+* [X] Fade-out effect for smokes
+* [X] Timer for smokes
 * [X] `x` at places where players died
 * [X] Indicator for flash-effect / -duration
 * [X] Indicator for defusing player
 * [ ] C4 on player, on the ground, planted and defused
+* [ ] Smoke radius scaling (map metadata)
+* [ ] remove smoke effects after round end
 
 ### Keybinds
 
