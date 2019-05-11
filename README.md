@@ -21,12 +21,13 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [ ] ~~Shots~~
 * [X] Grenades during flight
 * [ ] ~~NadeTails~~
-* [ ] Effects for grenades
+* [X] Effects for flashbangs and hes
 * [ ] Fade-out effect for smokes
 * [ ] Timer for mollys and smokes
 * [X] `x` at places where players died 🗹
 * [X] Indicator for flash-effect / -duration
 * [X] Indicator for defusing player
+* [ ] C4 on player, on the ground, planted and defused
 
 ### Keybinds
 
@@ -44,23 +45,39 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [ ] E -> to start of next half
 * [X] space -> toggle pause
 * [ ] [num]g -> go to round [num]
-* [ ] o -> open demo
 * [ ] p -> take screenshot
-* [ ] i -> export gif
+* [ ] i -> export gif/mp4
+
+### Screenshot export
+
+* jpg of current frame
+
+### Gif/ mp4 export of a single round
+
+* from
+* until
+
+## Milestone v0.2.0
+
+### Misc
+
+* [ ] Scaling
+* [ ] Multi-platform
+ 
 
 ### Additional information about round and players
 
-* #round / #total
-* Score
-* Teamnames
-* Warmup-indicator
-* Freezetime timer
-* Time remaining in current round
-* Bombplant Indicator
-* Bomb timer
-* Defuse timer
-* Killfeed
-* Player details (left/right)
+* [ ] #round / #total
+* [ ] Score
+* [ ] Teamnames
+* [ ] Warmup-indicator
+* [ ] Freezetime timer
+* [ ] Time remaining in current round
+* [ ] Bombplant Indicator
+* [ ] Bomb timer
+* [ ] Defuse timer
+* [ ] Killfeed
+* [ ] Player details (left/right)
     - Name
     - Hp
     - Armor
@@ -72,26 +89,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
     - (Taser)
     - Money
     - Kills in current round
-* Results of previous rounds (survivors?)
-
-### Misc
-
-* Splashscreen with keybinds
-* Scaling
-* Multi-platform
-* Additional information about players optional - instead letters for weapons
-  instead of playernumbers?
-
-## Milestone v0.2.0
-
-### Screenshot export
-
-* jpg of current view
-
-### Gif-Export of a single round
-
-* from
-* until
+* [ ] Results of previous rounds (survivors?)
 
 ### Command Line Interface
 

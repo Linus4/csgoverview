@@ -108,7 +108,7 @@ func main() {
 	})
 	parser.RegisterEventHandler(func(e event.HeExplode) {
 		frame := parser.CurrentFrame()
-		AddGrenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
+		GrenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
@@ -446,7 +446,7 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 	gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorR, colorG, colorB, 255)
 }
 
-func AddGrenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent) {
+func GrenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent) {
 	for i := 0; i < int(lifetime); i++ {
 		effect := GrenadeEffect{
 			GrenadeEvent: e,
