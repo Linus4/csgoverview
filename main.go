@@ -104,7 +104,7 @@ func main() {
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
 		frame := parser.CurrentFrame()
-		AddGrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
+		GrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(e event.HeExplode) {
 		frame := parser.CurrentFrame()
