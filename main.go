@@ -32,6 +32,7 @@ var (
 	mapName          string
 	halfStarts       []int
 	roundStarts      []int
+	grenadeEffects   map[int][]GrenadeEffect
 	curFrame         int = 0
 	frameRate        float64
 	frameRateRounded int
@@ -41,6 +42,11 @@ type OverviewState struct {
 	IngameTick int
 	Players    []common.Player
 	Grenades   []common.GrenadeProjectile
+}
+
+type GrenadeEffect struct {
+	GrenadeEvent event.GrenadeEvent
+	Lifetime     int
 }
 
 func main() {
@@ -70,7 +76,6 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	// First pass to get round starts, half starts and header info
 	demo, err := os.Open(os.Args[1])
 	if err != nil {
 		log.Println(err)
@@ -82,6 +87,7 @@ func main() {
 	halfStarts = make([]int, 0)
 	roundStarts = make([]int, 0)
 	roundStarts = append(roundStarts, 0)
+	grenadeEffects = make(map[int][]GrenadeEffect)
 
 	// find round starts and half starts
 	parser := dem.NewParser(demo)
@@ -93,6 +99,22 @@ func main() {
 	})
 	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
 		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	parser.RegisterEventHandler(func(e event.FlashExplode) {
+		lifetime := 7
+		frame := parser.CurrentFrame()
+		for i := 0; i < lifetime; i++ {
+			effect := GrenadeEffect{
+				GrenadeEvent: e.GrenadeEvent,
+				Lifetime:     lifetime,
+			}
+			effects, ok := grenadeEffects[frame+i]
+			if ok {
+				grenadeEffects[frame+i] = append(effects, effect)
+			} else {
+				grenadeEffects[frame+i] = []GrenadeEffect{effect}
+			}
+		}
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
