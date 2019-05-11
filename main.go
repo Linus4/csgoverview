@@ -26,18 +26,19 @@ const (
 	counterG            uint8 = 206
 	counterB            uint8 = 200
 	radiusPlayer        int32 = 10
-	flashEffectLifetime int32 = 10
-	heEffectLifetime    int32 = 10
+	flashEffectLifetime int   = 10
+	heEffectLifetime    int   = 10
 )
 
 var (
-	mapName          string
-	halfStarts       []int
-	roundStarts      []int
-	grenadeEffects   map[int][]GrenadeEffect
-	curFrame         int = 0
-	frameRate        float64
-	frameRateRounded int
+	mapName             string
+	halfStarts          []int
+	roundStarts         []int
+	grenadeEffects      map[int][]GrenadeEffect
+	curFrame            int
+	frameRate           float64
+	frameRateRounded    int
+	smokeEffectLifetime int
 )
 
 type OverviewState struct {
@@ -48,7 +49,7 @@ type OverviewState struct {
 
 type GrenadeEffect struct {
 	GrenadeEvent event.GrenadeEvent
-	Lifetime     int32
+	Lifetime     int
 }
 
 func main() {
@@ -93,6 +94,18 @@ func main() {
 
 	// find round starts and half starts
 	parser := dem.NewParser(demo)
+
+	header, err := parser.ParseHeader()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	frameRate = header.FrameRate()
+	frameRateRounded = int(math.Round(frameRate))
+	mapName = header.MapName
+	smokeEffectLifetime = int(18 * frameRate)
+
 	h1 := parser.RegisterEventHandler(func(event.MatchStart) {
 		halfStarts = append(halfStarts, parser.CurrentFrame())
 	})
@@ -110,6 +123,10 @@ func main() {
 		frame := parser.CurrentFrame()
 		GrenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
 	})
+	parser.RegisterEventHandler(func(e event.SmokeStart) {
+		frame := parser.CurrentFrame()
+		GrenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
+	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
 		parser.UnregisterEventHandler(h2)
@@ -123,10 +140,6 @@ func main() {
 		log.Println(err)
 		return
 	}
-
-	frameRate = parser.Header().FrameRate()
-	frameRateRounded = int(math.Round(frameRate))
-	mapName = parser.Header().MapName
 
 	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
 	if err != nil {
@@ -296,12 +309,10 @@ func main() {
 			DrawPlayer(renderer, &player)
 		}
 
-		effects, ok := grenadeEffects[curFrame]
+		effects := grenadeEffects[curFrame]
 
-		if ok {
-			for _, effect := range effects {
-				DrawGrenadeEffect(renderer, &effect)
-			}
+		for _, effect := range effects {
+			DrawGrenadeEffect(renderer, &effect)
 		}
 
 		grenades := states[curFrame].Grenades
@@ -401,11 +412,7 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile) {
 
 	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
 
-	// GenadeEvent SmokeExpired SmokeStart InfernoStart InfernoExpired HeExplode GrenadeProjectileDestroy FlashExplode
-
-	// trajectory
-	// not drawing trajectories at the moment
-
+	// SmokeStart InfernoStart InfernoExpired
 }
 
 func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
@@ -443,14 +450,22 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 		colorB = 0
 	}
 
-	gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorR, colorG, colorB, 255)
+	switch effect.GrenadeEvent.GrenadeType {
+	case common.EqFlash:
+		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
+	case common.EqHE:
+		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
+	case common.EqSmoke:
+		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
+		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
+	}
 }
 
-func GrenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent) {
-	for i := 0; i < int(lifetime); i++ {
+func GrenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
+	for i := 0; i < lifetime; i++ {
 		effect := GrenadeEffect{
 			GrenadeEvent: e,
-			Lifetime:     int32(i),
+			Lifetime:     i,
 		}
 		effects, ok := grenadeEffects[frame+i]
 		if ok {

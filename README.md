@@ -22,7 +22,9 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Grenades during flight
 * [ ] ~~NadeTails~~
 * [X] Effects for flashbangs and hes
-* [X] Effects for smokes and mollys
+* [X] Effects for smokes
+* [ ] Effects for mollys
+* [ ] Smoke radius scaling (map metadata)
 * [ ] Fade-out effect for smokes
 * [ ] Timer for mollys and smokes
 * [X] `x` at places where players died
