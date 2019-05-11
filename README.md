@@ -25,7 +25,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Effects for smokes and mollys
 * [ ] Fade-out effect for smokes
 * [ ] Timer for mollys and smokes
-* [X] `x` at places where players died 🗹
+* [X] `x` at places where players died
 * [X] Indicator for flash-effect / -duration
 * [X] Indicator for defusing player
 * [ ] C4 on player, on the ground, planted and defused
