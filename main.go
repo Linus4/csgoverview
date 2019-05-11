@@ -46,7 +46,7 @@ type OverviewState struct {
 
 type GrenadeEffect struct {
 	GrenadeEvent event.GrenadeEvent
-	Lifetime     int
+	Lifetime     int32
 }
 
 func main() {
@@ -101,12 +101,12 @@ func main() {
 		halfStarts = append(halfStarts, parser.CurrentFrame())
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
-		lifetime := 7
+		lifetime := 10
 		frame := parser.CurrentFrame()
 		for i := 0; i < lifetime; i++ {
 			effect := GrenadeEffect{
 				GrenadeEvent: e.GrenadeEvent,
-				Lifetime:     lifetime,
+				Lifetime:     int32(i),
 			}
 			effects, ok := grenadeEffects[frame+i]
 			if ok {
@@ -302,6 +302,14 @@ func main() {
 			DrawPlayer(renderer, &player)
 		}
 
+		effects, ok := grenadeEffects[curFrame]
+
+		if ok {
+			for _, effect := range effects {
+				DrawGrenadeEffect(renderer, &effect)
+			}
+		}
+
 		grenades := states[curFrame].Grenades
 
 		for _, grenade := range grenades {
@@ -404,4 +412,42 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile) {
 	// trajectory
 	// not drawing trajectories at the moment
 
+}
+
+func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
+	pos := effect.GrenadeEvent.Position
+
+	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	var scaledXInt int32 = int32(scaledX)
+	var scaledYInt int32 = int32(scaledY)
+	var colorR, colorG, colorB uint8
+
+	switch effect.GrenadeEvent.GrenadeType {
+	case common.EqDecoy:
+		colorR = 102
+		colorG = 34
+		colorB = 0
+	case common.EqMolotov:
+		colorR = 255
+		colorG = 153
+		colorB = 0
+	case common.EqIncendiary:
+		colorR = 255
+		colorG = 153
+		colorB = 0
+	case common.EqFlash:
+		colorR = 128
+		colorG = 170
+		colorB = 255
+	case common.EqSmoke:
+		colorR = 153
+		colorG = 153
+		colorB = 153
+	case common.EqHE:
+		colorR = 85
+		colorG = 150
+		colorB = 0
+	}
+
+	gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorR, colorG, colorB, 255)
 }
