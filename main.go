@@ -27,6 +27,7 @@ const (
 	counterB            uint8 = 200
 	radiusPlayer        int32 = 10
 	flashEffectLifetime int32 = 10
+	heEffectLifetime    int32 = 10
 )
 
 var (
@@ -104,6 +105,10 @@ func main() {
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
 		frame := parser.CurrentFrame()
 		AddGrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
+	})
+	parser.RegisterEventHandler(func(e event.HeExplode) {
+		frame := parser.CurrentFrame()
+		AddGrenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
