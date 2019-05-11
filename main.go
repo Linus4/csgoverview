@@ -45,6 +45,7 @@ type OverviewState struct {
 	IngameTick int
 	Players    []common.Player
 	Grenades   []common.GrenadeProjectile
+	Infernos   []common.Inferno
 }
 
 type GrenadeEffect struct {
@@ -191,10 +192,17 @@ func main() {
 			grenades = append(grenades, *grenade)
 		}
 
+		infernos := make([]common.Inferno, 0)
+
+		for _, inferno := range parser.GameState().Infernos() {
+			infernos = append(infernos, *inferno)
+		}
+
 		state := OverviewState{
 			IngameTick: parser.GameState().IngameTick(),
 			Players:    players,
 			Grenades:   grenades,
+			Infernos:   infernos,
 		}
 
 		states = append(states, state)
@@ -302,6 +310,12 @@ func main() {
 
 		renderer.Clear()
 		renderer.Copy(mapTexture, nil, nil)
+
+		infernos := states[curFrame].Infernos
+
+		for _, inferno := range infernos {
+			DrawInferno(renderer, &inferno)
+		}
 
 		players := states[curFrame].Players
 
@@ -424,18 +438,6 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 	var colorR, colorG, colorB uint8
 
 	switch effect.GrenadeEvent.GrenadeType {
-	case common.EqDecoy:
-		colorR = 102
-		colorG = 34
-		colorB = 0
-	case common.EqMolotov:
-		colorR = 255
-		colorG = 153
-		colorB = 0
-	case common.EqIncendiary:
-		colorR = 255
-		colorG = 153
-		colorB = 0
 	case common.EqFlash:
 		colorR = 128
 		colorG = 170
@@ -457,12 +459,30 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
 		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
 	case common.EqSmoke:
 		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
-		// Smoke is not fading
+		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*smokeEffectLifetime/18 {
 			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
 		}
 		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/smokeEffectLifetime), 630, colorR, colorG, colorB, 255)
 	}
+}
+
+func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno) {
+	hull := inferno.ConvexHull2D()
+	var colorR, colorG, colorB uint8 = 255, 153, 0
+	xCoordinates := make([]int16, 0)
+	yCoordinates := make([]int16, 0)
+
+	for _, v := range hull {
+		scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(v.X, v.Y)
+		scaledXInt := int16(scaledX)
+		scaledYInt := int16(scaledY)
+		xCoordinates = append(xCoordinates, scaledXInt)
+		yCoordinates = append(yCoordinates, scaledYInt)
+	}
+
+	gfx.FilledPolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
+	gfx.PolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
 }
 
 func GrenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
