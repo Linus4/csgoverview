@@ -209,10 +209,12 @@ func main() {
 	}
 	fmt.Printf("Got %v frames\n", len(states))
 
-	fmt.Println("Round starts:")
-	for i, tick := range roundStarts {
-		fmt.Printf("Round %v:\t%v\n", i, tick)
-	}
+	/*
+		fmt.Println("Round starts:")
+		for i, tick := range roundStarts {
+			fmt.Printf("Round %v:\t%v\n", i, tick)
+		}
+	*/
 	fmt.Println("Half starts:")
 	for i, tick := range halfStarts {
 		fmt.Printf("Half %v:\t%v\n", i, tick)
@@ -312,35 +314,44 @@ func main() {
 		renderer.Copy(mapTexture, nil, nil)
 
 		infernos := states[curFrame].Infernos
-
 		for _, inferno := range infernos {
 			DrawInferno(renderer, &inferno)
 		}
 
 		players := states[curFrame].Players
-
 		for _, player := range players {
 			DrawPlayer(renderer, &player)
 		}
 
 		effects := grenadeEffects[curFrame]
-
 		for _, effect := range effects {
 			DrawGrenadeEffect(renderer, &effect)
 		}
 
 		grenades := states[curFrame].Grenades
-
 		for _, grenade := range grenades {
 			DrawGrenade(renderer, &grenade)
 		}
 
-		fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
+		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
+
+		var playbackSpeed float64 = 1
 
 		// frameDuration is in ms
 		frameDuration := float64(time.Since(frameStart) / 1000000)
-		sdl.Delay(uint32(frameRate - frameDuration))
+		keyboardState := sdl.GetKeyboardState()
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 {
+			playbackSpeed = 5
+		}
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
+			playbackSpeed = 0.5
+		}
+		delay := (1/playbackSpeed)*frameRate - frameDuration
+		if delay < 0 {
+			delay = 0
+		}
+		sdl.Delay(uint32(delay))
 		if curFrame < len(states)-1 {
 			curFrame++
 		}

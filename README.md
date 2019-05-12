@@ -31,7 +31,6 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Indicator for defusing player
 * [ ] C4 on player, on the ground, planted and defused
 * [ ] Smoke radius scaling (map metadata)
-* [ ] remove smoke effects after round end
 
 ### Keybinds
 
@@ -39,10 +38,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] d -> 10 s forwards
 * [X] A -> 30 s backwards
 * [X] D -> 30 s forwards
-* [ ] w -> hold to speed up 10 x
-* [ ] s -> hold to slow down to 0.5 x
-* [ ] W -> toggle 2 x speed
-* [ ] S -> toggle 0.33 x speed
+* [X] w -> hold to speed up 10 x
+* [X] s -> hold to slow down to 0.5 x
 * [X] q -> round backwards
 * [X] e -> round forwards
 * [ ] Q -> to start of last half
