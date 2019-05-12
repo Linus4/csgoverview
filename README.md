@@ -42,8 +42,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] s -> hold to slow down to 0.5 x
 * [X] q -> round backwards
 * [X] e -> round forwards
-* [ ] Q -> to start of last half
-* [ ] E -> to start of next half
+* [X] Q -> to start of last half
+* [X] E -> to start of next half
 * [X] space -> toggle pause
 * [ ] [num]g -> go to round [num]
 * [ ] p -> take screenshot
