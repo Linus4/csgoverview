@@ -17,7 +17,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Map
 * [X] Playerpositions
 * [X] Playernames
-* [X] Player-line of vision
+* [X] Player line of vision
 * [ ] ~~Shots~~
 * [X] Grenades during flight
 * [ ] ~~NadeTails~~
@@ -29,7 +29,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] `x` at places where players died
 * [X] Indicator for flash-effect / -duration
 * [X] Indicator for defusing player
-* [ ] C4 on player, on the ground, planted and defused
+* [X] C4 on the ground
+* [ ] C4 on player
 * [ ] Smoke radius scaling (map metadata)
 
 ### Keybinds
@@ -38,25 +39,22 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] d -> 10 s forwards
 * [X] A -> 30 s backwards
 * [X] D -> 30 s forwards
-* [X] w -> hold to speed up 10 x
+* [X] w -> hold to speed up 5 x
 * [X] s -> hold to slow down to 0.5 x
 * [X] q -> round backwards
 * [X] e -> round forwards
-* [X] Q -> to start of last half
+* [X] Q -> to start of previous half
 * [X] E -> to start of next half
 * [X] space -> toggle pause
 * [ ] [num]g -> go to round [num]
 * [ ] p -> take screenshot
 * [ ] i -> export gif/mp4
 
-### Screenshot export
+### Misc
 
 * jpg of current frame
-
-### Gif/ mp4 export of a single round
-
-* from
-* until
+* Gif / mp4 export of a single round
+* unicode support for playernames (ttf)
 
 ## Milestone v0.2.0
 
@@ -65,7 +63,6 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [ ] Scaling
 * [ ] Multi-platform
  
-
 ### Additional information about round and players
 
 * [ ] #round / #total
@@ -109,6 +106,11 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 * Keybinds
 
+### Analysis
+
+* CSGO Demos Manager
+* other 3rd-party tools
+
 ### Networking
 
 * join.me
@@ -122,8 +124,3 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * twiddla
 * paint
 * live overlay ?
-
-### Analysis
-
-* CSGO Demos Manager
-* other 3rd-party tools

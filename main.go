@@ -46,6 +46,7 @@ type OverviewState struct {
 	Players    []common.Player
 	Grenades   []common.GrenadeProjectile
 	Infernos   []common.Inferno
+	Bomb       common.Bomb
 }
 
 type GrenadeEffect struct {
@@ -87,13 +88,11 @@ func main() {
 	}
 	defer demo.Close()
 
-	// MatchStart + GameHalfEnd
 	halfStarts = make([]int, 0)
 	roundStarts = make([]int, 0)
 	roundStarts = append(roundStarts, 0)
 	grenadeEffects = make(map[int][]GrenadeEffect)
 
-	// find round starts and half starts
 	parser := dem.NewParser(demo)
 
 	header, err := parser.ParseHeader()
@@ -107,20 +106,18 @@ func main() {
 	mapName = header.MapName
 	smokeEffectLifetime = int(18 * frameRate)
 
-	h1 := parser.RegisterEventHandler(func(event.MatchStart) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	h2 := parser.RegisterEventHandler(func(event.RoundStart) {
+	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
 		roundStarts = append(roundStarts, parser.CurrentFrame())
 	})
-	h3 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
+	h2 := parser.RegisterEventHandler(func(event.MatchStart) {
 		halfStarts = append(halfStarts, parser.CurrentFrame())
 	})
-	/*
-		h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
-			halfStarts = append(halfStarts, parser.CurrentFrame())
-		})
-	*/
+	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
 		frame := parser.CurrentFrame()
 		GrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
@@ -137,9 +134,9 @@ func main() {
 		parser.UnregisterEventHandler(h1)
 		parser.UnregisterEventHandler(h2)
 		parser.UnregisterEventHandler(h3)
+		parser.UnregisterEventHandler(h4)
 
 	})
-	// RoundEndOfficial / reason
 
 	err = parser.ParseToEnd()
 	if err != nil {
@@ -178,7 +175,6 @@ func main() {
 	states := make([]OverviewState, 0)
 
 	// parse demo and save GameStates in slice
-
 	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
 		if err != nil {
 			log.Println(err)
@@ -203,11 +199,14 @@ func main() {
 			infernos = append(infernos, *inferno)
 		}
 
+		bomb := *parser.GameState().Bomb()
+
 		state := OverviewState{
 			IngameTick: parser.GameState().IngameTick(),
 			Players:    players,
 			Grenades:   grenades,
 			Infernos:   infernos,
+			Bomb:       bomb,
 		}
 
 		states = append(states, state)
@@ -228,7 +227,6 @@ func main() {
 	paused := false
 
 	// MAIN GAME LOOP
-
 	for {
 		frameStart := time.Now()
 
@@ -371,6 +369,9 @@ func main() {
 			DrawGrenade(renderer, &grenade)
 		}
 
+		bomb := states[curFrame].Bomb
+		DrawBomb(renderer, &bomb)
+
 		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
@@ -428,6 +429,14 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
 		if player.FlashDuration > 0.8 {
 			gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-5, 200, 200, 200, 200)
 		}
+
+		/* bug in library?
+		for _, w := range player.Weapons() {
+			if w.Weapon == common.EqBomb {
+				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-1, 255, 0, 0, 255)
+			}
+		}
+		*/
 
 		if player.IsDefusing {
 			gfx.CharacterRGBA(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', counterR, counterG, counterB, 200)
@@ -532,6 +541,25 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno) {
 
 	gfx.FilledPolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
 	gfx.PolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
+}
+
+func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb) {
+	pos := bomb.Position()
+	// bug in library? Position returns weird player when someone is carrying it
+	if bomb.Carrier != nil {
+		return
+	}
+
+	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	var scaledXInt int32 = int32(scaledX)
+	var scaledYInt int32 = int32(scaledY)
+	var colorR, colorG, colorB uint8
+
+	colorR = 255
+	colorG = 0
+	colorB = 0
+
+	gfx.BoxRGBA(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorR, colorG, colorB, 255)
 }
 
 func GrenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
