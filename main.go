@@ -125,6 +125,7 @@ func main() {
 	renderer.Copy(mapTexture, nil, nil)
 	renderer.Present()
 
+	// Second pass of the parser
 	_, err = demo.Seek(0, 0)
 	if err != nil {
 		log.Println(err)
@@ -133,45 +134,7 @@ func main() {
 
 	parser = dem.NewParser(demo)
 
-	states := make([]OverviewState, 0)
-
-	// parse demo and save GameStates in slice
-	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
-		if err != nil {
-			log.Println(err)
-			// return here or not?
-		}
-
-		players := make([]common.Player, 0)
-
-		for _, player := range parser.GameState().Participants().Playing() {
-			players = append(players, *player)
-		}
-
-		grenades := make([]common.GrenadeProjectile, 0)
-
-		for _, grenade := range parser.GameState().GrenadeProjectiles() {
-			grenades = append(grenades, *grenade)
-		}
-
-		infernos := make([]common.Inferno, 0)
-
-		for _, inferno := range parser.GameState().Infernos() {
-			infernos = append(infernos, *inferno)
-		}
-
-		bomb := *parser.GameState().Bomb()
-
-		state := OverviewState{
-			IngameTick: parser.GameState().IngameTick(),
-			Players:    players,
-			Grenades:   grenades,
-			Infernos:   infernos,
-			Bomb:       bomb,
-		}
-
-		states = append(states, state)
-	}
+	states := parseGameStates(parser)
 
 	paused := false
 
@@ -393,4 +356,48 @@ func registerEventHandlers(parser *dem.Parser) {
 		parser.UnregisterEventHandler(h3)
 		parser.UnregisterEventHandler(h4)
 	})
+}
+
+func parseGameStates(parser *dem.Parser) []OverviewState {
+	states := make([]OverviewState, 0)
+
+	// parse demo and save GameStates in slice
+	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
+		if err != nil {
+			log.Println(err)
+			// return here or not?
+		}
+
+		players := make([]common.Player, 0)
+
+		for _, player := range parser.GameState().Participants().Playing() {
+			players = append(players, *player)
+		}
+
+		grenades := make([]common.GrenadeProjectile, 0)
+
+		for _, grenade := range parser.GameState().GrenadeProjectiles() {
+			grenades = append(grenades, *grenade)
+		}
+
+		infernos := make([]common.Inferno, 0)
+
+		for _, inferno := range parser.GameState().Infernos() {
+			infernos = append(infernos, *inferno)
+		}
+
+		bomb := *parser.GameState().Bomb()
+
+		state := OverviewState{
+			IngameTick: parser.GameState().IngameTick(),
+			Players:    players,
+			Grenades:   grenades,
+			Infernos:   infernos,
+			Bomb:       bomb,
+		}
+
+		states = append(states, state)
+	}
+
+	return states
 }
