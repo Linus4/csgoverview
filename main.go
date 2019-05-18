@@ -35,11 +35,13 @@ var (
 )
 
 type OverviewState struct {
-	IngameTick int
-	Players    []common.Player
-	Grenades   []common.GrenadeProjectile
-	Infernos   []common.Inferno
-	Bomb       common.Bomb
+	IngameTick            int
+	Players               []common.Player
+	Grenades              []common.GrenadeProjectile
+	Infernos              []common.Inferno
+	Bomb                  common.Bomb
+	TeamCounterTerrorists common.TeamState
+	TeamTerrorists        common.TeamState
 }
 
 type GrenadeEffect struct {
@@ -187,6 +189,12 @@ func main() {
 		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
+		cts := states[curFrame].TeamCounterTerrorists
+		ts := states[curFrame].TeamTerrorists
+		windowTitle := fmt.Sprintf("%s %d:%d %s", cts.ClanName, cts.Score, ts.Score, ts.ClanName)
+		// expensive?
+		window.SetTitle(windowTitle)
+
 		var playbackSpeed float64 = 1
 
 		// frameDuration is in ms
@@ -268,32 +276,39 @@ func parseGameStates(parser *dem.Parser) []OverviewState {
 			// return here or not?
 		}
 
+		gameState := parser.GameState()
+
 		players := make([]common.Player, 0)
 
-		for _, player := range parser.GameState().Participants().Playing() {
+		for _, player := range gameState.Participants().Playing() {
 			players = append(players, *player)
 		}
 
 		grenades := make([]common.GrenadeProjectile, 0)
 
-		for _, grenade := range parser.GameState().GrenadeProjectiles() {
+		for _, grenade := range gameState.GrenadeProjectiles() {
 			grenades = append(grenades, *grenade)
 		}
 
 		infernos := make([]common.Inferno, 0)
 
-		for _, inferno := range parser.GameState().Infernos() {
+		for _, inferno := range gameState.Infernos() {
 			infernos = append(infernos, *inferno)
 		}
 
-		bomb := *parser.GameState().Bomb()
+		bomb := *gameState.Bomb()
+
+		cts := *gameState.TeamCounterTerrorists()
+		ts := *gameState.TeamTerrorists()
 
 		state := OverviewState{
-			IngameTick: parser.GameState().IngameTick(),
-			Players:    players,
-			Grenades:   grenades,
-			Infernos:   infernos,
-			Bomb:       bomb,
+			IngameTick:            parser.GameState().IngameTick(),
+			Players:               players,
+			Grenades:              grenades,
+			Infernos:              infernos,
+			Bomb:                  bomb,
+			TeamCounterTerrorists: cts,
+			TeamTerrorists:        ts,
 		}
 
 		states = append(states, state)
