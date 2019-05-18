@@ -30,6 +30,8 @@ var (
 	frameRate           float64
 	frameRateRounded    int
 	smokeEffectLifetime int
+	paused              bool
+	states              []OverviewState
 )
 
 type OverviewState struct {
@@ -134,9 +136,7 @@ func main() {
 
 	parser = dem.NewParser(demo)
 
-	states := parseGameStates(parser)
-
-	paused := false
+	states = parseGameStates(parser)
 
 	// MAIN GAME LOOP
 	for {
@@ -148,107 +148,7 @@ func main() {
 				return
 
 			case *sdl.KeyboardEvent:
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
-					paused = !paused
-				}
-
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
-					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						if curFrame < frameRateRounded*30 {
-							curFrame = 0
-						} else {
-							curFrame -= frameRateRounded * 30
-						}
-					} else {
-						if curFrame < frameRateRounded*10 {
-							curFrame = 0
-						} else {
-							curFrame -= frameRateRounded * 10
-						}
-					}
-				}
-
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
-					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						if curFrame+frameRateRounded*30 > len(states)-1 {
-							curFrame = len(states) - 1
-						} else {
-							curFrame += frameRateRounded * 30
-						}
-					} else {
-						if curFrame+frameRateRounded*10 > len(states)-1 {
-							curFrame = len(states) - 1
-						} else {
-							curFrame += frameRateRounded * 10
-						}
-					}
-				}
-
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
-					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						set := false
-						for i, frame := range halfStarts {
-							if curFrame < frame {
-								if i > 1 && curFrame < halfStarts[i-1]+frameRateRounded/2 {
-									curFrame = halfStarts[i-2]
-									set = true
-									break
-								}
-								curFrame = halfStarts[i-1]
-								set = true
-								break
-							}
-						}
-						// not set -> last round of match
-						if !set {
-							if len(halfStarts) > 1 && curFrame < halfStarts[len(halfStarts)-1]+frameRateRounded/2 {
-								curFrame = halfStarts[len(halfStarts)-2]
-							} else {
-								curFrame = halfStarts[len(halfStarts)-1]
-							}
-						}
-					} else {
-						set := false
-						for i, frame := range roundStarts {
-							if curFrame < frame {
-								if i > 1 && curFrame < roundStarts[i-1]+frameRateRounded/2 {
-									curFrame = roundStarts[i-2]
-									set = true
-									break
-								}
-								curFrame = roundStarts[i-1]
-								set = true
-								break
-							}
-						}
-						// not set -> last round of match
-						if !set {
-							if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRateRounded/2 {
-								curFrame = roundStarts[len(roundStarts)-2]
-							} else {
-								curFrame = roundStarts[len(roundStarts)-1]
-							}
-						}
-					}
-				}
-
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
-					if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-						for _, frame := range halfStarts {
-							if curFrame < frame {
-								curFrame = frame
-								break
-							}
-						}
-					} else {
-						for _, frame := range roundStarts {
-							if curFrame < frame {
-								curFrame = frame
-								break
-							}
-						}
-					}
-				}
+				handleKeyboardEvents(eventT)
 			}
 		}
 
@@ -400,4 +300,108 @@ func parseGameStates(parser *dem.Parser) []OverviewState {
 	}
 
 	return states
+}
+
+func handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
+		paused = !paused
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
+		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+			if curFrame < frameRateRounded*30 {
+				curFrame = 0
+			} else {
+				curFrame -= frameRateRounded * 30
+			}
+		} else {
+			if curFrame < frameRateRounded*10 {
+				curFrame = 0
+			} else {
+				curFrame -= frameRateRounded * 10
+			}
+		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
+		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+			if curFrame+frameRateRounded*30 > len(states)-1 {
+				curFrame = len(states) - 1
+			} else {
+				curFrame += frameRateRounded * 30
+			}
+		} else {
+			if curFrame+frameRateRounded*10 > len(states)-1 {
+				curFrame = len(states) - 1
+			} else {
+				curFrame += frameRateRounded * 10
+			}
+		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
+		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+			set := false
+			for i, frame := range halfStarts {
+				if curFrame < frame {
+					if i > 1 && curFrame < halfStarts[i-1]+frameRateRounded/2 {
+						curFrame = halfStarts[i-2]
+						set = true
+						break
+					}
+					curFrame = halfStarts[i-1]
+					set = true
+					break
+				}
+			}
+			// not set -> last round of match
+			if !set {
+				if len(halfStarts) > 1 && curFrame < halfStarts[len(halfStarts)-1]+frameRateRounded/2 {
+					curFrame = halfStarts[len(halfStarts)-2]
+				} else {
+					curFrame = halfStarts[len(halfStarts)-1]
+				}
+			}
+		} else {
+			set := false
+			for i, frame := range roundStarts {
+				if curFrame < frame {
+					if i > 1 && curFrame < roundStarts[i-1]+frameRateRounded/2 {
+						curFrame = roundStarts[i-2]
+						set = true
+						break
+					}
+					curFrame = roundStarts[i-1]
+					set = true
+					break
+				}
+			}
+			// not set -> last round of match
+			if !set {
+				if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRateRounded/2 {
+					curFrame = roundStarts[len(roundStarts)-2]
+				} else {
+					curFrame = roundStarts[len(roundStarts)-1]
+				}
+			}
+		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
+		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+			for _, frame := range halfStarts {
+				if curFrame < frame {
+					curFrame = frame
+					break
+				}
+			}
+		} else {
+			for _, frame := range roundStarts {
+				if curFrame < frame {
+					curFrame = frame
+					break
+				}
+			}
+		}
+	}
 }
