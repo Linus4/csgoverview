@@ -10,8 +10,6 @@ import (
 	dem "github.com/markus-wa/demoinfocs-golang"
 	common "github.com/markus-wa/demoinfocs-golang/common"
 	event "github.com/markus-wa/demoinfocs-golang/events"
-	meta "github.com/markus-wa/demoinfocs-golang/metadata"
-	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -19,13 +17,6 @@ import (
 const (
 	winHeight           int32 = 1024
 	winWidth            int32 = 1024
-	terrorR             uint8 = 252
-	terrorG             uint8 = 176
-	terrorB             uint8 = 12
-	counterR            uint8 = 89
-	counterG            uint8 = 206
-	counterB            uint8 = 200
-	radiusPlayer        int32 = 10
 	flashEffectLifetime int   = 10
 	heEffectLifetime    int   = 10
 )
@@ -120,15 +111,15 @@ func main() {
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
 		frame := parser.CurrentFrame()
-		GrenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
+		grenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(e event.HeExplode) {
 		frame := parser.CurrentFrame()
-		GrenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
+		grenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(e event.SmokeStart) {
 		frame := parser.CurrentFrame()
-		GrenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
+		grenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
@@ -210,18 +201,6 @@ func main() {
 		}
 
 		states = append(states, state)
-	}
-	fmt.Printf("Got %v frames\n", len(states))
-
-	/*
-		fmt.Println("Round starts:")
-		for i, tick := range roundStarts {
-			fmt.Printf("Round %v:\t%v\n", i, tick)
-		}
-	*/
-	fmt.Println("Half starts:")
-	for i, tick := range halfStarts {
-		fmt.Printf("Half %v:\t%v\n", i, tick)
 	}
 
 	paused := false
@@ -351,26 +330,26 @@ func main() {
 
 		infernos := states[curFrame].Infernos
 		for _, inferno := range infernos {
-			DrawInferno(renderer, &inferno)
+			DrawInferno(renderer, &inferno, mapName)
 		}
 
 		players := states[curFrame].Players
 		for _, player := range players {
-			DrawPlayer(renderer, &player)
+			DrawPlayer(renderer, &player, mapName)
 		}
 
 		effects := grenadeEffects[curFrame]
 		for _, effect := range effects {
-			DrawGrenadeEffect(renderer, &effect)
+			DrawGrenadeEffect(renderer, &effect, mapName)
 		}
 
 		grenades := states[curFrame].Grenades
 		for _, grenade := range grenades {
-			DrawGrenade(renderer, &grenade)
+			DrawGrenade(renderer, &grenade, mapName)
 		}
 
 		bomb := states[curFrame].Bomb
-		DrawBomb(renderer, &bomb)
+		DrawBomb(renderer, &bomb, mapName)
 
 		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
@@ -398,171 +377,7 @@ func main() {
 
 }
 
-func DrawPlayer(renderer *sdl.Renderer, player *common.Player) {
-	pos := player.LastAlivePosition
-
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
-	var colorR, colorG, colorB uint8
-
-	if player.Team == common.TeamTerrorists {
-		colorR = terrorR
-		colorG = terrorG
-		colorB = terrorB
-	} else { // if player.Team == common.TeamCounterTerrorists {
-		colorR = counterR
-		colorG = counterG
-		colorB = counterB
-	}
-
-	if player.Hp > 0 {
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, colorR, colorG, colorB, 255)
-		gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
-
-		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, 200, 200, 200, 255)
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, 200, 200, 200, 255)
-
-		// FlashDuration is not the time remaining but always the total amount of time flashed from a single flashbang
-		if player.FlashDuration > 0.8 {
-			gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-5, 200, 200, 200, 200)
-		}
-
-		/* bug in library?
-		for _, w := range player.Weapons() {
-			if w.Weapon == common.EqBomb {
-				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-1, 255, 0, 0, 255)
-			}
-		}
-		*/
-
-		if player.IsDefusing {
-			gfx.CharacterRGBA(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', counterR, counterG, counterB, 200)
-		}
-	} else {
-		//gfx.SetFont(fontdata, 10, 10)
-		gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', colorR, colorG, colorB, 150)
-	}
-}
-
-func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile) {
-	pos := grenade.Position
-
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
-	var colorR, colorG, colorB uint8
-
-	switch grenade.Weapon {
-	case common.EqDecoy:
-		colorR = 102
-		colorG = 34
-		colorB = 0
-	case common.EqMolotov:
-		colorR = 255
-		colorG = 153
-		colorB = 0
-	case common.EqIncendiary:
-		colorR = 255
-		colorG = 153
-		colorB = 0
-	case common.EqFlash:
-		colorR = 128
-		colorG = 170
-		colorB = 255
-	case common.EqSmoke:
-		colorR = 153
-		colorG = 153
-		colorB = 153
-	case common.EqHE:
-		colorR = 85
-		colorG = 150
-		colorB = 0
-	}
-
-	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
-
-	// SmokeStart InfernoStart InfernoExpired
-}
-
-func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect) {
-	pos := effect.GrenadeEvent.Position
-
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
-	var colorR, colorG, colorB uint8
-
-	switch effect.GrenadeEvent.GrenadeType {
-	case common.EqFlash:
-		colorR = 128
-		colorG = 170
-		colorB = 255
-	case common.EqSmoke:
-		colorR = 153
-		colorG = 153
-		colorB = 153
-	case common.EqHE:
-		colorR = 85
-		colorG = 150
-		colorB = 0
-	}
-
-	switch effect.GrenadeEvent.GrenadeType {
-	case common.EqFlash:
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
-	case common.EqHE:
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
-	case common.EqSmoke:
-		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
-		// only draw the outline if the smoke is not fading
-		if effect.Lifetime < 15*smokeEffectLifetime/18 {
-			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
-		}
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/smokeEffectLifetime), 630, colorR, colorG, colorB, 255)
-	}
-}
-
-func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno) {
-	hull := inferno.ConvexHull2D()
-	var colorR, colorG, colorB uint8 = 255, 153, 0
-	xCoordinates := make([]int16, 0)
-	yCoordinates := make([]int16, 0)
-
-	for _, v := range hull {
-		scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(v.X, v.Y)
-		scaledXInt := int16(scaledX)
-		scaledYInt := int16(scaledY)
-		xCoordinates = append(xCoordinates, scaledXInt)
-		yCoordinates = append(yCoordinates, scaledYInt)
-	}
-
-	gfx.FilledPolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
-	gfx.PolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
-}
-
-func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb) {
-	pos := bomb.Position()
-	// bug in library? Position returns weird player when someone is carrying it
-	if bomb.Carrier != nil {
-		return
-	}
-
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
-	var colorR, colorG, colorB uint8
-
-	colorR = 255
-	colorG = 0
-	colorB = 0
-
-	gfx.BoxRGBA(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorR, colorG, colorB, 255)
-}
-
-func GrenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
+func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
 	for i := 0; i < lifetime; i++ {
 		effect := GrenadeEffect{
 			GrenadeEvent: e,
