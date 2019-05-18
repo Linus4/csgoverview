@@ -97,37 +97,7 @@ func main() {
 	mapName = header.MapName
 	smokeEffectLifetime = int(18 * frameRate)
 
-	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
-		roundStarts = append(roundStarts, parser.CurrentFrame())
-	})
-	h2 := parser.RegisterEventHandler(func(event.MatchStart) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	parser.RegisterEventHandler(func(e event.FlashExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(e event.HeExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(e event.SmokeStart) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
-		parser.UnregisterEventHandler(h1)
-		parser.UnregisterEventHandler(h2)
-		parser.UnregisterEventHandler(h3)
-		parser.UnregisterEventHandler(h4)
-
-	})
+	registerEventHandlers(parser)
 
 	err = parser.ParseToEnd()
 	if err != nil {
@@ -390,4 +360,37 @@ func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
 			grenadeEffects[frame+i] = []GrenadeEffect{effect}
 		}
 	}
+}
+
+func registerEventHandlers(parser *dem.Parser) {
+	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
+		roundStarts = append(roundStarts, parser.CurrentFrame())
+	})
+	h2 := parser.RegisterEventHandler(func(event.MatchStart) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
+		halfStarts = append(halfStarts, parser.CurrentFrame())
+	})
+	parser.RegisterEventHandler(func(e event.FlashExplode) {
+		frame := parser.CurrentFrame()
+		grenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
+	})
+	parser.RegisterEventHandler(func(e event.HeExplode) {
+		frame := parser.CurrentFrame()
+		grenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
+	})
+	parser.RegisterEventHandler(func(e event.SmokeStart) {
+		frame := parser.CurrentFrame()
+		grenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
+	})
+	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
+		parser.UnregisterEventHandler(h1)
+		parser.UnregisterEventHandler(h2)
+		parser.UnregisterEventHandler(h3)
+		parser.UnregisterEventHandler(h4)
+	})
 }
