@@ -189,11 +189,7 @@ func main() {
 		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
-		cts := states[curFrame].TeamCounterTerrorists
-		ts := states[curFrame].TeamTerrorists
-		windowTitle := fmt.Sprintf("%s %d:%d %s", cts.ClanName, cts.Score, ts.Score, ts.ClanName)
-		// expensive?
-		window.SetTitle(windowTitle)
+		updateWindowTitle(window)
 
 		var playbackSpeed float64 = 1
 
@@ -419,4 +415,20 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			}
 		}
 	}
+}
+
+func updateWindowTitle(window *sdl.Window) {
+	cts := states[curFrame].TeamCounterTerrorists
+	ts := states[curFrame].TeamTerrorists
+	clanNameCTs := cts.ClanName
+	if clanNameCTs == "" {
+		clanNameCTs = "Counter Terrorists"
+	}
+	clanNameTs := ts.ClanName
+	if clanNameTs == "" {
+		clanNameTs = "Terrorists"
+	}
+	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s", clanNameCTs, cts.Score, ts.Score, clanNameTs)
+	// expensive?
+	window.SetTitle(windowTitle)
 }
