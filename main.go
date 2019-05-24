@@ -36,7 +36,7 @@ var (
 
 type OverviewState struct {
 	IngameTick            int
-	Players               []common.Player
+	Players               []OverviewPlayer
 	Grenades              []common.GrenadeProjectile
 	Infernos              []common.Inferno
 	Bomb                  common.Bomb
@@ -47,6 +47,12 @@ type OverviewState struct {
 type GrenadeEffect struct {
 	GrenadeEvent event.GrenadeEvent
 	Lifetime     int
+}
+
+// Do not use Weapons(), but do use Weapons instead
+type OverviewPlayer struct {
+	common.Player
+	Weapons []common.Equipment
 }
 
 func main() {
@@ -274,10 +280,18 @@ func parseGameStates(parser *dem.Parser) []OverviewState {
 
 		gameState := parser.GameState()
 
-		players := make([]common.Player, 0)
+		players := make([]OverviewPlayer, 0)
 
-		for _, player := range gameState.Participants().Playing() {
-			players = append(players, *player)
+		for _, p := range gameState.Participants().Playing() {
+			equipment := make([]common.Equipment, 0)
+			for _, eq := range p.Weapons() {
+				equipment = append(equipment, *eq)
+			}
+			player := OverviewPlayer{
+				Player:  *p,
+				Weapons: equipment,
+			}
+			players = append(players, player)
 		}
 
 		grenades := make([]common.GrenadeProjectile, 0)

@@ -30,8 +30,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Indicator for flash-effect / -duration
 * [X] Indicator for defusing player
 * [X] C4 on the ground
-* [ ] C4 on player
-* [ ] Smoke radius scaling (map metadata)
+* [X] C4 on player
 
 ### Keybinds
 
@@ -52,22 +51,18 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Misc
 
-* jpg of current frame
-* Gif / mp4 export of a single round
-* unicode support for playernames (ttf)
+* [ ] jpg of current frame
+* [ ] Gif / mp4 export of a single round
+* [ ] unicode support for playernames (ttf)
+* [ ] Smoke radius scaling (map metadata)
 
 ## Milestone v0.2.0
 
-### Misc
-
-* [ ] Scaling
-* [ ] Multi-platform
- 
 ### Additional information about round and players
 
 * [ ] #round / #total
-* [ ] Score
-* [ ] Teamnames
+* [X] Score
+* [X] Teamnames
 * [ ] Warmup-indicator
 * [ ] Freezetime timer
 * [ ] Time remaining in current round
@@ -89,16 +84,21 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
     - Kills in current round
 * [ ] Results of previous rounds (survivors?)
 
+## Milestone v0.3.0
+
+### Misc
+
+* [ ] Scaling
+* [ ] Multi-platform
+ 
+### Configurable keybinds and scaling
+
+* hardcoded defaults
+
 ### Command Line Interface
 
 * take Screenshot
 * export Gif
-
-## Milestone v0.3.0
-
-### Configurable keybinds and scaling
-
-* hardcoded defaults
 
 # Non-Features
 
@@ -111,7 +111,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * CSGO Demos Manager
 * other 3rd-party tools
 
-### Networking
+### Networking?
 
 * join.me
 * screenshare
@@ -119,7 +119,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * gif export
 * cli
 
-### Drawing
+### Drawing?
 
 * twiddla
 * paint

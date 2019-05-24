@@ -17,7 +17,7 @@ const (
 	radiusPlayer int32 = 10
 )
 
-func DrawPlayer(renderer *sdl.Renderer, player *common.Player, mapName string) {
+func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) {
 	pos := player.LastAlivePosition
 
 	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
@@ -49,13 +49,12 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player, mapName string) {
 			gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-5, 200, 200, 200, 200)
 		}
 
-		/* bug in library?
-		for _, w := range player.Weapons() {
+		for _, w := range player.Weapons {
 			if w.Weapon == common.EqBomb {
 				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-1, 255, 0, 0, 255)
+				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-2, 255, 0, 0, 255)
 			}
 		}
-		*/
 
 		if player.IsDefusing {
 			gfx.CharacterRGBA(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', counterR, counterG, counterB, 200)
@@ -164,7 +163,6 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, mapName string
 
 func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, mapName string) {
 	pos := bomb.Position()
-	// bug in library? Position returns weird player when someone is carrying it
 	if bomb.Carrier != nil {
 		return
 	}
