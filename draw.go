@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	common "github.com/markus-wa/demoinfocs-golang/common"
 	meta "github.com/markus-wa/demoinfocs-golang/metadata"
 	"github.com/veandco/go-sdl2/gfx"
@@ -17,27 +19,59 @@ const (
 	radiusPlayer int32 = 10
 )
 
+var (
+	colorTerror sdl.Color = sdl.Color{
+		R: 252,
+		G: 176,
+		B: 12,
+		A: 255,
+	}
+	colorCounter sdl.Color = sdl.Color{
+		R: 89,
+		G: 206,
+		B: 200,
+		A: 255,
+	}
+)
+
 func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) {
 	pos := player.LastAlivePosition
 
 	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
-	var colorR, colorG, colorB uint8
+	var color sdl.Color
 
 	if player.Team == common.TeamTerrorists {
-		colorR = terrorR
-		colorG = terrorG
-		colorB = terrorB
-	} else { // if player.Team == common.TeamCounterTerrorists {
-		colorR = counterR
-		colorG = counterG
-		colorB = counterB
+		color = colorTerror
+	} else {
+		color = colorCounter
 	}
 
 	if player.Hp > 0 {
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer, colorR, colorG, colorB, 255)
-		gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
+		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
+
+		nameSurface, err := font.RenderUTF8Solid(player.Name, color)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer nameSurface.Free()
+		nameTexture, err := renderer.CreateTextureFromSurface(nameSurface)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer nameTexture.Destroy()
+		nameRect := &sdl.Rect{
+			X: scaledXInt + 10,
+			Y: scaledYInt + 10,
+			W: nameSurface.W,
+			H: nameSurface.H,
+		}
+		err = renderer.Copy(nameTexture, nil, nameRect)
+		if err != nil {
+			log.Fatal(err)
+		}
+		//gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
@@ -57,11 +91,14 @@ func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) 
 		}
 
 		if player.IsDefusing {
-			gfx.CharacterRGBA(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', counterR, counterG, counterB, 200)
+			color.A = 200
+			gfx.CharacterColor(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', color)
+			color.A = 255
 		}
 	} else {
-		//gfx.SetFont(fontdata, 10, 10)
-		gfx.CharacterRGBA(renderer, scaledXInt, scaledYInt, 'X', colorR, colorG, colorB, 150)
+		color.A = 150
+		gfx.CharacterColor(renderer, scaledXInt, scaledYInt, 'X', color)
+		color.A = 255
 	}
 }
 
@@ -101,8 +138,6 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, mapN
 	}
 
 	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
-
-	// SmokeStart InfernoStart InfernoExpired
 }
 
 func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect, mapName string) {

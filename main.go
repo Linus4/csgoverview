@@ -12,6 +12,7 @@ import (
 	event "github.com/markus-wa/demoinfocs-golang/events"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 const (
@@ -19,6 +20,7 @@ const (
 	winWidth            int32 = 1024
 	flashEffectLifetime int   = 10
 	heEffectLifetime    int   = 10
+	nameMapFontSize     int   = 14
 )
 
 var (
@@ -32,6 +34,7 @@ var (
 	smokeEffectLifetime int
 	paused              bool
 	states              []OverviewState
+	font                *ttf.Font
 )
 
 type OverviewState struct {
@@ -45,8 +48,8 @@ type OverviewState struct {
 }
 
 type GrenadeEffect struct {
-	GrenadeEvent event.GrenadeEvent
-	Lifetime     int
+	event.GrenadeEvent
+	Lifetime int
 }
 
 // Do not use Weapons(), but do use Weapons instead
@@ -64,8 +67,23 @@ func main() {
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	defer sdl.Quit()
+
+	err = ttf.Init()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer ttf.Quit()
+
+	font, err = ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer font.Close()
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winHeight, winWidth, sdl.WINDOW_SHOWN)
@@ -115,24 +133,30 @@ func main() {
 		return
 	}
 
-	surface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
+	mapSurface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
 	if err != nil {
 		log.Println(err)
 		return
 	}
+	defer mapSurface.Free()
 
-	mapTexture, err := renderer.CreateTextureFromSurface(surface)
+	mapTexture, err := renderer.CreateTextureFromSurface(mapSurface)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	defer mapTexture.Destroy()
 
-	// err
-	renderer.Clear()
-	// nil, nil stretches texture to fill the screen
-	// err
-	renderer.Copy(mapTexture, nil, nil)
+	err = renderer.Clear()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = renderer.Copy(mapTexture, nil, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	renderer.Present()
 
 	// Second pass of the parser
@@ -143,7 +167,6 @@ func main() {
 	}
 
 	parser = dem.NewParser(demo)
-
 	states = parseGameStates(parser)
 
 	// MAIN GAME LOOP
@@ -192,7 +215,6 @@ func main() {
 		bomb := states[curFrame].Bomb
 		DrawBomb(renderer, &bomb, mapName)
 
-		//fmt.Printf("Ingame Tick %v\n", states[curFrame].IngameTick)
 		renderer.Present()
 
 		updateWindowTitle(window)
@@ -268,14 +290,15 @@ func registerEventHandlers(parser *dem.Parser) {
 	})
 }
 
+// parse demo and save GameStates in slice
 func parseGameStates(parser *dem.Parser) []OverviewState {
 	states := make([]OverviewState, 0)
 
-	// parse demo and save GameStates in slice
 	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
 		if err != nil {
 			log.Println(err)
 			// return here or not?
+			continue
 		}
 
 		gameState := parser.GameState()
@@ -283,6 +306,7 @@ func parseGameStates(parser *dem.Parser) []OverviewState {
 		players := make([]OverviewPlayer, 0)
 
 		for _, p := range gameState.Participants().Playing() {
+			// common.RawWeapons is map[int]*common.Equipment, but it is unclear what the key means
 			equipment := make([]common.Equipment, 0)
 			for _, eq := range p.Weapons() {
 				equipment = append(equipment, *eq)
