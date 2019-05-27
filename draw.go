@@ -7,6 +7,7 @@ import (
 	meta "github.com/markus-wa/demoinfocs-golang/metadata"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 const (
@@ -51,23 +52,7 @@ func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) 
 	if player.Hp > 0 {
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		nameSurface, err := font.RenderUTF8Solid(player.Name, color)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer nameSurface.Free()
-		nameTexture, err := renderer.CreateTextureFromSurface(nameSurface)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer nameTexture.Destroy()
-		nameRect := &sdl.Rect{
-			X: scaledXInt + 10,
-			Y: scaledYInt + 10,
-			W: nameSurface.W,
-			H: nameSurface.H,
-		}
-		err = renderer.Copy(nameTexture, nil, nameRect)
+		err := DrawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -212,4 +197,28 @@ func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, mapName string) {
 	colorB = 0
 
 	gfx.BoxRGBA(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorR, colorG, colorB, 255)
+}
+
+func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) error {
+	textSurface, err := font.RenderUTF8Solid(text, color)
+	if err != nil {
+		return err
+	}
+	defer textSurface.Free()
+	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
+	if err != nil {
+		return err
+	}
+	defer textTexture.Destroy()
+	textRect := &sdl.Rect{
+		X: x,
+		Y: y,
+		W: textSurface.W,
+		H: textSurface.H,
+	}
+	err = renderer.Copy(textTexture, nil, textRect)
+	if err != nil {
+		return err
+	}
+	return nil
 }
