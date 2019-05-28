@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image/jpeg"
 	"log"
 	"math"
 	"os"
