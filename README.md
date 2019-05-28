@@ -51,9 +51,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Misc
 
-* [ ] jpg of current frame
-* [ ] Gif / mp4 export of a single round
-* [X] unicode support for playernames (ttf)
+* [X] font support for playernames (ttf)
 * [ ] Smoke radius scaling (map metadata)
 
 ## Milestone v0.2.0
@@ -90,6 +88,11 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 * [ ] Scaling
 * [ ] Multi-platform
+
+### Export
+
+* [ ] jpg of current frame
+* [ ] Gif / mp4 export of a single round
  
 ### Configurable keybinds and scaling
 

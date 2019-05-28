@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"image/jpeg"
 	"log"
 	"math"
 	"os"
@@ -35,6 +36,7 @@ var (
 	paused              bool
 	states              []OverviewState
 	font                *ttf.Font
+	demoFileName        string
 )
 
 type OverviewState struct {
@@ -63,6 +65,7 @@ func main() {
 		fmt.Println("Usage: ./csgoverview [demoname]")
 		return
 	}
+	demoFileName = os.Args[1]
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
@@ -100,7 +103,7 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	demo, err := os.Open(os.Args[1])
+	demo, err := os.Open(demoFileName)
 	if err != nil {
 		log.Println(err)
 		return
@@ -179,7 +182,7 @@ func main() {
 				return
 
 			case *sdl.KeyboardEvent:
-				handleKeyboardEvents(eventT)
+				handleKeyboardEvents(eventT, window)
 			}
 		}
 
@@ -351,7 +354,7 @@ func parseGameStates(parser *dem.Parser) []OverviewState {
 	return states
 }
 
-func handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
+func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window) {
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
 		paused = !paused
 	}
@@ -453,6 +456,29 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			}
 		}
 	}
+
+	/*
+		sdl.Window At() not implemented completely
+		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
+			fmt.Println("take screenshot")
+			fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
+			screenshotSurface, err := window.GetSurface()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			screenshotFile, err := os.Create(fileName)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			err = jpeg.Encode(screenshotFile, screenshotSurface, nil)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+		}
+	*/
 }
 
 func updateWindowTitle(window *sdl.Window) {
