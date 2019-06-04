@@ -52,10 +52,7 @@ func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) 
 	if player.Hp > 0 {
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		err := DrawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
-		if err != nil {
-			log.Fatal(err)
-		}
+		DrawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
 		//gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
@@ -199,15 +196,15 @@ func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, mapName string) {
 	gfx.BoxRGBA(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorR, colorG, colorB, 255)
 }
 
-func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) error {
+func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
 	textSurface, err := font.RenderUTF8Solid(text, color)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	defer textSurface.Free()
 	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
 	defer textTexture.Destroy()
 	textRect := &sdl.Rect{
@@ -218,7 +215,6 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 	}
 	err = renderer.Copy(textTexture, nil, textRect)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
 }
