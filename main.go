@@ -123,6 +123,7 @@ func main() {
 	}
 
 	frameRate = header.FrameRate()
+	fmt.Println(frameRate)
 	frameRateRounded = int(math.Round(frameRate))
 	mapName = header.MapName
 	smokeEffectLifetime = int(18 * frameRate)
@@ -232,7 +233,7 @@ func main() {
 		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
 			playbackSpeed = 0.5
 		}
-		delay := (1/playbackSpeed)*frameRate - frameDuration
+		delay := (1/playbackSpeed)*(1000/frameRate) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
