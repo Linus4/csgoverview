@@ -45,9 +45,6 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Q -> to start of previous half
 * [X] E -> to start of next half
 * [X] space -> toggle pause
-* [ ] [num]g -> go to round [num]
-* [ ] p -> take screenshot
-* [ ] i -> export gif/mp4
 
 ### Misc
 
@@ -61,12 +58,9 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [ ] #round / #total
 * [X] Score
 * [X] Teamnames
-* [ ] Warmup-indicator
 * [ ] Freezetime timer
 * [ ] Time remaining in current round
-* [ ] Bombplant Indicator
 * [ ] Bomb timer
-* [ ] Defuse timer
 * [ ] Killfeed
 * [ ] Player details (left/right)
     - Name
@@ -80,28 +74,18 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
     - (Taser)
     - Money
     - Kills in current round
-* [ ] Results of previous rounds (survivors?)
+
+### Misc
+
+* [ ] new interface drawer in separate package
 
 ## Milestone v0.3.0
 
 ### Misc
 
 * [ ] Scaling
-* [ ] Multi-platform
-
-### Export
-
-* [ ] jpg of current frame
-* [ ] Gif / mp4 export of a single round
- 
-### Configurable keybinds and scaling
-
-* hardcoded defaults
-
-### Command Line Interface
-
-* take Screenshot
-* export Gif
+* [ ] Build for windows
+* [ ] Results of previous rounds (survivors?)
 
 # Non-Features
 
@@ -127,3 +111,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * twiddla
 * paint
 * live overlay ?
+
+### Export
+
+* Screenshot tools
+* SimpleScreenRecorder
