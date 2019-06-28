@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	ocom "github.com/linus4/csgoverview/common"
+	"github.com/linus4/csgoverview/match"
 	common "github.com/markus-wa/demoinfocs-golang/common"
 	meta "github.com/markus-wa/demoinfocs-golang/metadata"
 	"github.com/veandco/go-sdl2/gfx"
@@ -35,10 +37,10 @@ var (
 	}
 )
 
-func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) {
+func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.Font, match *match.Match) {
 	pos := player.LastAlivePosition
 
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
 	var color sdl.Color
@@ -84,10 +86,10 @@ func DrawPlayer(renderer *sdl.Renderer, player *OverviewPlayer, mapName string) 
 	}
 }
 
-func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, mapName string) {
+func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
 	pos := grenade.Position
 
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
 	var colorR, colorG, colorB uint8
@@ -122,10 +124,10 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, mapN
 	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
 }
 
-func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect, mapName string) {
+func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
 	pos := effect.GrenadeEvent.Position
 
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
 	var colorR, colorG, colorB uint8
@@ -153,21 +155,21 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *GrenadeEffect, mapName st
 	case common.EqSmoke:
 		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
 		// only draw the outline if the smoke is not fading
-		if effect.Lifetime < 15*smokeEffectLifetime/18 {
+		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
 			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
 		}
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/smokeEffectLifetime), 630, colorR, colorG, colorB, 255)
+		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorR, colorG, colorB, 255)
 	}
 }
 
-func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, mapName string) {
+func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
 	hull := inferno.ConvexHull2D()
 	var colorR, colorG, colorB uint8 = 255, 153, 0
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
 	for _, v := range hull {
-		scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(v.X, v.Y)
+		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(v.X, v.Y)
 		scaledXInt := int16(scaledX)
 		scaledYInt := int16(scaledY)
 		xCoordinates = append(xCoordinates, scaledXInt)
@@ -178,13 +180,13 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, mapName string
 	gfx.PolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
 }
 
-func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, mapName string) {
+func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	pos := bomb.Position()
 	if bomb.Carrier != nil {
 		return
 	}
 
-	scaledX, scaledY := meta.MapNameToMap[mapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX)
 	var scaledYInt int32 = int32(scaledY)
 	var colorR, colorG, colorB uint8

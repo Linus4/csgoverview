@@ -3,68 +3,32 @@ package main
 import (
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"time"
 
-	dem "github.com/markus-wa/demoinfocs-golang"
-	common "github.com/markus-wa/demoinfocs-golang/common"
-	event "github.com/markus-wa/demoinfocs-golang/events"
+	"github.com/linus4/csgoverview/match"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
 
 const (
-	winHeight           int32 = 1024
-	winWidth            int32 = 1024
-	flashEffectLifetime int   = 10
-	heEffectLifetime    int   = 10
-	nameMapFontSize     int   = 14
+	winHeight       int32 = 1024
+	winWidth        int32 = 1024
+	nameMapFontSize int   = 14
 )
 
 var (
-	mapName             string
-	halfStarts          []int
-	roundStarts         []int
-	grenadeEffects      map[int][]GrenadeEffect
-	curFrame            int
-	frameRate           float64
-	frameRateRounded    int
-	smokeEffectLifetime int
-	paused              bool
-	states              []OverviewState
-	font                *ttf.Font
-	demoFileName        string
+	paused   bool
+	curFrame int
 )
-
-type OverviewState struct {
-	IngameTick            int
-	Players               []OverviewPlayer
-	Grenades              []common.GrenadeProjectile
-	Infernos              []common.Inferno
-	Bomb                  common.Bomb
-	TeamCounterTerrorists common.TeamState
-	TeamTerrorists        common.TeamState
-}
-
-type GrenadeEffect struct {
-	event.GrenadeEvent
-	Lifetime int
-}
-
-// Do not use Weapons(), but do use Weapons instead
-type OverviewPlayer struct {
-	common.Player
-	Weapons []common.Equipment
-}
 
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: ./csgoverview [demoname]")
 		return
 	}
-	demoFileName = os.Args[1]
+	demoFileName := os.Args[1]
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
@@ -80,7 +44,7 @@ func main() {
 	}
 	defer ttf.Quit()
 
-	font, err = ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
+	font, err := ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
 	if err != nil {
 		log.Println(err)
 		return
@@ -102,41 +66,13 @@ func main() {
 	}
 	defer renderer.Destroy()
 
-	demo, err := os.Open(demoFileName)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer demo.Close()
-
-	halfStarts = make([]int, 0)
-	roundStarts = make([]int, 0)
-	roundStarts = append(roundStarts, 0)
-	grenadeEffects = make(map[int][]GrenadeEffect)
-
-	parser := dem.NewParser(demo)
-
-	header, err := parser.ParseHeader()
+	match, err := match.NewMatch(demoFileName)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	frameRate = header.FrameRate()
-	fmt.Println(frameRate)
-	frameRateRounded = int(math.Round(frameRate))
-	mapName = header.MapName
-	smokeEffectLifetime = int(18 * frameRate)
-
-	registerEventHandlers(parser)
-
-	err = parser.ParseToEnd()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	mapSurface, err := img.Load(fmt.Sprintf("%v.jpg", mapName))
+	mapSurface, err := img.Load(fmt.Sprintf("%v.jpg", match.MapName))
 	if err != nil {
 		log.Println(err)
 		return
@@ -162,16 +98,6 @@ func main() {
 	}
 	renderer.Present()
 
-	// Second pass of the parser
-	_, err = demo.Seek(0, 0)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	parser = dem.NewParser(demo)
-	states = parseGameStates(parser)
-
 	// MAIN GAME LOOP
 	for {
 		frameStart := time.Now()
@@ -182,7 +108,7 @@ func main() {
 				return
 
 			case *sdl.KeyboardEvent:
-				handleKeyboardEvents(eventT, window)
+				handleKeyboardEvents(eventT, window, match)
 			}
 		}
 
@@ -195,32 +121,32 @@ func main() {
 		renderer.Clear()
 		renderer.Copy(mapTexture, nil, nil)
 
-		infernos := states[curFrame].Infernos
+		infernos := match.States[curFrame].Infernos
 		for _, inferno := range infernos {
-			DrawInferno(renderer, &inferno, mapName)
+			DrawInferno(renderer, &inferno, match)
 		}
 
-		players := states[curFrame].Players
+		players := match.States[curFrame].Players
 		for _, player := range players {
-			DrawPlayer(renderer, &player, mapName)
+			DrawPlayer(renderer, &player, font, match)
 		}
 
-		effects := grenadeEffects[curFrame]
+		effects := match.GrenadeEffects[curFrame]
 		for _, effect := range effects {
-			DrawGrenadeEffect(renderer, &effect, mapName)
+			DrawGrenadeEffect(renderer, &effect, match)
 		}
 
-		grenades := states[curFrame].Grenades
+		grenades := match.States[curFrame].Grenades
 		for _, grenade := range grenades {
-			DrawGrenade(renderer, &grenade, mapName)
+			DrawGrenade(renderer, &grenade, match)
 		}
 
-		bomb := states[curFrame].Bomb
-		DrawBomb(renderer, &bomb, mapName)
+		bomb := match.States[curFrame].Bomb
+		DrawBomb(renderer, &bomb, match)
 
 		renderer.Present()
 
-		updateWindowTitle(window)
+		updateWindowTitle(window, match)
 
 		var playbackSpeed float64 = 1
 
@@ -233,160 +159,51 @@ func main() {
 		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
 			playbackSpeed = 0.5
 		}
-		delay := (1/playbackSpeed)*(1000/frameRate) - frameDuration
+		delay := (1/playbackSpeed)*(1000/match.FrameRate) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
 		sdl.Delay(uint32(delay))
-		if curFrame < len(states)-1 {
+		if curFrame < len(match.States)-1 {
 			curFrame++
 		}
 	}
 
 }
 
-func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent) {
-	for i := 0; i < lifetime; i++ {
-		effect := GrenadeEffect{
-			GrenadeEvent: e,
-			Lifetime:     i,
-		}
-		effects, ok := grenadeEffects[frame+i]
-		if ok {
-			grenadeEffects[frame+i] = append(effects, effect)
-		} else {
-			grenadeEffects[frame+i] = []GrenadeEffect{effect}
-		}
-	}
-}
-
-func registerEventHandlers(parser *dem.Parser) {
-	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
-		roundStarts = append(roundStarts, parser.CurrentFrame())
-	})
-	h2 := parser.RegisterEventHandler(func(event.MatchStart) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
-		halfStarts = append(halfStarts, parser.CurrentFrame())
-	})
-	parser.RegisterEventHandler(func(e event.FlashExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(e event.HeExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(e event.SmokeStart) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(smokeEffectLifetime, frame, e.GrenadeEvent)
-	})
-	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
-		parser.UnregisterEventHandler(h1)
-		parser.UnregisterEventHandler(h2)
-		parser.UnregisterEventHandler(h3)
-		parser.UnregisterEventHandler(h4)
-	})
-}
-
-// parse demo and save GameStates in slice
-func parseGameStates(parser *dem.Parser) []OverviewState {
-	states := make([]OverviewState, 0)
-
-	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
-		if err != nil {
-			log.Println(err)
-			// return here or not?
-			continue
-		}
-
-		gameState := parser.GameState()
-
-		players := make([]OverviewPlayer, 0)
-
-		for _, p := range gameState.Participants().Playing() {
-			// common.RawWeapons is map[int]*common.Equipment, but it is unclear what the key means
-			equipment := make([]common.Equipment, 0)
-			for _, eq := range p.Weapons() {
-				equipment = append(equipment, *eq)
-			}
-			player := OverviewPlayer{
-				Player:  *p,
-				Weapons: equipment,
-			}
-			players = append(players, player)
-		}
-
-		grenades := make([]common.GrenadeProjectile, 0)
-
-		for _, grenade := range gameState.GrenadeProjectiles() {
-			grenades = append(grenades, *grenade)
-		}
-
-		infernos := make([]common.Inferno, 0)
-
-		for _, inferno := range gameState.Infernos() {
-			infernos = append(infernos, *inferno)
-		}
-
-		bomb := *gameState.Bomb()
-
-		cts := *gameState.TeamCounterTerrorists()
-		ts := *gameState.TeamTerrorists()
-
-		state := OverviewState{
-			IngameTick:            parser.GameState().IngameTick(),
-			Players:               players,
-			Grenades:              grenades,
-			Infernos:              infernos,
-			Bomb:                  bomb,
-			TeamCounterTerrorists: cts,
-			TeamTerrorists:        ts,
-		}
-
-		states = append(states, state)
-	}
-
-	return states
-}
-
-func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window) {
+func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *match.Match) {
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
 		paused = !paused
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-			if curFrame < frameRateRounded*30 {
+			if curFrame < match.FrameRateRounded*30 {
 				curFrame = 0
 			} else {
-				curFrame -= frameRateRounded * 30
+				curFrame -= match.FrameRateRounded * 30
 			}
 		} else {
-			if curFrame < frameRateRounded*10 {
+			if curFrame < match.FrameRateRounded*10 {
 				curFrame = 0
 			} else {
-				curFrame -= frameRateRounded * 10
+				curFrame -= match.FrameRateRounded * 10
 			}
 		}
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-			if curFrame+frameRateRounded*30 > len(states)-1 {
-				curFrame = len(states) - 1
+			if curFrame+match.FrameRateRounded*30 > len(match.States)-1 {
+				curFrame = len(match.States) - 1
 			} else {
-				curFrame += frameRateRounded * 30
+				curFrame += match.FrameRateRounded * 30
 			}
 		} else {
-			if curFrame+frameRateRounded*10 > len(states)-1 {
-				curFrame = len(states) - 1
+			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
+				curFrame = len(match.States) - 1
 			} else {
-				curFrame += frameRateRounded * 10
+				curFrame += match.FrameRateRounded * 10
 			}
 		}
 	}
@@ -394,46 +211,46 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window) {
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
 			set := false
-			for i, frame := range halfStarts {
+			for i, frame := range match.HalfStarts {
 				if curFrame < frame {
-					if i > 1 && curFrame < halfStarts[i-1]+frameRateRounded/2 {
-						curFrame = halfStarts[i-2]
+					if i > 1 && curFrame < match.HalfStarts[i-1]+match.FrameRateRounded/2 {
+						curFrame = match.HalfStarts[i-2]
 						set = true
 						break
 					}
-					curFrame = halfStarts[i-1]
+					curFrame = match.HalfStarts[i-1]
 					set = true
 					break
 				}
 			}
 			// not set -> last round of match
 			if !set {
-				if len(halfStarts) > 1 && curFrame < halfStarts[len(halfStarts)-1]+frameRateRounded/2 {
-					curFrame = halfStarts[len(halfStarts)-2]
+				if len(match.HalfStarts) > 1 && curFrame < match.HalfStarts[len(match.HalfStarts)-1]+match.FrameRateRounded/2 {
+					curFrame = match.HalfStarts[len(match.HalfStarts)-2]
 				} else {
-					curFrame = halfStarts[len(halfStarts)-1]
+					curFrame = match.HalfStarts[len(match.HalfStarts)-1]
 				}
 			}
 		} else {
 			set := false
-			for i, frame := range roundStarts {
+			for i, frame := range match.RoundStarts {
 				if curFrame < frame {
-					if i > 1 && curFrame < roundStarts[i-1]+frameRateRounded/2 {
-						curFrame = roundStarts[i-2]
+					if i > 1 && curFrame < match.RoundStarts[i-1]+match.FrameRateRounded/2 {
+						curFrame = match.RoundStarts[i-2]
 						set = true
 						break
 					}
-					curFrame = roundStarts[i-1]
+					curFrame = match.RoundStarts[i-1]
 					set = true
 					break
 				}
 			}
 			// not set -> last round of match
 			if !set {
-				if len(roundStarts) > 1 && curFrame < roundStarts[len(roundStarts)-1]+frameRateRounded/2 {
-					curFrame = roundStarts[len(roundStarts)-2]
+				if len(match.RoundStarts) > 1 && curFrame < match.RoundStarts[len(match.RoundStarts)-1]+match.FrameRateRounded/2 {
+					curFrame = match.RoundStarts[len(match.RoundStarts)-2]
 				} else {
-					curFrame = roundStarts[len(roundStarts)-1]
+					curFrame = match.RoundStarts[len(match.RoundStarts)-1]
 				}
 			}
 		}
@@ -441,14 +258,14 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window) {
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-			for _, frame := range halfStarts {
+			for _, frame := range match.HalfStarts {
 				if curFrame < frame {
 					curFrame = frame
 					break
 				}
 			}
 		} else {
-			for _, frame := range roundStarts {
+			for _, frame := range match.RoundStarts {
 				if curFrame < frame {
 					curFrame = frame
 					break
@@ -481,9 +298,9 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window) {
 	*/
 }
 
-func updateWindowTitle(window *sdl.Window) {
-	cts := states[curFrame].TeamCounterTerrorists
-	ts := states[curFrame].TeamTerrorists
+func updateWindowTitle(window *sdl.Window, match *match.Match) {
+	cts := match.States[curFrame].TeamCounterTerrorists
+	ts := match.States[curFrame].TeamTerrorists
 	clanNameCTs := cts.ClanName
 	if clanNameCTs == "" {
 		clanNameCTs = "Counter Terrorists"
