@@ -41,8 +41,8 @@ func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.F
 	pos := player.LastAlivePosition
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
+	var scaledXInt int32 = int32(scaledX) + mapXOffset
+	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var color sdl.Color
 
 	if player.Team == common.TeamTerrorists {
@@ -90,8 +90,8 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	pos := grenade.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
+	var scaledXInt int32 = int32(scaledX) + mapXOffset
+	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var colorR, colorG, colorB uint8
 
 	switch grenade.Weapon {
@@ -128,8 +128,8 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	pos := effect.GrenadeEvent.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
+	var scaledXInt int32 = int32(scaledX) + mapXOffset
+	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var colorR, colorG, colorB uint8
 
 	switch effect.GrenadeEvent.GrenadeType {
@@ -187,8 +187,8 @@ func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	}
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX)
-	var scaledYInt int32 = int32(scaledY)
+	var scaledXInt int32 = int32(scaledX) + mapXOffset
+	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var colorR, colorG, colorB uint8
 
 	colorR = 255
@@ -219,4 +219,21 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func DrawInfobars(renderer *sdl.Renderer, match *match.Match) {
+	var cts, ts []*ocom.OverviewPlayer
+	for _, player := range match.States[curFrame].Players {
+		if player.Team == common.TeamCounterTerrorists {
+			cts = append(cts, &player)
+		} else {
+			ts = append(ts, &player)
+		}
+	}
+	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter)
+	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror)
+}
+
+func DrawInfobar(renderer *sdl.Renderer, players []*ocom.OverviewPlayer, x, y int32, color sdl.Color) {
+
 }

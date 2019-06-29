@@ -13,9 +13,13 @@ import (
 )
 
 const (
-	winHeight       int32 = 1024
-	winWidth        int32 = 1024
-	nameMapFontSize int   = 14
+	winWidth          int32 = 1624
+	winHeight         int32 = 1024
+	nameMapFontSize   int   = 14
+	mapOverviewWidth  int32 = 1024
+	mapOverviewHeight int32 = 1024
+	mapXOffset        int32 = 300
+	mapYOffset        int32 = 0
 )
 
 var (
@@ -52,7 +56,7 @@ func main() {
 	defer font.Close()
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		winHeight, winWidth, sdl.WINDOW_SHOWN)
+		winWidth, winHeight, sdl.WINDOW_SHOWN)
 	if err != nil {
 		log.Println(err)
 		return
@@ -86,17 +90,7 @@ func main() {
 	}
 	defer mapTexture.Destroy()
 
-	err = renderer.Clear()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	err = renderer.Copy(mapTexture, nil, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	renderer.Present()
+	mapRect := &sdl.Rect{mapXOffset, mapYOffset, mapOverviewWidth, mapOverviewHeight}
 
 	// MAIN GAME LOOP
 	for {
@@ -118,8 +112,9 @@ func main() {
 			continue
 		}
 
+		renderer.SetDrawColor(10, 10, 10, 255)
 		renderer.Clear()
-		renderer.Copy(mapTexture, nil, nil)
+		renderer.Copy(mapTexture, nil, mapRect)
 
 		infernos := match.States[curFrame].Infernos
 		for _, inferno := range infernos {
@@ -143,6 +138,8 @@ func main() {
 
 		bomb := match.States[curFrame].Bomb
 		DrawBomb(renderer, &bomb, match)
+
+		DrawInfobars(renderer, match)
 
 		renderer.Present()
 
