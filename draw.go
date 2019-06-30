@@ -37,6 +37,18 @@ var (
 		B: 200,
 		A: 255,
 	}
+	colorMoney sdl.Color = sdl.Color{
+		R: 45,
+		G: 135,
+		B: 45,
+		A: 255,
+	}
+	colorBomb sdl.Color = sdl.Color{
+		R: 255,
+		G: 0,
+		B: 0,
+		A: 255,
+	}
 )
 
 func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.Font, match *match.Match) {
@@ -191,13 +203,8 @@ func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
-	var colorR, colorG, colorB uint8
 
-	colorR = 255
-	colorG = 0
-	colorB = 0
-
-	gfx.BoxRGBA(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorR, colorG, colorB, 255)
+	gfx.BoxColor(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorBomb)
 }
 
 func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
@@ -247,6 +254,21 @@ func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int
 		}
 		DrawString(renderer, player.Name, color, x+80, yOffset+10, font)
 		DrawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
+		if player.Armor > 0 && player.HasHelmet {
+			DrawString(renderer, "H", color, x+30, yOffset+10, font)
+		} else if player.Armor > 0 {
+			DrawString(renderer, "A", color, x+30, yOffset+10, font)
+		}
+		if player.HasDefuseKit {
+			DrawString(renderer, "D", color, x+45, yOffset+10, font)
+		}
+		DrawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+35, font)
+		/*
+			for _, w := range player.Weapons {
+
+			}
+		*/
+
 		yOffset += infobarElementHeight
 	}
 }

@@ -18,9 +18,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Playerpositions
 * [X] Playernames
 * [X] Player line of vision
-* [ ] ~~Shots~~
 * [X] Grenades during flight
-* [ ] ~~NadeTails~~
 * [X] Effects for flashbangs and hes
 * [X] Effects for smokes
 * [X] Effects for mollys
@@ -31,6 +29,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Indicator for defusing player
 * [X] C4 on the ground
 * [X] C4 on player
+* [ ] ~~NadeTails~~
+* [ ] ~~Shots~~ (maybe fake-shots?)
 
 ### Keybinds
 
@@ -66,14 +66,14 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 * [X] Name
 * [X] Hp
-* [ ] Armor
-* [ ] Helmet
+* [X] Armor
+* [X] Helmet
 * [ ] Primary
 * [ ] Secondary
 * [ ] Grenades
-* [ ] Defkit
-* [ ] (Taser)
-* [ ] Money
+* [X] Defkit
+* [X] Money
+* [ ] C4
 * [ ] Kills in current round
 
 ### Misc
