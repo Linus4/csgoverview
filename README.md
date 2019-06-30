@@ -55,25 +55,26 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Additional information about round and players
 
-* [ ] #round / #total
 * [X] Score
 * [X] Teamnames
 * [ ] Freezetime timer
 * [ ] Time remaining in current round
 * [ ] Bomb timer
 * [ ] Killfeed
-* [ ] Player details (left/right)
-    - Name
-    - Hp
-    - Armor
-    - Helmet
-    - Primary
-    - Secondary
-    - Grenades
-    - Defkit
-    - (Taser)
-    - Money
-    - Kills in current round
+
+### Player details (left/right)
+
+* [X] Name
+* [X] Hp
+* [ ] Armor
+* [ ] Helmet
+* [ ] Primary
+* [ ] Secondary
+* [ ] Grenades
+* [ ] Defkit
+* [ ] (Taser)
+* [ ] Money
+* [ ] Kills in current round
 
 ### Misc
 

@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"sort"
 
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
@@ -170,8 +172,8 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 
 	for _, v := range hull {
 		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(v.X, v.Y)
-		scaledXInt := int16(scaledX)
-		scaledYInt := int16(scaledY)
+		scaledXInt := int16(scaledX) + int16(mapXOffset)
+		scaledYInt := int16(scaledY) + int16(mapYOffset)
 		xCoordinates = append(xCoordinates, scaledXInt)
 		yCoordinates = append(yCoordinates, scaledYInt)
 	}
@@ -221,19 +223,30 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 	}
 }
 
-func DrawInfobars(renderer *sdl.Renderer, match *match.Match) {
-	var cts, ts []*ocom.OverviewPlayer
+func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
+	var cts, ts []ocom.OverviewPlayer
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
-			cts = append(cts, &player)
+			cts = append(cts, player)
+			sort.Slice(cts, func(i, j int) bool { return cts[i].SteamID < cts[j].SteamID })
+
 		} else {
-			ts = append(ts, &player)
+			ts = append(ts, player)
+			sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID < ts[j].SteamID })
 		}
 	}
-	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter)
-	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror)
+	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
+	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 }
 
-func DrawInfobar(renderer *sdl.Renderer, players []*ocom.OverviewPlayer, x, y int32, color sdl.Color) {
-
+func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int32, color sdl.Color, font *ttf.Font) {
+	var yOffset int32 = 0
+	for _, player := range players {
+		if player.Hp > 0 {
+			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
+		}
+		DrawString(renderer, player.Name, color, x+80, yOffset+10, font)
+		DrawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
+		yOffset += infobarElementHeight
+	}
 }

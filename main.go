@@ -13,13 +13,14 @@ import (
 )
 
 const (
-	winWidth          int32 = 1624
-	winHeight         int32 = 1024
-	nameMapFontSize   int   = 14
-	mapOverviewWidth  int32 = 1024
-	mapOverviewHeight int32 = 1024
-	mapXOffset        int32 = 300
-	mapYOffset        int32 = 0
+	winWidth             int32 = 1624
+	winHeight            int32 = 1024
+	nameMapFontSize      int   = 14
+	mapOverviewWidth     int32 = 1024
+	mapOverviewHeight    int32 = 1024
+	mapXOffset           int32 = 300
+	mapYOffset           int32 = 0
+	infobarElementHeight int32 = 100
 )
 
 var (
@@ -139,7 +140,7 @@ func main() {
 		bomb := match.States[curFrame].Bomb
 		DrawBomb(renderer, &bomb, match)
 
-		DrawInfobars(renderer, match)
+		DrawInfobars(renderer, match, font)
 
 		renderer.Present()
 
