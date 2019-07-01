@@ -149,6 +149,9 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 				Player:  *p,
 				Weapons: equipment,
 			}
+			// I will save all information like this.......... FIXME
+			additionalPlayerInformation := *p.AdditionalPlayerInformation
+			player.AdditionalPlayerInformation = &additionalPlayerInformation
 			players = append(players, player)
 		}
 

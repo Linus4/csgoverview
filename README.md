@@ -26,6 +26,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Timer for smokes
 * [X] `x` at places where players died
 * [X] Indicator for flash-effect / -duration
+* [ ] Improve flash-duration indicator (new function in parser)
 * [X] Indicator for defusing player
 * [X] C4 on the ground
 * [X] C4 on player
@@ -68,17 +69,13 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Hp
 * [X] Armor
 * [X] Helmet
-* [ ] Primary
-* [ ] Secondary
-* [ ] Grenades
+* [X] Primary
+* [X] Secondary
+* [X] Grenades
 * [X] Defkit
 * [X] Money
-* [ ] C4
-* [ ] Kills in current round
-
-### Misc
-
-* [ ] new interface drawer in separate package
+* [X] C4
+* [X] Kills / Assists / Deaths
 
 ## Milestone v0.3.0
 
@@ -86,7 +83,13 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 * [ ] Scaling
 * [ ] Build for windows
-* [ ] Results of previous rounds (survivors?)
+
+## Future
+
+* Results of previous rounds + survivors?
+* Fake shots?
+* Bundle with overviews (map jpegs)
+* Highlight active weapon
 
 # Non-Features
 

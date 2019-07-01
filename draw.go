@@ -49,6 +49,42 @@ var (
 		B: 0,
 		A: 255,
 	}
+	colorEqDecoy sdl.Color = sdl.Color{
+		R: 102,
+		G: 34,
+		B: 0,
+		A: 255,
+	}
+	colorEqMolotov sdl.Color = sdl.Color{
+		R: 255,
+		G: 153,
+		B: 0,
+		A: 255,
+	}
+	colorEqIncendiary sdl.Color = sdl.Color{
+		R: 255,
+		G: 153,
+		B: 0,
+		A: 255,
+	}
+	colorEqFlash sdl.Color = sdl.Color{
+		R: 128,
+		G: 170,
+		B: 255,
+		A: 255,
+	}
+	colorEqSmoke sdl.Color = sdl.Color{
+		R: 153,
+		G: 153,
+		B: 153,
+		A: 255,
+	}
+	colorEqHE sdl.Color = sdl.Color{
+		R: 85,
+		G: 150,
+		B: 0,
+		A: 255,
+	}
 )
 
 func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.Font, match *match.Match) {
@@ -106,36 +142,24 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
-	var colorR, colorG, colorB uint8
+	var color sdl.Color
 
 	switch grenade.Weapon {
 	case common.EqDecoy:
-		colorR = 102
-		colorG = 34
-		colorB = 0
+		color = colorEqDecoy
 	case common.EqMolotov:
-		colorR = 255
-		colorG = 153
-		colorB = 0
+		color = colorEqMolotov
 	case common.EqIncendiary:
-		colorR = 255
-		colorG = 153
-		colorB = 0
+		color = colorEqIncendiary
 	case common.EqFlash:
-		colorR = 128
-		colorG = 170
-		colorB = 255
+		color = colorEqFlash
 	case common.EqSmoke:
-		colorR = 153
-		colorG = 153
-		colorB = 153
+		color = colorEqSmoke
 	case common.EqHE:
-		colorR = 85
-		colorG = 150
-		colorB = 0
+		color = colorEqHE
 	}
 
-	gfx.BoxRGBA(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, colorR, colorG, colorB, 255)
+	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
 
 func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
@@ -262,12 +286,46 @@ func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int
 		if player.HasDefuseKit {
 			DrawString(renderer, "D", color, x+45, yOffset+10, font)
 		}
-		DrawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+35, font)
-		/*
-			for _, w := range player.Weapons {
-
+		DrawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
+		var nadeCounter int32 = 0
+		sort.Slice(player.Weapons, func(i, j int) bool { return player.Weapons[i].Weapon < player.Weapons[j].Weapon })
+		for _, w := range player.Weapons {
+			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
+				DrawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)
 			}
-		*/
+			if w.Class() == common.EqClassPistols {
+				DrawString(renderer, w.Weapon.String(), color, x+150, yOffset+40, font)
+			}
+			if w.Class() == common.EqClassGrenade {
+				var nadeColor sdl.Color
+				switch w.Weapon {
+				case common.EqDecoy:
+					nadeColor = colorEqDecoy
+				case common.EqMolotov:
+					nadeColor = colorEqMolotov
+				case common.EqIncendiary:
+					nadeColor = colorEqIncendiary
+				case common.EqFlash:
+					// there seems to be only one flashbang in player.Weapons even if he has two
+					nadeColor = colorEqFlash
+				case common.EqSmoke:
+					nadeColor = colorEqSmoke
+				case common.EqHE:
+					nadeColor = colorEqHE
+				}
+
+				gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
+				nadeCounter++
+			}
+			if w.Class() == common.EqClassEquipment {
+				if w.Weapon == common.EqBomb {
+					gfx.BoxColor(renderer, x+45, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
+				}
+			}
+		}
+		addInfo := player.AdditionalPlayerInformation
+		kdaInfo := fmt.Sprintf("%v / %v / %v", addInfo.Kills, addInfo.Assists, addInfo.Deaths)
+		DrawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
 
 		yOffset += infobarElementHeight
 	}
