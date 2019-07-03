@@ -137,21 +137,18 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 
 		gameState := parser.GameState()
 
-		players := make([]ocom.OverviewPlayer, 0)
+		players := make([]common.Player, 0)
 
 		for _, p := range gameState.Participants().Playing() {
-			// common.RawWeapons is map[int]*common.Equipment, but it is unclear what the key means
-			equipment := make([]common.Equipment, 0)
-			for _, eq := range p.Weapons() {
-				equipment = append(equipment, *eq)
+			equipment := make(map[int]*common.Equipment)
+			for k, _ := range p.RawWeapons {
+				eq := *p.RawWeapons[k]
+				equipment[k] = &eq
 			}
-			player := ocom.OverviewPlayer{
-				Player:  *p,
-				Weapons: equipment,
-			}
-			// I will save all information like this.......... FIXME
+			player := *p
 			additionalPlayerInformation := *p.AdditionalPlayerInformation
 			player.AdditionalPlayerInformation = &additionalPlayerInformation
+			player.RawWeapons = equipment
 			players = append(players, player)
 		}
 

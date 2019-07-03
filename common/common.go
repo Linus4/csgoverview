@@ -7,7 +7,7 @@ import (
 
 type OverviewState struct {
 	IngameTick            int
-	Players               []OverviewPlayer
+	Players               []common.Player
 	Grenades              []common.GrenadeProjectile
 	Infernos              []common.Inferno
 	Bomb                  common.Bomb
@@ -18,10 +18,4 @@ type OverviewState struct {
 type GrenadeEffect struct {
 	event.GrenadeEvent
 	Lifetime int
-}
-
-// Do not use Weapons(), but do use Weapons instead
-type OverviewPlayer struct {
-	common.Player
-	Weapons []common.Equipment
 }

@@ -35,7 +35,7 @@ var (
 	colorFlashEffect  sdl.Color = sdl.Color{200, 200, 200, 180}
 )
 
-func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.Font, match *match.Match) {
+func DrawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
 	pos := player.LastAlivePosition
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -64,7 +64,7 @@ func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.F
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 
-		for _, w := range player.Weapons {
+		for _, w := range player.Weapons() {
 			if w.Weapon == common.EqBomb {
 				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
 				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
@@ -185,7 +185,7 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 }
 
 func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
-	var cts, ts []ocom.OverviewPlayer
+	var cts, ts []common.Player
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
 			cts = append(cts, player)
@@ -200,7 +200,7 @@ func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 }
 
-func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int32, color sdl.Color, font *ttf.Font) {
+func DrawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
 	var yOffset int32 = 0
 	for _, player := range players {
 		if player.Hp > 0 {
@@ -218,8 +218,9 @@ func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int
 		}
 		DrawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
 		var nadeCounter int32 = 0
-		sort.Slice(player.Weapons, func(i, j int) bool { return player.Weapons[i].Weapon < player.Weapons[j].Weapon })
-		for _, w := range player.Weapons {
+		weapons := player.Weapons()
+		sort.Slice(weapons, func(i, j int) bool { return weapons[i].Weapon < weapons[j].Weapon })
+		for _, w := range weapons {
 			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
 				DrawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)
 			}
@@ -236,7 +237,7 @@ func DrawInfobar(renderer *sdl.Renderer, players []ocom.OverviewPlayer, x, y int
 				case common.EqIncendiary:
 					nadeColor = colorEqIncendiary
 				case common.EqFlash:
-					// there seems to be only one flashbang in player.Weapons even if he has two
+					// there seems to be only one flashbang in player.Weapons() even if he has two
 					nadeColor = colorEqFlash
 				case common.EqSmoke:
 					nadeColor = colorEqSmoke
