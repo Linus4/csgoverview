@@ -15,76 +15,24 @@ import (
 )
 
 const (
-	terrorR      uint8 = 252
-	terrorG      uint8 = 176
-	terrorB      uint8 = 12
-	counterR     uint8 = 89
-	counterG     uint8 = 206
-	counterB     uint8 = 200
 	radiusPlayer int32 = 10
 )
 
 var (
-	colorTerror sdl.Color = sdl.Color{
-		R: 252,
-		G: 176,
-		B: 12,
-		A: 255,
-	}
-	colorCounter sdl.Color = sdl.Color{
-		R: 89,
-		G: 206,
-		B: 200,
-		A: 255,
-	}
-	colorMoney sdl.Color = sdl.Color{
-		R: 45,
-		G: 135,
-		B: 45,
-		A: 255,
-	}
-	colorBomb sdl.Color = sdl.Color{
-		R: 255,
-		G: 0,
-		B: 0,
-		A: 255,
-	}
-	colorEqDecoy sdl.Color = sdl.Color{
-		R: 102,
-		G: 34,
-		B: 0,
-		A: 255,
-	}
-	colorEqMolotov sdl.Color = sdl.Color{
-		R: 255,
-		G: 153,
-		B: 0,
-		A: 255,
-	}
-	colorEqIncendiary sdl.Color = sdl.Color{
-		R: 255,
-		G: 153,
-		B: 0,
-		A: 255,
-	}
-	colorEqFlash sdl.Color = sdl.Color{
-		R: 128,
-		G: 170,
-		B: 255,
-		A: 255,
-	}
-	colorEqSmoke sdl.Color = sdl.Color{
-		R: 153,
-		G: 153,
-		B: 153,
-		A: 255,
-	}
-	colorEqHE sdl.Color = sdl.Color{
-		R: 85,
-		G: 150,
-		B: 0,
-		A: 255,
-	}
+	colorTerror       sdl.Color = sdl.Color{252, 176, 12, 255}
+	colorCounter      sdl.Color = sdl.Color{89, 206, 200, 255}
+	colorMoney        sdl.Color = sdl.Color{45, 135, 45, 255}
+	colorBomb         sdl.Color = sdl.Color{255, 0, 0, 255}
+	colorEqDecoy      sdl.Color = sdl.Color{102, 34, 0, 255}
+	colorEqMolotov    sdl.Color = sdl.Color{255, 153, 0, 255}
+	colorEqIncendiary sdl.Color = sdl.Color{255, 153, 0, 255}
+	colorInferno      sdl.Color = sdl.Color{255, 153, 0, 100}
+	colorEqFlash      sdl.Color = sdl.Color{128, 170, 255, 255}
+	colorEqSmoke      sdl.Color = sdl.Color{153, 153, 153, 255}
+	colorSmoke        sdl.Color = sdl.Color{153, 153, 153, 100}
+	colorEqHE         sdl.Color = sdl.Color{85, 150, 0, 255}
+	colorDarkWhite    sdl.Color = sdl.Color{200, 200, 200, 255}
+	colorFlashEffect  sdl.Color = sdl.Color{200, 200, 200, 180}
 )
 
 func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.Font, match *match.Match) {
@@ -105,22 +53,21 @@ func DrawPlayer(renderer *sdl.Renderer, player *ocom.OverviewPlayer, font *ttf.F
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		DrawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
-		//gfx.StringRGBA(renderer, scaledXInt+15, scaledYInt+15, player.Name, colorR, colorG, colorB, 255)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, 200, 200, 200, 255)
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, 200, 200, 200, 255)
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, 200, 200, 200, 255)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorDarkWhite)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorDarkWhite)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
 
 		// FlashDuration is not the time remaining but always the total amount of time flashed from a single flashbang
 		if player.FlashDuration > 0.8 {
-			gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-5, 200, 200, 200, 200)
+			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 
 		for _, w := range player.Weapons {
 			if w.Weapon == common.EqBomb {
-				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-1, 255, 0, 0, 255)
-				gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, radiusPlayer-2, 255, 0, 0, 255)
+				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
+				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
 			}
 		}
 
@@ -168,41 +115,24 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
-	var colorR, colorG, colorB uint8
 
 	switch effect.GrenadeEvent.GrenadeType {
 	case common.EqFlash:
-		colorR = 128
-		colorG = 170
-		colorB = 255
-	case common.EqSmoke:
-		colorR = 153
-		colorG = 153
-		colorB = 153
+		gfx.CircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
 	case common.EqHE:
-		colorR = 85
-		colorG = 150
-		colorB = 0
-	}
-
-	switch effect.GrenadeEvent.GrenadeType {
-	case common.EqFlash:
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
-	case common.EqHE:
-		gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorR, colorG, colorB, 255)
+		gfx.CircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
 	case common.EqSmoke:
-		gfx.FilledCircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 100)
+		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, 25, colorSmoke)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
-			gfx.CircleRGBA(renderer, scaledXInt, scaledYInt, 25, colorR, colorG, colorB, 255)
+			gfx.CircleColor(renderer, scaledXInt, scaledYInt, 25, colorDarkWhite)
 		}
-		gfx.ArcRGBA(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorR, colorG, colorB, 255)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorDarkWhite)
 	}
 }
 
 func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
 	hull := inferno.ConvexHull2D()
-	var colorR, colorG, colorB uint8 = 255, 153, 0
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
@@ -214,8 +144,8 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 		yCoordinates = append(yCoordinates, scaledYInt)
 	}
 
-	gfx.FilledPolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
-	gfx.PolygonRGBA(renderer, xCoordinates, yCoordinates, colorR, colorG, colorB, 100)
+	gfx.FilledPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
+	gfx.PolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
 }
 
 func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
@@ -259,13 +189,13 @@ func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
 			cts = append(cts, player)
-			sort.Slice(cts, func(i, j int) bool { return cts[i].SteamID < cts[j].SteamID })
 
 		} else {
 			ts = append(ts, player)
-			sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID < ts[j].SteamID })
 		}
 	}
+	sort.Slice(cts, func(i, j int) bool { return cts[i].SteamID < cts[j].SteamID })
+	sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID < ts[j].SteamID })
 	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
 	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 }

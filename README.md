@@ -90,6 +90,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * Fake shots?
 * Bundle with overviews (map jpegs)
 * Highlight active weapon
+* Flatpack
 
 # Non-Features
 
