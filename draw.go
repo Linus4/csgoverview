@@ -18,6 +18,7 @@ import (
 
 const (
 	radiusPlayer   int32 = 10
+	radiusSmoke    int32 = 25
 	killfeedHeight int32 = 15
 )
 
@@ -62,8 +63,8 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorDarkWhite)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
 
-		// FlashDuration is not the time remaining but always the total amount of time flashed from a single flashbang
-		if player.FlashDuration > 0.8 {
+		if player.FlashDuration > 0.5 {
+			colorFlashEffect.A = uint8((player.FlashDurationTimeRemaining().Seconds() * 255) / 5.5)
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 
@@ -125,10 +126,12 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	case common.EqHE:
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
 	case common.EqSmoke:
-		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, 25, colorSmoke)
+		// 4.9 is the reference on Inferno for the value for radiusSmoke
+		scaledRadiusSmoke := int32(float64(radiusSmoke) * 4.9 / meta.MapNameToMap[match.MapName].Scale)
+		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorSmoke)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
-			gfx.CircleColor(renderer, scaledXInt, scaledYInt, 25, colorDarkWhite)
+			gfx.CircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
 		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorDarkWhite)
 	}

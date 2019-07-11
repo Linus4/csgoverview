@@ -26,7 +26,6 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [X] Timer for smokes
 * [X] `x` at places where players died
 * [X] Indicator for flash-effect / -duration
-* [ ] Improve flash-duration indicator (new function in parser)
 * [X] Indicator for defusing player
 * [X] C4 on the ground
 * [X] C4 on player
@@ -50,7 +49,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 ### Misc
 
 * [X] font support for playernames (ttf)
-* [ ] Smoke radius scaling (map metadata)
+* [X] Smoke radius scaling (map metadata)
 
 ## Milestone v0.2.0
 
