@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"unicode/utf8"
 
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	common "github.com/markus-wa/demoinfocs-golang/common"
+	event "github.com/markus-wa/demoinfocs-golang/events"
 	meta "github.com/markus-wa/demoinfocs-golang/metadata"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -15,7 +17,8 @@ import (
 )
 
 const (
-	radiusPlayer int32 = 10
+	radiusPlayer   int32 = 10
+	killfeedHeight int32 = 15
 )
 
 var (
@@ -198,6 +201,7 @@ func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID < ts[j].SteamID })
 	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
 	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
+	DrawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
 }
 
 func DrawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
@@ -259,5 +263,40 @@ func DrawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		DrawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
 
 		yOffset += infobarElementHeight
+	}
+}
+
+func DrawKillfeed(renderer *sdl.Renderer, killfeed []event.Kill, x, y int32, font *ttf.Font) {
+	var yOffset int32 = 0
+	for _, kill := range killfeed {
+		var colorKiller, colorVictim sdl.Color
+		if kill.Killer.Team == common.TeamCounterTerrorists {
+			colorKiller = colorCounter
+		} else {
+			colorKiller = colorTerror
+		}
+		if kill.Victim.Team == common.TeamCounterTerrorists {
+			colorVictim = colorCounter
+		} else {
+			colorVictim = colorTerror
+		}
+		killerName := kill.Killer.Name
+		if utf8.RuneCountInString(kill.Killer.Name) > 15 {
+			killerRunes := []rune(kill.Killer.Name)
+			killerName = string(killerRunes[:15])
+		}
+		victimName := kill.Victim.Name
+		if utf8.RuneCountInString(kill.Victim.Name) > 15 {
+			victimRunes := []rune(kill.Victim.Name)
+			victimName = string(victimRunes[:15])
+		}
+		weaponName := kill.Weapon.Weapon.String()
+		if len(kill.Weapon.Weapon.String()) > 10 {
+			weaponName = kill.Weapon.Weapon.String()[:10]
+		}
+		DrawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
+		DrawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
+		DrawString(renderer, victimName, colorVictim, x+185, y+yOffset, font)
+		yOffset += killfeedHeight
 	}
 }

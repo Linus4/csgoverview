@@ -273,7 +273,6 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	/*
-		sdl.Window At() not implemented completely
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
 			fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
@@ -282,12 +281,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				log.Println(err)
 				return
 			}
-			screenshotFile, err := os.Create(fileName)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			err = jpeg.Encode(screenshotFile, screenshotSurface, nil)
+			err = img.SavePNG(screenshotSurface, fileName)
 			if err != nil {
 				log.Println(err)
 				return

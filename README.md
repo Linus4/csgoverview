@@ -61,7 +61,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [ ] Freezetime timer
 * [ ] Time remaining in current round
 * [ ] Bomb timer
-* [ ] Killfeed
+* [X] Killfeed
 
 ### Player details (left/right)
 
@@ -81,7 +81,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Misc
 
-* [ ] Scaling
+* [ ] Scaling (Resolution Independent Rendering)
 * [ ] Build for windows
 
 ## Future
@@ -90,7 +90,9 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * Fake shots?
 * Bundle with overviews (map jpegs)
 * Highlight active weapon
-* Flatpack
+* Flatpak
+* Icons for weapons
+
 
 # Non-Features
 

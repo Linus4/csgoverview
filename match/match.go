@@ -14,6 +14,7 @@ import (
 const (
 	flashEffectLifetime int = 10
 	heEffectLifetime    int = 10
+	killfeedLifetime    int = 10
 )
 
 type Match struct {
@@ -25,6 +26,7 @@ type Match struct {
 	FrameRateRounded    int
 	States              []ocom.OverviewState
 	SmokeEffectLifetime int
+	Killfeed            map[int][]event.Kill
 }
 
 func NewMatch(demoFileName string) (*Match, error) {
@@ -47,6 +49,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 		RoundStarts:    make([]int, 0),
 		GrenadeEffects: make(map[int][]ocom.GrenadeEffect),
 		States:         make([]ocom.OverviewState, 0),
+		Killfeed:       make(map[int][]event.Kill),
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -115,6 +118,41 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(e event.SmokeStart) {
 		frame := parser.CurrentFrame()
 		grenadeEventHandler(match.SmokeEffectLifetime, frame, e.GrenadeEvent, match)
+	})
+	parser.RegisterEventHandler(func(e event.Kill) {
+		frame := parser.CurrentFrame()
+		weapon := *e.Weapon
+		victim := *e.Victim
+		killer := *e.Killer
+		var assister common.Player
+		var pAssister *common.Player
+		if e.Assister == nil {
+			pAssister = nil
+		} else {
+			assister = *e.Assister
+			pAssister = &assister
+		}
+		penetratedObjects := e.PenetratedObjects
+		isHeadshot := e.IsHeadshot
+		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
+			kill := event.Kill{
+				Weapon:            &weapon,
+				Victim:            &victim,
+				Killer:            &killer,
+				Assister:          pAssister,
+				PenetratedObjects: penetratedObjects,
+				IsHeadshot:        isHeadshot,
+			}
+			kills, ok := match.Killfeed[frame+i]
+			if ok {
+				if len(kills) > 5 {
+					match.Killfeed[frame+i] = match.Killfeed[frame+i][1:]
+				}
+				match.Killfeed[frame+i] = append(kills, kill)
+			} else {
+				match.Killfeed[frame+i] = []event.Kill{kill}
+			}
+		}
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
