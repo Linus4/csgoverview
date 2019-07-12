@@ -80,7 +80,8 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 ### Misc
 
-* [ ] Scaling (Resolution Independent Rendering)
+* [X] Scaling (Resolution Independent Rendering; still doesn't look good on
+  resolutions lower than 1080)
 * [ ] Build for windows
 
 ## Future

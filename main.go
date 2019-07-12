@@ -57,7 +57,7 @@ func main() {
 	defer font.Close()
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-		winWidth, winHeight, sdl.WINDOW_SHOWN)
+		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
 		log.Println(err)
 		return
@@ -70,6 +70,7 @@ func main() {
 		return
 	}
 	defer renderer.Destroy()
+	renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
 
 	match, err := match.NewMatch(demoFileName)
 	if err != nil {
