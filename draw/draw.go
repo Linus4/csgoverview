@@ -1,4 +1,4 @@
-package main
+package draw
 
 import (
 	"fmt"
@@ -17,9 +17,14 @@ import (
 )
 
 const (
-	radiusPlayer   int32 = 10
-	radiusSmoke    int32 = 25
-	killfeedHeight int32 = 15
+	radiusPlayer         int32 = 10
+	radiusSmoke          int32 = 25
+	killfeedHeight       int32 = 15
+	mapOverviewWidth     int32 = 1024
+	mapOverviewHeight    int32 = 1024
+	mapXOffset           int32 = 300
+	mapYOffset           int32 = 0
+	infobarElementHeight int32 = 100
 )
 
 var (
@@ -190,7 +195,7 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 	}
 }
 
-func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
+func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, curFrame int) {
 	var cts, ts []common.Player
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
