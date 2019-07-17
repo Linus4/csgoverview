@@ -57,23 +57,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 	match.MapName = header.MapName
 	match.SmokeEffectLifetime = int(18 * match.FrameRate)
 
-	// First pass of the parser for events
 	registerEventHandlers(parser, match)
-
-	err = parser.ParseToEnd()
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	// Second pass of the parser for gamestates
-	_, err = demo.Seek(0, 0)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	parser = dem.NewParser(demo)
 	match.States = parseGameStates(parser)
 
 	return match, nil
