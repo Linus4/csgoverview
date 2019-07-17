@@ -75,7 +75,7 @@ func main() {
 
 	match, err := match.NewMatch(demoFileName)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to parse demo file:", err)
 		return
 	}
 

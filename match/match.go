@@ -32,7 +32,6 @@ type Match struct {
 func NewMatch(demoFileName string) (*Match, error) {
 	demo, err := os.Open(demoFileName)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	defer demo.Close()
@@ -40,7 +39,6 @@ func NewMatch(demoFileName string) (*Match, error) {
 	parser := dem.NewParser(demo)
 	header, err := parser.ParseHeader()
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
