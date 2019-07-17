@@ -118,15 +118,16 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 		}
 		penetratedObjects := e.PenetratedObjects
 		isHeadshot := e.IsHeadshot
+		kill := event.Kill{
+			Weapon:            &weapon,
+			Victim:            &victim,
+			Killer:            &killer,
+			Assister:          pAssister,
+			PenetratedObjects: penetratedObjects,
+			IsHeadshot:        isHeadshot,
+		}
+
 		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
-			kill := event.Kill{
-				Weapon:            &weapon,
-				Victim:            &victim,
-				Killer:            &killer,
-				Assister:          pAssister,
-				PenetratedObjects: penetratedObjects,
-				IsHeadshot:        isHeadshot,
-			}
 			kills, ok := match.Killfeed[frame+i]
 			if ok {
 				if len(kills) > 5 {
