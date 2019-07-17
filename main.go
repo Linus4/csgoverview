@@ -38,21 +38,21 @@ func main() {
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to initialize SDL:", err)
 		return
 	}
 	defer sdl.Quit()
 
 	err = ttf.Init()
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to initialize the TTF lib:", err)
 		return
 	}
 	defer ttf.Quit()
 
 	font, err := ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to open the font:", err)
 		return
 	}
 	defer font.Close()
@@ -60,14 +60,14 @@ func main() {
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to create SDL window:", err)
 		return
 	}
 	defer window.Destroy()
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to create SDL renderer:", err)
 		return
 	}
 	defer renderer.Destroy()
@@ -81,14 +81,14 @@ func main() {
 
 	mapSurface, err := img.Load(fmt.Sprintf("%v.jpg", match.MapName))
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to load map overview image:", err)
 		return
 	}
 	defer mapSurface.Free()
 
 	mapTexture, err := renderer.CreateTextureFromSurface(mapSurface)
 	if err != nil {
-		log.Println(err)
+		log.Println("trying to create mapTexture from Surface", err)
 		return
 	}
 	defer mapTexture.Destroy()
@@ -278,6 +278,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
 			fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
+			// using a renderer so window does not have a surface
 			screenshotSurface, err := window.GetSurface()
 			if err != nil {
 				log.Println(err)
