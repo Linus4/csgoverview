@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/linus4/csgoverview/draw"
 	"github.com/linus4/csgoverview/match"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
@@ -16,12 +15,12 @@ import (
 const (
 	winWidth             int32 = 1624
 	winHeight            int32 = 1024
+	nameMapFontSize      int   = 14
 	mapOverviewWidth     int32 = 1024
 	mapOverviewHeight    int32 = 1024
 	mapXOffset           int32 = 300
 	mapYOffset           int32 = 0
 	infobarElementHeight int32 = 100
-	nameMapFontSize      int   = 14
 )
 
 var (
@@ -118,30 +117,30 @@ func main() {
 		renderer.SetDrawColor(10, 10, 10, 255)
 		renderer.Clear()
 
-		draw.DrawInfobars(renderer, match, font, curFrame)
+		DrawInfobars(renderer, match, font)
 		renderer.Copy(mapTexture, nil, mapRect)
 
 		infernos := match.States[curFrame].Infernos
 		for _, inferno := range infernos {
-			draw.DrawInferno(renderer, &inferno, match)
+			DrawInferno(renderer, &inferno, match)
 		}
 
 		effects := match.GrenadeEffects[curFrame]
 		for _, effect := range effects {
-			draw.DrawGrenadeEffect(renderer, &effect, match)
+			DrawGrenadeEffect(renderer, &effect, match)
 		}
 
 		grenades := match.States[curFrame].Grenades
 		for _, grenade := range grenades {
-			draw.DrawGrenade(renderer, &grenade, match)
+			DrawGrenade(renderer, &grenade, match)
 		}
 
 		bomb := match.States[curFrame].Bomb
-		draw.DrawBomb(renderer, &bomb, match)
+		DrawBomb(renderer, &bomb, match)
 
 		players := match.States[curFrame].Players
 		for _, player := range players {
-			draw.DrawPlayer(renderer, &player, font, match)
+			DrawPlayer(renderer, &player, font, match)
 		}
 
 		renderer.Present()
