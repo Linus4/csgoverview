@@ -46,7 +46,6 @@ func NewMatch(demoFileName string) (*Match, error) {
 		HalfStarts:     make([]int, 0),
 		RoundStarts:    make([]int, 0),
 		GrenadeEffects: make(map[int][]ocom.GrenadeEffect),
-		States:         make([]ocom.OverviewState, 0),
 		Killfeed:       make(map[int][]event.Kill),
 	}
 
@@ -147,7 +146,8 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 
 // parse demo and save GameStates in slice
 func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
-	states := make([]ocom.OverviewState, 0)
+	playbackFrames := parser.Header().PlaybackFrames
+	states := make([]ocom.OverviewState, 0, playbackFrames)
 
 	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
 		if err != nil {
@@ -158,7 +158,7 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 
 		gameState := parser.GameState()
 
-		players := make([]common.Player, 0)
+		players := make([]common.Player, 0, 10)
 
 		for _, p := range gameState.Participants().Playing() {
 			equipment := make(map[int]*common.Equipment)
