@@ -1,8 +1,10 @@
+# csgoverview
+
 A 2D demo replay tool for Counter Strike: Global Offensive.
 
-[![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview)
+[![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE)
 
-# Tools
+## Tools
 
 * [golang](https://golang.org/)
 * [SDL2](https://wiki.libsdl.org/Introduction)
@@ -10,27 +12,27 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang)
 * [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
-# Installation
+## Installation
 
 This project uses go modules, so make sure you have go version `1.11` or higher
 installed. Run `go version` to check.
 
-## Dependencies
+### Dependencies
 
-### Fedora
+#### Fedora
 
 ```sh
 dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel
 ```
 
-### Ubuntu
+#### Ubuntu
 
 ```sh
 sudo apt install git golang libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev
 libsdl2-ttf-dev
 ```
 
-## Build
+### Build
 
 ```sh
 git clone https://github.com/Linus4/csgoverview.git
@@ -38,13 +40,13 @@ cd csgoverview
 go build
 ```
 
-## Get overviews
+### Get overviews
 
 Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
 (overviews directory) and copy the overviews that you need into the directory
 you cloned.
 
-# Usage
+## Usage
 
 * the demo you want to watch must be in the directory you cloned
 * you must be in the directory you cloned
@@ -53,7 +55,7 @@ you cloned.
 ./csgoverview [demoname]
 ```
 
-## Keybinds
+### Keybinds
 
 * a -> 10 s backwards
 * d -> 10 s forwards
