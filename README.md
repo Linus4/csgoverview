@@ -21,6 +21,13 @@ installed. Run `go version` to check.
 dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel
 ```
 
+### Ubuntu
+
+```sh
+sudo apt install git golang libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev
+libsdl2-ttf-dev
+```
+
 ## Build
 
 ```sh
