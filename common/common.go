@@ -1,3 +1,4 @@
+// Package common contains types that are used throughout this project.
 package common
 
 import (
@@ -16,7 +17,8 @@ type OverviewState struct {
 	TeamTerrorists        common.TeamState
 }
 
-// GrenadeEffect extends by the Lifetime variable that is used to draw the effect.
+// GrenadeEffect extends the GrenadeEvent type from the parser by the Lifetime
+// variable that is used to draw the effect.
 type GrenadeEffect struct {
 	event.GrenadeEvent
 	Lifetime int

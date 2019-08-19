@@ -1,3 +1,4 @@
+// Package match contains a high-level parser for demos.
 package match
 
 import (
