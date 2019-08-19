@@ -1,5 +1,7 @@
 A 2D demo replay tool for Counter Strike: Global Offensive.
 
+[![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview)
+
 # Tools
 
 * [golang](https://golang.org/)
