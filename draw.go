@@ -23,23 +23,23 @@ const (
 )
 
 var (
-	colorTerror       sdl.Color = sdl.Color{252, 176, 12, 255}
-	colorCounter      sdl.Color = sdl.Color{89, 206, 200, 255}
-	colorMoney        sdl.Color = sdl.Color{45, 135, 45, 255}
-	colorBomb         sdl.Color = sdl.Color{255, 0, 0, 255}
-	colorEqDecoy      sdl.Color = sdl.Color{102, 34, 0, 255}
-	colorEqMolotov    sdl.Color = sdl.Color{255, 153, 0, 255}
-	colorEqIncendiary sdl.Color = sdl.Color{255, 153, 0, 255}
-	colorInferno      sdl.Color = sdl.Color{255, 153, 0, 100}
-	colorEqFlash      sdl.Color = sdl.Color{128, 170, 255, 255}
-	colorEqSmoke      sdl.Color = sdl.Color{153, 153, 153, 255}
-	colorSmoke        sdl.Color = sdl.Color{153, 153, 153, 100}
-	colorEqHE         sdl.Color = sdl.Color{85, 150, 0, 255}
-	colorDarkWhite    sdl.Color = sdl.Color{200, 200, 200, 255}
-	colorFlashEffect  sdl.Color = sdl.Color{200, 200, 200, 180}
+	colorTerror       = sdl.Color{252, 176, 12, 255}
+	colorCounter      = sdl.Color{89, 206, 200, 255}
+	colorMoney        = sdl.Color{45, 135, 45, 255}
+	colorBomb         = sdl.Color{255, 0, 0, 255}
+	colorEqDecoy      = sdl.Color{102, 34, 0, 255}
+	colorEqMolotov    = sdl.Color{255, 153, 0, 255}
+	colorEqIncendiary = sdl.Color{255, 153, 0, 255}
+	colorInferno      = sdl.Color{255, 153, 0, 100}
+	colorEqFlash      = sdl.Color{128, 170, 255, 255}
+	colorEqSmoke      = sdl.Color{153, 153, 153, 255}
+	colorSmoke        = sdl.Color{153, 153, 153, 100}
+	colorEqHE         = sdl.Color{85, 150, 0, 255}
+	colorDarkWhite    = sdl.Color{200, 200, 200, 255}
+	colorFlashEffect  = sdl.Color{200, 200, 200, 180}
 )
 
-func DrawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
+func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
 	pos := player.LastAlivePosition
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -56,7 +56,7 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 	if player.Hp > 0 {
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		DrawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
+		drawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorDarkWhite)
@@ -87,7 +87,7 @@ func DrawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 	}
 }
 
-func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
+func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
 	pos := grenade.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -113,7 +113,7 @@ func DrawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
 
-func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
+func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
 	pos := effect.GrenadeEvent.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -137,7 +137,7 @@ func DrawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	}
 }
 
-func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
+func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
 	hull := inferno.ConvexHull2D()
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
@@ -154,7 +154,7 @@ func DrawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 	gfx.PolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
 }
 
-func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
+func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	pos := bomb.Position()
 	if bomb.Carrier != nil {
 		return
@@ -167,7 +167,7 @@ func DrawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	gfx.BoxColor(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorBomb)
 }
 
-func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
+func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
 	textSurface, err := font.RenderUTF8Solid(text, color)
 	if err != nil {
 		log.Fatal(err)
@@ -190,7 +190,7 @@ func DrawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 	}
 }
 
-func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
+func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	var cts, ts []common.Player
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
@@ -202,37 +202,37 @@ func DrawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	}
 	sort.Slice(cts, func(i, j int) bool { return cts[i].SteamID < cts[j].SteamID })
 	sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID < ts[j].SteamID })
-	DrawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
-	DrawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
-	DrawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
+	drawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
+	drawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
+	drawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
 }
 
-func DrawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
-	var yOffset int32 = 0
+func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
+	var yOffset int32
 	for _, player := range players {
 		if player.Hp > 0 {
 			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
-		DrawString(renderer, player.Name, color, x+80, yOffset+10, font)
-		DrawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
+		drawString(renderer, player.Name, color, x+80, yOffset+10, font)
+		drawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {
-			DrawString(renderer, "H", color, x+30, yOffset+10, font)
+			drawString(renderer, "H", color, x+30, yOffset+10, font)
 		} else if player.Armor > 0 {
-			DrawString(renderer, "A", color, x+30, yOffset+10, font)
+			drawString(renderer, "A", color, x+30, yOffset+10, font)
 		}
 		if player.HasDefuseKit {
-			DrawString(renderer, "D", color, x+45, yOffset+10, font)
+			drawString(renderer, "D", color, x+45, yOffset+10, font)
 		}
-		DrawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
-		var nadeCounter int32 = 0
+		drawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
+		var nadeCounter int32
 		weapons := player.Weapons()
 		sort.Slice(weapons, func(i, j int) bool { return weapons[i].Weapon < weapons[j].Weapon })
 		for _, w := range weapons {
 			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
-				DrawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)
+				drawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)
 			}
 			if w.Class() == common.EqClassPistols {
-				DrawString(renderer, w.Weapon.String(), color, x+150, yOffset+40, font)
+				drawString(renderer, w.Weapon.String(), color, x+150, yOffset+40, font)
 			}
 			if w.Class() == common.EqClassGrenade {
 				var nadeColor sdl.Color
@@ -263,14 +263,14 @@ func DrawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		}
 		addInfo := player.AdditionalPlayerInformation
 		kdaInfo := fmt.Sprintf("%v / %v / %v", addInfo.Kills, addInfo.Assists, addInfo.Deaths)
-		DrawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
+		drawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
 
 		yOffset += infobarElementHeight
 	}
 }
 
-func DrawKillfeed(renderer *sdl.Renderer, killfeed []event.Kill, x, y int32, font *ttf.Font) {
-	var yOffset int32 = 0
+func drawKillfeed(renderer *sdl.Renderer, killfeed []event.Kill, x, y int32, font *ttf.Font) {
+	var yOffset int32
 	for _, kill := range killfeed {
 		var colorKiller, colorVictim sdl.Color
 		if kill.Killer.Team == common.TeamCounterTerrorists {
@@ -297,9 +297,9 @@ func DrawKillfeed(renderer *sdl.Renderer, killfeed []event.Kill, x, y int32, fon
 		if len(kill.Weapon.Weapon.String()) > 10 {
 			weaponName = kill.Weapon.Weapon.String()[:10]
 		}
-		DrawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
-		DrawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
-		DrawString(renderer, victimName, colorVictim, x+185, y+yOffset, font)
+		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
+		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
+		drawString(renderer, victimName, colorVictim, x+185, y+yOffset, font)
 		yOffset += killfeedHeight
 	}
 }

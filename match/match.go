@@ -162,7 +162,7 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 
 		for _, p := range gameState.Participants().Playing() {
 			equipment := make(map[int]*common.Equipment)
-			for k, _ := range p.RawWeapons {
+			for k := range p.RawWeapons {
 				eq := *p.RawWeapons[k]
 				equipment[k] = &eq
 			}

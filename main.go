@@ -117,30 +117,30 @@ func main() {
 		renderer.SetDrawColor(10, 10, 10, 255)
 		renderer.Clear()
 
-		DrawInfobars(renderer, match, font)
+		drawInfobars(renderer, match, font)
 		renderer.Copy(mapTexture, nil, mapRect)
 
 		infernos := match.States[curFrame].Infernos
 		for _, inferno := range infernos {
-			DrawInferno(renderer, &inferno, match)
+			drawInferno(renderer, &inferno, match)
 		}
 
 		effects := match.GrenadeEffects[curFrame]
 		for _, effect := range effects {
-			DrawGrenadeEffect(renderer, &effect, match)
+			drawGrenadeEffect(renderer, &effect, match)
 		}
 
 		grenades := match.States[curFrame].Grenades
 		for _, grenade := range grenades {
-			DrawGrenade(renderer, &grenade, match)
+			drawGrenade(renderer, &grenade, match)
 		}
 
 		bomb := match.States[curFrame].Bomb
-		DrawBomb(renderer, &bomb, match)
+		drawBomb(renderer, &bomb, match)
 
 		players := match.States[curFrame].Players
 		for _, player := range players {
-			DrawPlayer(renderer, &player, font, match)
+			drawPlayer(renderer, &player, font, match)
 		}
 
 		renderer.Present()
