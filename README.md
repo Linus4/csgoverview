@@ -8,118 +8,54 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 * [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang)
 * [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
-# Roadmap
+# Installation
 
-## Milestone v0.1.0
+## Dependencies
 
-### Demo playback
+### Fedora
 
-* [X] Map
-* [X] Playerpositions
-* [X] Playernames
-* [X] Player line of vision
-* [X] Grenades during flight
-* [X] Effects for flashbangs and hes
-* [X] Effects for smokes
-* [X] Effects for mollys
-* [X] Fade-out effect for smokes
-* [X] Timer for smokes
-* [X] `x` at places where players died
-* [X] Indicator for flash-effect / -duration
-* [X] Indicator for defusing player
-* [X] C4 on the ground
-* [X] C4 on player
-* [ ] ~~NadeTails~~
-* [ ] ~~Shots~~ (maybe fake-shots?)
+```sh
+dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel
+```
 
-### Keybinds
+## Build
 
-* [X] a -> 10 s backwards
-* [X] d -> 10 s forwards
-* [X] A -> 30 s backwards
-* [X] D -> 30 s forwards
-* [X] w -> hold to speed up 5 x
-* [X] s -> hold to slow down to 0.5 x
-* [X] q -> round backwards
-* [X] e -> round forwards
-* [X] Q -> to start of previous half
-* [X] E -> to start of next half
-* [X] space -> toggle pause
+```sh
+git clone https://github.com/Linus4/csgoverview.git
+cd csgoverview
+go build
+```
 
-### Misc
+## Get overviews
 
-* [X] font support for playernames (ttf)
-* [X] Smoke radius scaling (map metadata)
+Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
+(overviews directory) and copy the overviews that you need into the directory
+you cloned.
 
-## Milestone v0.2.0
+# Usage
 
-### Additional information about round and players
+* the demo you want to watch must be in the directory you cloned
+* you must be in the directory you cloned
 
-* [X] Score
-* [X] Teamnames
-* [ ] Freezetime timer
-* [ ] Time remaining in current round
-* [ ] Bomb timer
-* [X] Killfeed
+```sh
+./csgoverview [demoname]
+```
 
-### Player details (left/right)
+## Keybinds
 
-* [X] Name
-* [X] Hp
-* [X] Armor
-* [X] Helmet
-* [X] Primary
-* [X] Secondary
-* [X] Grenades
-* [X] Defkit
-* [X] Money
-* [X] C4
-* [X] Kills / Assists / Deaths
+* a -> 10 s backwards
+* d -> 10 s forwards
+* A -> 30 s backwards
+* D -> 30 s forwards
+* w -> hold to speed up 5 x
+* s -> hold to slow down to 0.5 x
+* q -> round backwards
+* e -> round forwards
+* Q -> to start of previous half
+* E -> to start of next half
+* space -> toggle pause
 
-## Milestone v0.3.0
+![Screenshot 1 de_dust2](https://i.imgur.com/FpPy5WV.png)
 
-### Misc
+![Screenshot 2 de_inferno](https://i.imgur.com/VrWOKzJ.png)
 
-* [X] Scaling (Resolution Independent Rendering; still doesn't look good on
-  resolutions lower than 1080)
-* [ ] Build for windows
-
-## Future
-
-* Results of previous rounds + survivors?
-* Fake shots?
-* Bundle with overviews (map jpegs)
-* Highlight active weapon
-* Flatpak
-* Icons for weapons
-
-
-# Non-Features
-
-### GUI / Buttons
-
-* Keybinds
-
-### Analysis
-
-* CSGO Demos Manager
-* other 3rd-party tools
-
-### Networking?
-
-* join.me
-* screenshare
-* stream
-* gif export
-* cli
-
-### Drawing?
-
-* twiddla
-* paint
-* live overlay ?
-
-### Export
-
-* Screenshot tools
-* SimpleScreenRecorder

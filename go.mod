@@ -10,7 +10,7 @@ require (
 	github.com/llgcode/draw2d v0.0.0-20180825133448-f52c8a71aff0 // indirect
 	github.com/markus-wa/demoinfocs-golang v1.1.1
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/veandco/go-sdl2 v0.3.0
+	github.com/veandco/go-sdl2 v0.3.3
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/image v0.0.0-20190523035834-f03afa92d3ff // indirect
 	golang.org/x/net v0.0.0-20190522155817-f3200d17e092 // indirect
