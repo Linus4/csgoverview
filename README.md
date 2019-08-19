@@ -10,6 +10,9 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 # Installation
 
+This project uses go modules, so make sure you have go version `1.11` or higher
+installed. Run `go version` to check.
+
 ## Dependencies
 
 ### Fedora
