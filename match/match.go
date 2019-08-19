@@ -17,6 +17,8 @@ const (
 	killfeedLifetime    int = 10
 )
 
+// Match contains general information about the demo and all relevant, parsed
+// data from every tick of the demo that will be displayed.
 type Match struct {
 	MapName             string
 	HalfStarts          []int
@@ -29,6 +31,8 @@ type Match struct {
 	Killfeed            map[int][]event.Kill
 }
 
+// NewMatch parses the demo at the specified path in the argument and returns a
+// match.Match containing all relevant data from the demo.
 func NewMatch(demoFileName string) (*Match, error) {
 	demo, err := os.Open(demoFileName)
 	if err != nil {
