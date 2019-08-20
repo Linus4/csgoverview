@@ -1,4 +1,4 @@
-# csgoverview
+# csgoverview - 2D Demoviewer
 
 A 2D demo replay tool for Counter Strike: Global Offensive.
 
@@ -45,13 +45,29 @@ Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
 (overviews directory) and copy the overviews that you need into the directory
 you cloned.
 
+You can use other overviews as long as they are `.jpg` files and they match the
+naming pattern (e.g. `de_nuke.jpg`). Ideally, their size should be 1024x1024
+pixels or larger.
+
+More overviews are available here:
+
+* [alternative generated from game
+  files](https://github.com/CSGO-Analysis/csgo-maps-overviews)
+* [Simple Radar](www.simpleradar.com)
+
+On Linux, you can convert images with `convert image.png image.jpg` if you
+have `ImageMagick` installed.
+
 ## Usage
 
-* the demo you want to watch must be in the directory you cloned
-* you must be in the directory you cloned
+1. you must be in the directory you cloned that contains the executable
+1. the font (`liberationserif-regular.ttf`) must be in the same directory as the
+  executable
+1. the overview (`e.g. de_nuke.jpg`) must be in the same directory as the
+  executable
 
 ```sh
-./csgoverview [demoname]
+./csgoverview [path to demo]
 ```
 
 ### Keybinds
