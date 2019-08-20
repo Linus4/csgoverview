@@ -86,5 +86,7 @@ have `ImageMagick` installed.
 
 ![Screenshot 1 de_dust2](https://i.imgur.com/FpPy5WV.png)
 
-![Screenshot 2 de_inferno](https://i.imgur.com/VrWOKzJ.png)
+![Screenshot 2 de_dust2](https://i.imgur.com/j3BDQhz.png)
+
+![Screenshot 3 de_inferno](https://i.imgur.com/VrWOKzJ.png)
 
