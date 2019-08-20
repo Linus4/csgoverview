@@ -55,6 +55,7 @@ func main() {
 		return
 	}
 	defer font.Close()
+	font.SetStyle(ttf.STYLE_BOLD)
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
