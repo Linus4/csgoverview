@@ -29,7 +29,7 @@ type Match struct {
 	FrameRateRounded    int
 	States              []ocom.OverviewState
 	SmokeEffectLifetime int
-	Killfeed            map[int][]event.Kill
+	Killfeed            map[int][]ocom.Kill
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -51,7 +51,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 		HalfStarts:     make([]int, 0),
 		RoundStarts:    make([]int, 0),
 		GrenadeEffects: make(map[int][]ocom.GrenadeEffect),
-		Killfeed:       make(map[int][]event.Kill),
+		Killfeed:       make(map[int][]ocom.Kill),
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -107,26 +107,12 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	})
 	parser.RegisterEventHandler(func(e event.Kill) {
 		frame := parser.CurrentFrame()
-		weapon := *e.Weapon
-		victim := *e.Victim
-		killer := *e.Killer
-		var assister common.Player
-		var pAssister *common.Player
-		if e.Assister == nil {
-			pAssister = nil
-		} else {
-			assister = *e.Assister
-			pAssister = &assister
-		}
-		penetratedObjects := e.PenetratedObjects
-		isHeadshot := e.IsHeadshot
-		kill := event.Kill{
-			Weapon:            &weapon,
-			Victim:            &victim,
-			Killer:            &killer,
-			Assister:          pAssister,
-			PenetratedObjects: penetratedObjects,
-			IsHeadshot:        isHeadshot,
+		kill := ocom.Kill{
+			KillerName: e.Killer.Name,
+			KillerTeam: e.Killer.Team,
+			VictimName: e.Victim.Name,
+			VictimTeam: e.Victim.Team,
+			Weapon:     e.Weapon.Weapon.String(),
 		}
 
 		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
@@ -137,7 +123,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 				}
 				match.Killfeed[frame+i] = append(kills, kill)
 			} else {
-				match.Killfeed[frame+i] = []event.Kill{kill}
+				match.Killfeed[frame+i] = []ocom.Kill{kill}
 			}
 		}
 	})

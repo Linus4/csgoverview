@@ -9,7 +9,6 @@ import (
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	common "github.com/markus-wa/demoinfocs-golang/common"
-	event "github.com/markus-wa/demoinfocs-golang/events"
 	meta "github.com/markus-wa/demoinfocs-golang/metadata"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
@@ -269,33 +268,33 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 	}
 }
 
-func drawKillfeed(renderer *sdl.Renderer, killfeed []event.Kill, x, y int32, font *ttf.Font) {
+func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font *ttf.Font) {
 	var yOffset int32
 	for _, kill := range killfeed {
 		var colorKiller, colorVictim sdl.Color
-		if kill.Killer.Team == common.TeamCounterTerrorists {
+		if kill.KillerTeam == common.TeamCounterTerrorists {
 			colorKiller = colorCounter
 		} else {
 			colorKiller = colorTerror
 		}
-		if kill.Victim.Team == common.TeamCounterTerrorists {
+		if kill.VictimTeam == common.TeamCounterTerrorists {
 			colorVictim = colorCounter
 		} else {
 			colorVictim = colorTerror
 		}
-		killerName := kill.Killer.Name
-		if utf8.RuneCountInString(kill.Killer.Name) > 15 {
-			killerRunes := []rune(kill.Killer.Name)
+		killerName := kill.KillerName
+		if utf8.RuneCountInString(kill.KillerName) > 15 {
+			killerRunes := []rune(kill.KillerName)
 			killerName = string(killerRunes[:15])
 		}
-		victimName := kill.Victim.Name
-		if utf8.RuneCountInString(kill.Victim.Name) > 15 {
-			victimRunes := []rune(kill.Victim.Name)
+		victimName := kill.VictimName
+		if utf8.RuneCountInString(kill.VictimName) > 15 {
+			victimRunes := []rune(kill.VictimName)
 			victimName = string(victimRunes[:15])
 		}
-		weaponName := kill.Weapon.Weapon.String()
-		if len(kill.Weapon.Weapon.String()) > 10 {
-			weaponName = kill.Weapon.Weapon.String()[:10]
+		weaponName := kill.Weapon
+		if len(kill.Weapon) > 10 {
+			weaponName = kill.Weapon[:10]
 		}
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
 		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)

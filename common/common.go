@@ -23,3 +23,12 @@ type GrenadeEffect struct {
 	event.GrenadeEvent
 	Lifetime int
 }
+
+// Kill contains all information that is displayed on the killfeed.
+type Kill struct {
+	KillerName string
+	KillerTeam common.Team
+	VictimName string
+	VictimTeam common.Team
+	Weapon     string
+}
