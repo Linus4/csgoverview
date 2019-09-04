@@ -111,41 +111,12 @@ func main() {
 
 		if paused {
 			sdl.Delay(32)
-			// draw?
+			updateGraphics(renderer, match, font, mapTexture, mapRect)
+			updateWindowTitle(window, match)
 			continue
 		}
 
-		renderer.SetDrawColor(10, 10, 10, 255)
-		renderer.Clear()
-
-		drawInfobars(renderer, match, font)
-		renderer.Copy(mapTexture, nil, mapRect)
-
-		infernos := match.States[curFrame].Infernos
-		for _, inferno := range infernos {
-			drawInferno(renderer, &inferno, match)
-		}
-
-		effects := match.GrenadeEffects[curFrame]
-		for _, effect := range effects {
-			drawGrenadeEffect(renderer, &effect, match)
-		}
-
-		grenades := match.States[curFrame].Grenades
-		for _, grenade := range grenades {
-			drawGrenade(renderer, &grenade, match)
-		}
-
-		bomb := match.States[curFrame].Bomb
-		drawBomb(renderer, &bomb, match)
-
-		players := match.States[curFrame].Players
-		for _, player := range players {
-			drawPlayer(renderer, &player, font, match)
-		}
-
-		renderer.Present()
-
+		updateGraphics(renderer, match, font, mapTexture, mapRect)
 		updateWindowTitle(window, match)
 
 		var playbackSpeed float64 = 1
@@ -307,4 +278,37 @@ func updateWindowTitle(window *sdl.Window, match *match.Match) {
 	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s", clanNameCTs, cts.Score, ts.Score, clanNameTs)
 	// expensive?
 	window.SetTitle(windowTitle)
+}
+
+func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, mapTexture *sdl.Texture, mapRect *sdl.Rect) {
+	renderer.SetDrawColor(10, 10, 10, 255)
+	renderer.Clear()
+
+	drawInfobars(renderer, match, font)
+	renderer.Copy(mapTexture, nil, mapRect)
+
+	infernos := match.States[curFrame].Infernos
+	for _, inferno := range infernos {
+		drawInferno(renderer, &inferno, match)
+	}
+
+	effects := match.GrenadeEffects[curFrame]
+	for _, effect := range effects {
+		drawGrenadeEffect(renderer, &effect, match)
+	}
+
+	grenades := match.States[curFrame].Grenades
+	for _, grenade := range grenades {
+		drawGrenade(renderer, &grenade, match)
+	}
+
+	bomb := match.States[curFrame].Bomb
+	drawBomb(renderer, &bomb, match)
+
+	players := match.States[curFrame].Players
+	for _, player := range players {
+		drawPlayer(renderer, &player, font, match)
+	}
+
+	renderer.Present()
 }
