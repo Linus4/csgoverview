@@ -33,7 +33,7 @@ type Match struct {
 	States               []ocom.OverviewState
 	SmokeEffectLifetime  int
 	Killfeed             map[int][]ocom.Kill
-	CurrentPhase         ocom.Phase
+	currentPhase         ocom.Phase
 	LatestTimerEventTime time.Duration
 }
 
@@ -133,23 +133,23 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 		}
 	})
 	parser.RegisterEventHandler(func(e event.RoundStart) {
-		match.CurrentPhase = ocom.PhaseFreezetime
+		match.currentPhase = ocom.PhaseFreezetime
 		match.LatestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundFreezetimeEnd) {
-		match.CurrentPhase = ocom.PhaseRegular
+		match.currentPhase = ocom.PhaseRegular
 		match.LatestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.BombPlanted) {
-		match.CurrentPhase = ocom.PhasePlanted
+		match.currentPhase = ocom.PhasePlanted
 		match.LatestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundEnd) {
-		match.CurrentPhase = ocom.PhaseRestart
+		match.currentPhase = ocom.PhaseRestart
 		match.LatestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
-		match.CurrentPhase = ocom.PhaseHalftime
+		match.currentPhase = ocom.PhaseHalftime
 		match.LatestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
@@ -214,7 +214,7 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 				Phase:         ocom.PhaseWarmup,
 			}
 		} else {
-			switch match.CurrentPhase {
+			switch match.currentPhase {
 			case ocom.PhaseFreezetime:
 				freezetime, _ := strconv.Atoi(gameState.ConVars()["mp_freezetime"])
 				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
