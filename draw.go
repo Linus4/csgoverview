@@ -292,14 +292,14 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 			colorVictim = colorTerror
 		}
 		killerName := kill.KillerName
-		if utf8.RuneCountInString(kill.KillerName) > 15 {
+		if utf8.RuneCountInString(kill.KillerName) > 10 {
 			killerRunes := []rune(kill.KillerName)
-			killerName = string(killerRunes[:15])
+			killerName = string(killerRunes[:10])
 		}
 		victimName := kill.VictimName
-		if utf8.RuneCountInString(kill.VictimName) > 15 {
+		if utf8.RuneCountInString(kill.VictimName) > 10 {
 			victimRunes := []rune(kill.VictimName)
-			victimName = string(victimRunes[:15])
+			victimName = string(victimRunes[:10])
 		}
 		weaponName := kill.Weapon
 		if len(kill.Weapon) > 10 {
@@ -307,7 +307,7 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 		}
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
 		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
-		drawString(renderer, victimName, colorVictim, x+185, y+yOffset, font)
+		drawString(renderer, victimName, colorVictim, x+200, y+yOffset, font)
 		yOffset += killfeedHeight
 	}
 }
