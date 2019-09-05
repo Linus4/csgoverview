@@ -215,7 +215,6 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 			}
 		} else {
 			switch match.CurrentPhase {
-			// FIXME Errorhandling
 			case ocom.PhaseFreezetime:
 				freezetime, _ := strconv.Atoi(gameState.ConVars()["mp_freezetime"])
 				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
