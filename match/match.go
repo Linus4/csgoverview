@@ -5,6 +5,8 @@ import (
 	"log"
 	"math"
 	"os"
+	"strconv"
+	"time"
 
 	ocom "github.com/linus4/csgoverview/common"
 	dem "github.com/markus-wa/demoinfocs-golang"
@@ -16,20 +18,23 @@ const (
 	flashEffectLifetime int = 10
 	heEffectLifetime    int = 10
 	killfeedLifetime    int = 10
+	c4timer             int = 40
 )
 
 // Match contains general information about the demo and all relevant, parsed
 // data from every tick of the demo that will be displayed.
 type Match struct {
-	MapName             string
-	HalfStarts          []int
-	RoundStarts         []int
-	GrenadeEffects      map[int][]ocom.GrenadeEffect
-	FrameRate           float64
-	FrameRateRounded    int
-	States              []ocom.OverviewState
-	SmokeEffectLifetime int
-	Killfeed            map[int][]ocom.Kill
+	MapName              string
+	HalfStarts           []int
+	RoundStarts          []int
+	GrenadeEffects       map[int][]ocom.GrenadeEffect
+	FrameRate            float64
+	FrameRateRounded     int
+	States               []ocom.OverviewState
+	SmokeEffectLifetime  int
+	Killfeed             map[int][]ocom.Kill
+	CurrentPhase         ocom.Phase
+	LatestTimerEventTime time.Duration
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -60,7 +65,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 	match.SmokeEffectLifetime = int(18 * match.FrameRate)
 
 	registerEventHandlers(parser, match)
-	match.States = parseGameStates(parser)
+	match.States = parseGameStates(parser, match)
 
 	return match, nil
 }
@@ -127,6 +132,26 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 			}
 		}
 	})
+	parser.RegisterEventHandler(func(e event.RoundStart) {
+		match.CurrentPhase = ocom.PhaseFreezetime
+		match.LatestTimerEventTime = parser.CurrentTime()
+	})
+	parser.RegisterEventHandler(func(e event.RoundFreezetimeEnd) {
+		match.CurrentPhase = ocom.PhaseRegular
+		match.LatestTimerEventTime = parser.CurrentTime()
+	})
+	parser.RegisterEventHandler(func(e event.BombPlanted) {
+		match.CurrentPhase = ocom.PhasePlanted
+		match.LatestTimerEventTime = parser.CurrentTime()
+	})
+	parser.RegisterEventHandler(func(e event.RoundEnd) {
+		match.CurrentPhase = ocom.PhaseRestart
+		match.LatestTimerEventTime = parser.CurrentTime()
+	})
+	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
+		match.CurrentPhase = ocom.PhaseHalftime
+		match.LatestTimerEventTime = parser.CurrentTime()
+	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
 		parser.UnregisterEventHandler(h2)
@@ -136,7 +161,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 }
 
 // parse demo and save GameStates in slice
-func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
+func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 	playbackFrames := parser.Header().PlaybackFrames
 	states := make([]ocom.OverviewState, 0, playbackFrames)
 
@@ -181,6 +206,56 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 		cts := *gameState.TeamCounterTerrorists()
 		ts := *gameState.TeamTerrorists()
 
+		var timer ocom.Timer
+
+		if gameState.IsWarmupPeriod() {
+			timer = ocom.Timer{
+				TimeRemaining: 0,
+				Phase:         ocom.PhaseWarmup,
+			}
+		} else {
+			switch match.CurrentPhase {
+			// FIXME Errorhandling
+			case ocom.PhaseFreezetime:
+				freezetime, _ := strconv.Atoi(gameState.ConVars()["mp_freezetime"])
+				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				timer = ocom.Timer{
+					TimeRemaining: remaining,
+					Phase:         ocom.PhaseFreezetime,
+				}
+			case ocom.PhaseRegular:
+				roundtime, _ := strconv.ParseFloat(gameState.ConVars()["mp_roundtime_defuse"], 64)
+				remaining := time.Duration(roundtime*60)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				timer = ocom.Timer{
+					TimeRemaining: remaining,
+					Phase:         ocom.PhaseRegular,
+				}
+			case ocom.PhasePlanted:
+				// mp_c4timer is not set in testdemo
+				//bombtime, _ := strconv.Atoi(gameState.ConVars()["mp_c4timer"])
+				bombtime := c4timer
+				remaining := time.Duration(bombtime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				timer = ocom.Timer{
+					TimeRemaining: remaining,
+					Phase:         ocom.PhasePlanted,
+				}
+			case ocom.PhaseRestart:
+				restartDelay, _ := strconv.Atoi(gameState.ConVars()["mp_round_restart_delay"])
+				remaining := time.Duration(restartDelay)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				timer = ocom.Timer{
+					TimeRemaining: remaining,
+					Phase:         ocom.PhaseRestart,
+				}
+			case ocom.PhaseHalftime:
+				halftimeDuration, _ := strconv.Atoi(gameState.ConVars()["mp_halftime_duration"])
+				remaining := time.Duration(halftimeDuration)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				timer = ocom.Timer{
+					TimeRemaining: remaining,
+					Phase:         ocom.PhaseRestart,
+				}
+			}
+		}
+
 		state := ocom.OverviewState{
 			IngameTick:            parser.GameState().IngameTick(),
 			Players:               players,
@@ -189,6 +264,7 @@ func parseGameStates(parser *dem.Parser) []ocom.OverviewState {
 			Bomb:                  bomb,
 			TeamCounterTerrorists: cts,
 			TeamTerrorists:        ts,
+			Timer:                 timer,
 		}
 
 		states = append(states, state)
