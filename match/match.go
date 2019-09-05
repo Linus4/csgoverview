@@ -34,7 +34,7 @@ type Match struct {
 	SmokeEffectLifetime  int
 	Killfeed             map[int][]ocom.Kill
 	currentPhase         ocom.Phase
-	LatestTimerEventTime time.Duration
+	latestTimerEventTime time.Duration
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -134,23 +134,23 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	})
 	parser.RegisterEventHandler(func(e event.RoundStart) {
 		match.currentPhase = ocom.PhaseFreezetime
-		match.LatestTimerEventTime = parser.CurrentTime()
+		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundFreezetimeEnd) {
 		match.currentPhase = ocom.PhaseRegular
-		match.LatestTimerEventTime = parser.CurrentTime()
+		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.BombPlanted) {
 		match.currentPhase = ocom.PhasePlanted
-		match.LatestTimerEventTime = parser.CurrentTime()
+		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundEnd) {
 		match.currentPhase = ocom.PhaseRestart
-		match.LatestTimerEventTime = parser.CurrentTime()
+		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
 		match.currentPhase = ocom.PhaseHalftime
-		match.LatestTimerEventTime = parser.CurrentTime()
+		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		parser.UnregisterEventHandler(h1)
@@ -217,14 +217,14 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 			switch match.currentPhase {
 			case ocom.PhaseFreezetime:
 				freezetime, _ := strconv.Atoi(gameState.ConVars()["mp_freezetime"])
-				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
 				timer = ocom.Timer{
 					TimeRemaining: remaining,
 					Phase:         ocom.PhaseFreezetime,
 				}
 			case ocom.PhaseRegular:
 				roundtime, _ := strconv.ParseFloat(gameState.ConVars()["mp_roundtime_defuse"], 64)
-				remaining := time.Duration(roundtime*60)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				remaining := time.Duration(roundtime*60)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
 				timer = ocom.Timer{
 					TimeRemaining: remaining,
 					Phase:         ocom.PhaseRegular,
@@ -233,21 +233,21 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 				// mp_c4timer is not set in testdemo
 				//bombtime, _ := strconv.Atoi(gameState.ConVars()["mp_c4timer"])
 				bombtime := c4timer
-				remaining := time.Duration(bombtime)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				remaining := time.Duration(bombtime)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
 				timer = ocom.Timer{
 					TimeRemaining: remaining,
 					Phase:         ocom.PhasePlanted,
 				}
 			case ocom.PhaseRestart:
 				restartDelay, _ := strconv.Atoi(gameState.ConVars()["mp_round_restart_delay"])
-				remaining := time.Duration(restartDelay)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				remaining := time.Duration(restartDelay)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
 				timer = ocom.Timer{
 					TimeRemaining: remaining,
 					Phase:         ocom.PhaseRestart,
 				}
 			case ocom.PhaseHalftime:
 				halftimeDuration, _ := strconv.Atoi(gameState.ConVars()["mp_halftime_duration"])
-				remaining := time.Duration(halftimeDuration)*time.Second - (parser.CurrentTime() - match.LatestTimerEventTime)
+				remaining := time.Duration(halftimeDuration)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
 				timer = ocom.Timer{
 					TimeRemaining: remaining,
 					Phase:         ocom.PhaseRestart,
