@@ -250,6 +250,7 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 					nadeColor = colorEqIncendiary
 				case common.EqFlash:
 					// there seems to be only one flashbang in player.Weapons() even if he has two
+					fmt.Println(player.Name, player.AmmoLeft[w.AmmoType])
 					nadeColor = colorEqFlash
 				case common.EqSmoke:
 					nadeColor = colorEqSmoke
@@ -257,8 +258,10 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 					nadeColor = colorEqHE
 				}
 
-				gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
-				nadeCounter++
+				for i := 0; i < player.AmmoLeft[w.AmmoType]; i++ {
+					gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
+					nadeCounter++
+				}
 			}
 			if w.Class() == common.EqClassEquipment {
 				if w.Weapon == common.EqBomb {
