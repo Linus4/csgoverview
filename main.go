@@ -149,32 +149,32 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-			if curFrame < match.FrameRateRounded*30 {
-				curFrame = 0
-			} else {
-				curFrame -= match.FrameRateRounded * 30
-			}
-		} else {
 			if curFrame < match.FrameRateRounded*10 {
 				curFrame = 0
 			} else {
 				curFrame -= match.FrameRateRounded * 10
+			}
+		} else {
+			if curFrame < match.FrameRateRounded*5 {
+				curFrame = 0
+			} else {
+				curFrame -= match.FrameRateRounded * 5
 			}
 		}
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
 		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
-			if curFrame+match.FrameRateRounded*30 > len(match.States)-1 {
-				curFrame = len(match.States) - 1
-			} else {
-				curFrame += match.FrameRateRounded * 30
-			}
-		} else {
 			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
 				curFrame = len(match.States) - 1
 			} else {
 				curFrame += match.FrameRateRounded * 10
+			}
+		} else {
+			if curFrame+match.FrameRateRounded*5 > len(match.States)-1 {
+				curFrame = len(match.States) - 1
+			} else {
+				curFrame += match.FrameRateRounded * 5
 			}
 		}
 	}

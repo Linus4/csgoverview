@@ -76,10 +76,10 @@ have `ImageMagick` installed.
 
 ### Keybinds
 
-* a -> 10 s backwards
-* d -> 10 s forwards
-* A -> 30 s backwards
-* D -> 30 s forwards
+* a -> 5 s backwards
+* d -> 5 s forwards
+* A -> 10 s backwards
+* D -> 10 s forwards
 * w -> hold to speed up 5 x
 * s -> hold to slow down to 0.5 x
 * q -> round backwards
