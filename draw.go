@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"time"
 	"unicode/utf8"
 
 	ocom "github.com/linus4/csgoverview/common"
@@ -63,7 +64,11 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
 
 		if player.FlashDuration > 0.5 {
-			colorFlashEffect.A = uint8((player.FlashDurationTimeRemaining().Seconds() * 255) / 5.5)
+			timeSinceFlash := time.Duration(float64(match.States[curFrame].IngameTick-player.FlashTick) / match.TickRate * float64(time.Second))
+			// 2+ weird offset because player.FlashDuration is imprecise
+			remaining := time.Duration((2+player.FlashDuration)*float32(time.Second)) - timeSinceFlash
+			// 2+ weird offset because player.FlashDuration is imprecise
+			colorFlashEffect.A = uint8((remaining.Seconds() * 255) / (2 + 5.5))
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 

@@ -29,6 +29,7 @@ type Match struct {
 	RoundStarts          []int
 	GrenadeEffects       map[int][]ocom.GrenadeEffect
 	FrameRate            float64
+	TickRate             float64
 	FrameRateRounded     int
 	States               []ocom.OverviewState
 	SmokeEffectLifetime  int
@@ -60,6 +61,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 	}
 
 	match.FrameRate = header.FrameRate()
+	match.TickRate = header.TickRate()
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	match.MapName = header.MapName
 	match.SmokeEffectLifetime = int(18 * match.FrameRate)
