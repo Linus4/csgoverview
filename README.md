@@ -74,7 +74,7 @@ have `ImageMagick` installed.
 ./csgoverview
     -framerate float
     	Fallback GOTV Framerate (optional) (default -1)
-  -tickrate float
+    -tickrate float
     	Fallback Gameserver Tickrate (optional) (default -1)
 
   [path to demo]
