@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -33,7 +34,10 @@ func main() {
 		fmt.Println("Usage: ./csgoverview [demoname]")
 		return
 	}
-	demoFileName := os.Args[1]
+	frameRatePtr := flag.Float64("framerate", -1, "Fallback GOTV Framerate (optional)")
+	tickRatePtr := flag.Float64("tickrate", -1, "Fallback Gameserver Tickrate (optional)")
+	flag.Parse()
+	demoFileName := flag.Args()[0]
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
@@ -73,7 +77,7 @@ func main() {
 	defer renderer.Destroy()
 	renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
 
-	match, err := match.NewMatch(demoFileName)
+	match, err := match.NewMatch(demoFileName, *frameRatePtr, *tickRatePtr)
 	if err != nil {
 		log.Println("trying to parse demo file:", err)
 		return

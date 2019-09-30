@@ -71,7 +71,13 @@ have `ImageMagick` installed.
   executable
 
 ```sh
-./csgoverview [path to demo]
+./csgoverview
+    -framerate float
+    	Fallback GOTV Framerate (optional) (default -1)
+  -tickrate float
+    	Fallback Gameserver Tickrate (optional) (default -1)
+
+  [path to demo]
 ```
 
 ### Keybinds

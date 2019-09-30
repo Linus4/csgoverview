@@ -41,7 +41,9 @@ type Match struct {
 
 // NewMatch parses the demo at the specified path in the argument and returns a
 // match.Match containing all relevant data from the demo.
-func NewMatch(demoFileName string) (*Match, error) {
+// fallbackFrameRate and fallbackTickRate are used in case the values cannot be
+// parsed from the demo. If they are not set, they must be -1.
+func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) (*Match, error) {
 	demo, err := os.Open(demoFileName)
 	if err != nil {
 		return nil, err
@@ -62,10 +64,22 @@ func NewMatch(demoFileName string) (*Match, error) {
 	}
 
 	match.FrameRate = header.FrameRate()
+	if math.IsNaN(match.FrameRate) {
+		if fallbackFrameRate == -1 {
+			err := errors.New("Could not parse Framerate from demo. Please provide a fallback value.")
+			return nil, err
+		} else {
+			match.FrameRate = fallbackFrameRate
+		}
+	}
 	match.TickRate = header.TickRate()
-	if math.IsNaN(match.FrameRate) || math.IsNaN(match.TickRate) {
-		err := errors.New("Could not parse Frame- and/or Tickrate from demo.")
-		return nil, err
+	if math.IsNaN(match.TickRate) {
+		if fallbackTickRate == -1 {
+			err := errors.New("Could not parse Tickrate from demo. Please provide a fallback value.")
+			return nil, err
+		} else {
+			match.TickRate = fallbackTickRate
+		}
 	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	match.MapName = header.MapName
