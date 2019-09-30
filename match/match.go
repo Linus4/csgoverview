@@ -2,6 +2,7 @@
 package match
 
 import (
+	"errors"
 	"log"
 	"math"
 	"os"
@@ -62,6 +63,10 @@ func NewMatch(demoFileName string) (*Match, error) {
 
 	match.FrameRate = header.FrameRate()
 	match.TickRate = header.TickRate()
+	if math.IsNaN(match.FrameRate) || math.IsNaN(match.TickRate) {
+		err := errors.New("Could not parse Frame- and/or Tickrate from demo.")
+		return nil, err
+	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	match.MapName = header.MapName
 	match.SmokeEffectLifetime = int(18 * match.FrameRate)
