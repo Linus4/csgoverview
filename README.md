@@ -74,7 +74,7 @@ have `ImageMagick` installed.
     	Path to font file (.ttf) (optional) (default "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     -framerate float
     	Fallback GOTV Framerate (optional) (default -1)
-  -tickrate float
+    -tickrate float
     	Fallback Gameserver Tickrate (optional) (default -1)
 
   [path to demo]
