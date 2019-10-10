@@ -23,13 +23,13 @@ Current version is `0.4.1`. Master branch is currently used for development.
 #### Fedora
 
 ```sh
-dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel dejavu-sans-fonts
+dnf install git golang SDL2{,_gfx,_image,_ttf}-devel dejavu-sans-fonts
 ```
 
 #### Ubuntu
 
 ```sh
-sudo apt install git golang libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-ttf-dev fonts-dejavu
+sudo apt install git golang libsdl2{,-gfx,-image,-ttf}-dev fonts-dejavu
 ```
 
 ### Build
@@ -64,7 +64,10 @@ have `ImageMagick` installed.
 
 ## Usage
 
-1. you must be in the directory you cloned that contains the executable
+The program tries to find the following font files until it finds one: the one
+you supply with the `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
+`./liberationserif-regular.ttf`.
+
 1. the overview (`e.g. de_nuke.jpg`) must be in the same directory as the
   executable
 

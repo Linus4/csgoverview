@@ -62,10 +62,10 @@ func main() {
 
 	font, err := ttf.OpenFont(*fontPathPtr, nameMapFontSize)
 	if err != nil {
-		log.Println("trying to open the font:", err)
+		log.Println("trying to open the system font file:", err)
 		font, err = ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
 		if err != nil {
-			log.Println("trying to open the font:", err)
+			log.Println("trying to open the font file in the curent directory:", err)
 			return
 		}
 	}
