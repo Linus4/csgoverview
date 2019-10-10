@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
+	"os/exec"
 	"time"
 
 	"github.com/linus4/csgoverview/match"
@@ -30,14 +30,21 @@ var (
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("Usage: ./csgoverview [demoname]")
-		return
-	}
 	frameRatePtr := flag.Float64("framerate", -1, "Fallback GOTV Framerate (optional)")
 	tickRatePtr := flag.Float64("tickrate", -1, "Fallback Gameserver Tickrate (optional)")
+	fontPathPtr := flag.String("fontpath", "/usr/share/fonts/dejavu/DejaVuSans.ttf", "Path to font file (.ttf) (optional)")
 	flag.Parse()
-	demoFileName := flag.Args()[0]
+	var demoFileName string
+	if len(flag.Args()) < 1 {
+		demoFileNameB, err := exec.Command("zenity", "--file-selection").Output()
+		if err != nil {
+			fmt.Println("Usage: ./csgoverview [path to demo]")
+			return
+		}
+		demoFileName = string(demoFileNameB)[:len(demoFileName)-1]
+	} else {
+		demoFileName = flag.Args()[0]
+	}
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
@@ -53,10 +60,14 @@ func main() {
 	}
 	defer ttf.Quit()
 
-	font, err := ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
+	font, err := ttf.OpenFont(*fontPathPtr, nameMapFontSize)
 	if err != nil {
 		log.Println("trying to open the font:", err)
-		return
+		font, err = ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
+		if err != nil {
+			log.Println("trying to open the font:", err)
+			return
+		}
 	}
 	defer font.Close()
 	font.SetStyle(ttf.STYLE_BOLD)

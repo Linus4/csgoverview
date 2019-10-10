@@ -23,13 +23,13 @@ Current version is `0.4.1`. Master branch is currently used for development.
 #### Fedora
 
 ```sh
-dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel
+dnf install git golang SDL2-devel SDL2_gfx-devel SDL2_image-devel SDL2_ttf-devel dejavu-sans-fonts
 ```
 
 #### Ubuntu
 
 ```sh
-sudo apt install git golang libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-ttf-dev
+sudo apt install git golang libsdl2-dev libsdl2-gfx-dev libsdl2-image-dev libsdl2-ttf-dev fonts-dejavu
 ```
 
 ### Build
@@ -65,13 +65,13 @@ have `ImageMagick` installed.
 ## Usage
 
 1. you must be in the directory you cloned that contains the executable
-1. the font (`liberationserif-regular.ttf`) must be in the same directory as the
-  executable
 1. the overview (`e.g. de_nuke.jpg`) must be in the same directory as the
   executable
 
 ```sh
 ./csgoverview
+    -fontpath string
+    	Path to font file (.ttf) (optional) (default "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     -framerate float
     	Fallback GOTV Framerate (optional) (default -1)
   -tickrate float
