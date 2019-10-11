@@ -4,9 +4,12 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 Package match povides a high-level parser you can use for your own demoviewer.
 
-Current version is `0.4.1`. Master branch is currently used for development.
+Current version is `0.5.0`. Master branch is currently used for development.
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE)
+
+Check out the [Roadmap](https://github.com/Linus4/csgoverview/projects/1) where
+I keep track of ideas and todos.
 
 ## Tools
 
@@ -63,6 +66,31 @@ More overviews are available here:
 On Linux, you can convert images with `convert image.png image.jpg` if you
 have `ImageMagick` installed.
 
+### Executable
+
+You can move or symlink the executable into a directory in your `$PATH` to make
+the program available everywhere on your system.
+
+Example:
+
+```sh
+sudo ln -s /usr/bin/csgoverview <path to cloned repository>/csgoverview
+```
+
+### Desktop file (Linux)
+
+In order to add csgoverview to your applications menu, create a `.desktop`
+file (use the path to the executable on your computer in Exec):
+
+```sh
+echo "[Desktop Entry]
+Name=CSGOverview
+Exec=/usr/bin/csgoverview
+Type=Application
+Terminal=false
+Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
+```
+
 ## Usage
 
 ```sh
@@ -76,6 +104,9 @@ have `ImageMagick` installed.
 
   [path to demo]
 ```
+
+If you're using GTK, you can also double-click the executable and select a
+demo with the GUI.
 
 Looking for font file in the following directories: the one you supply with the
 `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
