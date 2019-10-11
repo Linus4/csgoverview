@@ -85,7 +85,7 @@ file (use the path to the executable on your computer in Exec):
 ```sh
 echo "[Desktop Entry]
 Name=CSGOverview
-Exec=/usr/bin/csgoverview
+Exec=/usr/bin/csgoverview %F
 Type=Application
 Terminal=false
 Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
