@@ -42,7 +42,7 @@ func main() {
 			fmt.Println("Usage: ./csgoverview [path to demo]")
 			return
 		}
-		demoFileName = string(demoFileNameB)[:len(demoFileName)-1]
+		demoFileName = string(demoFileNameB)[:len(demoFileNameB)-1]
 	} else {
 		demoFileName = flag.Args()[0]
 	}
