@@ -218,15 +218,15 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		if player.Hp > 0 {
 			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
-		drawString(renderer, player.Name, color, x+80, yOffset+10, font)
+		drawString(renderer, player.Name, color, x+85, yOffset+10, font)
 		drawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {
-			drawString(renderer, "H", color, x+30, yOffset+10, font)
+			drawString(renderer, "H", color, x+35, yOffset+10, font)
 		} else if player.Armor > 0 {
-			drawString(renderer, "A", color, x+30, yOffset+10, font)
+			drawString(renderer, "A", color, x+35, yOffset+10, font)
 		}
 		if player.HasDefuseKit {
-			drawString(renderer, "D", color, x+45, yOffset+10, font)
+			drawString(renderer, "D", color, x+50, yOffset+10, font)
 		}
 		drawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
 		var nadeCounter int32
@@ -264,7 +264,7 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 			}
 			if w.Class() == common.EqClassEquipment {
 				if w.Weapon == common.EqBomb {
-					gfx.BoxColor(renderer, x+45, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
+					gfx.BoxColor(renderer, x+50, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
 				}
 			}
 		}
