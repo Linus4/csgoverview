@@ -108,6 +108,10 @@ Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
 If you're using GTK, you can also double-click the executable and select a
 demo with the GUI.
 
+After you've created the `.desktop` file, you can right click on a demo and
+select csgoverview when you select 'Open With'. This way, you can just
+double-click on a demo to watch it with csgoverview.
+
 Looking for font file in the following directories: the one you supply with the
 `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
 `./liberationserif-regular.ttf`.
