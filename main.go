@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"time"
 
@@ -94,10 +95,19 @@ func main() {
 		return
 	}
 
-	mapSurface, err := img.Load(fmt.Sprintf("%v.jpg", match.MapName))
+	userHomeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Println("trying to load map overview image:", err)
+		log.Println("trying to get user home directory:", err)
 		return
+	}
+	mapSurface, err := img.Load(fmt.Sprintf("%v/.local/share/csgoverview/%v.jpg", userHomeDir, match.MapName))
+	if err != nil {
+		log.Println("trying to load map overview image from ~/.local/share/csgoverview:", err)
+		mapSurface, err = img.Load(fmt.Sprintf("%v.jpg", match.MapName))
+		if err != nil {
+			log.Println("trying to load map overview image from current directory:", err)
+			return
+		}
 	}
 	defer mapSurface.Free()
 

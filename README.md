@@ -46,8 +46,9 @@ go build
 ### Get overviews
 
 Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
-(overviews directory) and copy the overviews that you need into the directory
-you cloned.
+(overviews directory), create a directory with `mkdir
+$HOME/.local/share/csgoverview`  and copy the overviews that you need to
+`$HOME/.local/share/csgoverview`.
 
 You can use other overviews as long as they are `.jpg` files and they match the
 naming pattern (e.g. `de_nuke.jpg`). Ideally, their size should be 1024x1024
@@ -64,13 +65,6 @@ have `ImageMagick` installed.
 
 ## Usage
 
-The program tries to find the following font files until it finds one: the one
-you supply with the `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
-`./liberationserif-regular.ttf`.
-
-1. the overview (`e.g. de_nuke.jpg`) must be in the same directory as the
-  executable
-
 ```sh
 ./csgoverview
     -fontpath string
@@ -82,6 +76,14 @@ you supply with the `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
 
   [path to demo]
 ```
+
+Looking for font file in the following directories: the one you supply with the
+`-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
+`./liberationserif-regular.ttf`.
+
+Looking for overview file in the following directories:
+`$HOME/.local/share/csgoverview` and in the current directory.
+
 
 ### Keybinds
 
