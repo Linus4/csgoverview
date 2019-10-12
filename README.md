@@ -96,11 +96,11 @@ Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
 ```sh
 ./csgoverview
     -fontpath string
-    	Path to font file (.ttf) (optional) (default "/usr/share/fonts/dejavu/DejaVuSans.ttf")
+    	Path to font file (.ttf) (default "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     -framerate float
-    	Fallback GOTV Framerate (optional) (default -1)
+    	Fallback GOTV Framerate (default -1)
     -tickrate float
-    	Fallback Gameserver Tickrate (optional) (default -1)
+    	Fallback Gameserver Tickrate (default -1)
 
   [path to demo]
 ```

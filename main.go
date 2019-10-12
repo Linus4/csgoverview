@@ -31,9 +31,9 @@ var (
 )
 
 func main() {
-	frameRatePtr := flag.Float64("framerate", -1, "Fallback GOTV Framerate (optional)")
-	tickRatePtr := flag.Float64("tickrate", -1, "Fallback Gameserver Tickrate (optional)")
-	fontPathPtr := flag.String("fontpath", "/usr/share/fonts/dejavu/DejaVuSans.ttf", "Path to font file (.ttf) (optional)")
+	frameRatePtr := flag.Float64("framerate", -1, "Fallback GOTV Framerate")
+	tickRatePtr := flag.Float64("tickrate", -1, "Fallback Gameserver Tickrate")
+	fontPathPtr := flag.String("fontpath", "/usr/share/fonts/dejavu/DejaVuSans.ttf", "Path to font file (.ttf)")
 	flag.Parse()
 	var demoFileName string
 	if len(flag.Args()) < 1 {
