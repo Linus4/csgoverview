@@ -5,7 +5,6 @@ import (
 	"log"
 	"sort"
 	"time"
-	"unicode/utf8"
 
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
@@ -56,7 +55,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 	if player.Hp > 0 {
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		drawString(renderer, player.Name, color, scaledXInt+10, scaledYInt+10, font)
+		drawString(renderer, cropStringToN(player.Name, 10), color, scaledXInt+10, scaledYInt+10, font)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorDarkWhite)
@@ -218,7 +217,7 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		if player.Hp > 0 {
 			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
-		drawString(renderer, player.Name, color, x+85, yOffset+10, font)
+		drawString(renderer, cropStringToN(player.Name, 20), color, x+85, yOffset+10, font)
 		drawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {
 			drawString(renderer, "H", color, x+35, yOffset+10, font)
@@ -290,20 +289,9 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 		} else {
 			colorVictim = colorTerror
 		}
-		killerName := kill.KillerName
-		if utf8.RuneCountInString(kill.KillerName) > 10 {
-			killerRunes := []rune(kill.KillerName)
-			killerName = string(killerRunes[:10])
-		}
-		victimName := kill.VictimName
-		if utf8.RuneCountInString(kill.VictimName) > 10 {
-			victimRunes := []rune(kill.VictimName)
-			victimName = string(victimRunes[:10])
-		}
-		weaponName := kill.Weapon
-		if len(kill.Weapon) > 10 {
-			weaponName = kill.Weapon[:10]
-		}
+		killerName := cropStringToN(kill.KillerName, 10)
+		victimName := cropStringToN(kill.VictimName, 10)
+		weaponName := cropStringToN(kill.Weapon, 10)
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
 		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
 		drawString(renderer, victimName, colorVictim, x+200, y+yOffset, font)
@@ -328,4 +316,12 @@ func drawTimer(renderer *sdl.Renderer, timer ocom.Timer, x, y int32, font *ttf.F
 		}
 		drawString(renderer, timeString, color, x+5, y, font)
 	}
+}
+
+func cropStringToN(s string, n int) string {
+	if len(s) > n {
+		return s[:n]
+	}
+
+	return s
 }
