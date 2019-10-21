@@ -39,20 +39,20 @@ var (
 )
 
 func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
-	pos := player.LastAlivePosition
-
-	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	var scaledXInt int32 = int32(scaledX) + mapXOffset
-	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var color sdl.Color
-
 	if player.Team == common.TeamTerrorists {
 		color = colorTerror
 	} else {
 		color = colorCounter
 	}
 
-	if player.Hp > 0 {
+	if player.IsAlive() {
+		pos := player.Position
+
+		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+		var scaledXInt int32 = int32(scaledX) + mapXOffset
+		var scaledYInt int32 = int32(scaledY) + mapYOffset
+
 		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		drawString(renderer, cropStringToN(player.Name, 10), color, scaledXInt+10, scaledYInt+10, font)
@@ -84,6 +84,12 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 			color.A = 255
 		}
 	} else {
+		pos := player.LastAlivePosition
+
+		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+		var scaledXInt int32 = int32(scaledX) + mapXOffset
+		var scaledYInt int32 = int32(scaledY) + mapYOffset
+
 		color.A = 150
 		gfx.CharacterColor(renderer, scaledXInt, scaledYInt, 'X', color)
 		color.A = 255
