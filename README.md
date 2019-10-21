@@ -46,6 +46,50 @@ cd csgoverview
 go build
 ```
 
+### Cross-compiling for Windows
+
+Using a Fedora 30 machine:
+
+#### Dependencies
+
+```sh
+sudo dnf install make git golang SDL2{,_gfx,_image,_ttf,_mixer} mingw64-SDL2{,_image,_ttf}
+```
+
+#### Installing SDL2_gfx library
+
+```sh
+wget http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.4.tar.gz
+tar xf SDL2_gfx-1.0.4.tar.gz
+cd SDL2_gfx-1.0.4
+mingw64-configure
+mingw64-make
+sudo mingw64-make install
+cd ..
+```
+
+#### Cloning the repository
+
+```sh
+git clone https://github.com/Linus4/csgoverview.git
+cd csgoverview
+```
+
+#### Switch to new go-sdl2 version
+
+Edit line in `go.mod`:
+
+```sh
+-       github.com/veandco/go-sdl2 v0.3.3
++       github.com/veandco/go-sdl2 v0.4.0-rc.0
+```
+
+#### Build
+
+```sh
+CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -tags static -ldflags "-s -w"
+```
+
 ### Get overviews
 
 Use [this repository](https://github.com/zoidbergwill/csgo-overviews)

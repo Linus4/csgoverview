@@ -248,7 +248,6 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 				case common.EqIncendiary:
 					nadeColor = colorEqIncendiary
 				case common.EqFlash:
-					// there seems to be only one flashbang in player.Weapons() even if he has two
 					nadeColor = colorEqFlash
 				case common.EqSmoke:
 					nadeColor = colorEqSmoke

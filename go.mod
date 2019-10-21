@@ -11,7 +11,7 @@ require (
 	github.com/phpdave11/gofpdi v1.0.8 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
-	github.com/veandco/go-sdl2 v0.3.3
+	github.com/veandco/go-sdl2 v0.4.0-rc.0
 	golang.org/x/crypto v0.0.0-20190927123631-a832865fa7ad // indirect
 	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect
 	golang.org/x/net v0.0.0-20190930134127-c5a3c61f89f3 // indirect
