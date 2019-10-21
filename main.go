@@ -214,6 +214,11 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 						set = true
 						break
 					}
+					if i-1 < 0 {
+						curFrame = 0
+						set = true
+						break
+					}
 					curFrame = match.HalfStarts[i-1]
 					set = true
 					break
@@ -233,6 +238,11 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				if curFrame < frame {
 					if i > 1 && curFrame < match.RoundStarts[i-1]+match.FrameRateRounded/2 {
 						curFrame = match.RoundStarts[i-2]
+						set = true
+						break
+					}
+					if i-1 < 0 {
+						curFrame = 0
 						set = true
 						break
 					}
