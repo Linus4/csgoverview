@@ -90,6 +90,14 @@ Edit line in `go.mod`:
 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -tags static -ldflags "-s -w"
 ```
 
+#### Required files
+
+Put the font file (`.ttf`) from the repository, the required map overviews
+(next section) and the executable (`.exe`) into a directory. You can launch the
+application from the command-line or by double-clicking on a demo in the same
+directory after you have set `csgoverview.exe` to be your default app to use
+for `.dem` files.
+
 ### Get overviews
 
 Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
