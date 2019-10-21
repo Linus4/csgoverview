@@ -220,10 +220,14 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
 	var yOffset int32
 	for _, player := range players {
-		if player.Hp > 0 {
+		if player.IsAlive() {
 			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
+		if !player.IsAlive() {
+			color.A = 150
+		}
 		drawString(renderer, cropStringToN(player.Name, 20), color, x+85, yOffset+10, font)
+		color.A = 255
 		drawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {
 			drawString(renderer, "H", color, x+35, yOffset+10, font)
