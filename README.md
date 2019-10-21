@@ -166,7 +166,7 @@ double-click on a demo to watch it with csgoverview.
 
 Looking for font file in the following directories: the one you supply with the
 `-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
-`./liberationserif-regular.ttf`.
+`./DejaVuSans.ttf`.
 
 Looking for overview file in the following directories:
 `$HOME/.local/share/csgoverview` and in the current directory.

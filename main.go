@@ -64,7 +64,7 @@ func main() {
 	font, err := ttf.OpenFont(*fontPathPtr, nameMapFontSize)
 	if err != nil {
 		log.Println("trying to open the font file (system or flag):", err)
-		font, err = ttf.OpenFont("liberationserif-regular.ttf", nameMapFontSize)
+		font, err = ttf.OpenFont("DejaVuSans.ttf", nameMapFontSize)
 		if err != nil {
 			log.Println("trying to open the font file in the curent directory:", err)
 			return
