@@ -205,4 +205,4 @@ Thank you for helping me or contributing to the project!
 * [markus-wa](https://github.com/markus-wa)
   ([demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang))
 * [veeableful](https://github.com/veeableful)
-  ([go-sdl2]([200~https://github.com/veandco/go-sdl2/))
+  ([go-sdl2](https://github.com/veandco/go-sdl2/))
