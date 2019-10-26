@@ -173,7 +173,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
-		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+		if isShiftPressed(eventT) {
 			if curFrame < match.FrameRateRounded*10 {
 				curFrame = 0
 			} else {
@@ -189,7 +189,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
-		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+		if isShiftPressed(eventT) {
 			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
 				curFrame = len(match.States) - 1
 			} else {
@@ -205,7 +205,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
-		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+		if isShiftPressed(eventT) {
 			set := false
 			for i, frame := range match.HalfStarts {
 				if curFrame < frame {
@@ -263,7 +263,7 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
-		if eventT.Keysym.Mod == sdl.KMOD_LSHIFT || eventT.Keysym.Mod == sdl.KMOD_RSHIFT {
+		if isShiftPressed(eventT) {
 			for _, frame := range match.HalfStarts {
 				if curFrame < frame {
 					curFrame = frame
@@ -346,4 +346,14 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	}
 
 	renderer.Present()
+}
+
+func isShiftPressed(event *sdl.KeyboardEvent) bool {
+	pressed := event.Keysym.Mod & sdl.KMOD_SHIFT
+
+	if pressed > 0 {
+		return true
+	} else {
+		return false
+	}
 }
