@@ -33,7 +33,7 @@ I did not sign the application - Windows *will* prevent the app from running.
 
 1. Download the latest compiled version (`.zip`) from the [releases
   page](https://github.com/Linus4/csgoverview/releases).
-1. Create a folder and extract the `.zip` file it.
+1. Create a folder and extract the `.zip` file into it.
 1. Download the overview images from [this
    repository](https://github.com/zoidbergwill/csgo-overviews) and put them
    into the same folder.
