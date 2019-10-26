@@ -27,6 +27,23 @@ I keep track of ideas and todos.
 
 ## Installation
 
+### Windows
+
+I did not sign the application - Windows *will* prevent the app from running.
+
+1. Download the latest compiled version (`.zip`) from the [releases
+  page](https://github.com/Linus4/csgoverview/releases).
+1. Create a folder and extract the `.zip` file it.
+1. Download the overview images from [this
+   repository](https://github.com/zoidbergwill/csgo-overviews) and put them
+   into the same folder.
+1. Put the demo you want to watch into the same folder.
+1. Right click the demo; Open with; Choose another app; check 'Always use this
+   app to open .dem files'; More apps; Look for another app on this PC; select
+   `csgoverview.exe` (weirdly, this does not open the demo yet).
+1. Double click any demo in the folder to open it with csgoverview.
+1. *alternatively*, you can launch the app from the command-line.
+
 ### Dependencies
 
 #### Fedora
