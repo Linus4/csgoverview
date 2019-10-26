@@ -19,6 +19,12 @@ I keep track of ideas and todos.
 * [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang)
 * [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
+## Hardware Requirements
+
+* Display with a resolution of **1920x1080** or higher
+* about 1.5 GB of memory for a 32 tick demo
+* about 5 GB of memory for a 128 tick demo
+
 ## Installation
 
 ### Dependencies
@@ -192,3 +198,11 @@ Looking for overview file in the following directories:
 
 ![Screenshot 3 de_inferno](https://i.imgur.com/sNYT4eH.png)
 
+## Credits
+
+Thank you for helping me or contributing to the project!
+
+* [markus-wa](https://github.com/markus-wa)
+  ([demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang))
+* [veeableful](https://github.com/veeableful)
+  ([go-sdl2]([200~https://github.com/veandco/go-sdl2/))
