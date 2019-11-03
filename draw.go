@@ -177,7 +177,7 @@ func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 }
 
 func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
-	textSurface, err := font.RenderUTF8Solid(text, color)
+	textSurface, err := font.RenderUTF8Blended(text, color)
 	if err != nil {
 		log.Fatal(err)
 	}
