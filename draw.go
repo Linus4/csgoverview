@@ -53,7 +53,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-		gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		drawString(renderer, cropStringToN(player.Name, 10), color, scaledXInt+10, scaledYInt+10, font)
 
@@ -73,8 +73,8 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 
 		for _, w := range player.Weapons() {
 			if w.Weapon == common.EqBomb {
-				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
-				gfx.CircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
+				gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
+				gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
 			}
 		}
 
@@ -131,16 +131,16 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 
 	switch effect.GrenadeEvent.GrenadeType {
 	case common.EqFlash:
-		gfx.CircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
 	case common.EqHE:
-		gfx.CircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
 	case common.EqSmoke:
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
 		scaledRadiusSmoke := int32(float64(radiusSmoke) * 4.9 / meta.MapNameToMap[match.MapName].Scale)
 		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorSmoke)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
-			gfx.CircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
 		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorDarkWhite)
 	}
@@ -160,7 +160,7 @@ func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 	}
 
 	gfx.FilledPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
-	gfx.PolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
+	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
 }
 
 func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
