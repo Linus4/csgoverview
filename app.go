@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"os/exec"
 	"path/filepath"
 	"time"
@@ -64,24 +63,28 @@ func run(c *Config) error {
 
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
-		log.Println("trying to initialize SDL:", err)
+		errorString := fmt.Sprintf("trying to initialize SDL:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer sdl.Quit()
 
 	err = ttf.Init()
 	if err != nil {
-		log.Println("trying to initialize the TTF lib:", err)
+		errorString := fmt.Sprintf("trying to initialize the TTF lib:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer ttf.Quit()
 
 	font, err := ttf.OpenFont(c.FontPath, nameMapFontSize)
 	if err != nil {
-		log.Println("trying to open the font file (system or flag):", err)
+		errorString := fmt.Sprintf("trying to open font file (system):\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		font, err = ttf.OpenFont("DejaVuSans.ttf", nameMapFontSize)
 		if err != nil {
-			log.Println("trying to open the font file in the curent directory:", err)
+			errorString := fmt.Sprintf("trying to open font file in the current directory:\n%v", err)
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 			return err
 		}
 	}
@@ -91,14 +94,16 @@ func run(c *Config) error {
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
-		log.Println("trying to create SDL window:", err)
+		errorString := fmt.Sprintf("trying to create SDL window:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer window.Destroy()
 
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
 	if err != nil {
-		log.Println("trying to create SDL renderer:", err)
+		errorString := fmt.Sprintf("trying to create SDL renderer:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer renderer.Destroy()
@@ -106,16 +111,23 @@ func run(c *Config) error {
 
 	match, err := match.NewMatch(demoFileName, c.FrameRate, c.TickRate)
 	if err != nil {
-		log.Println("trying to parse demo file:", err)
+		errorString := fmt.Sprintf("trying to parse demo file:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 
 	mapSurface, err := img.Load(filepath.Join(c.OverviewDir, fmt.Sprintf("%v.jpg", match.MapName)))
 	if err != nil {
-		log.Println("trying to load map overview image from %v:", c.OverviewDir, err)
+		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
+			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
+			"to place the overview images in this directory.", c.OverviewDir, err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		mapSurface, err = img.Load(fmt.Sprintf("%v.jpg", match.MapName))
 		if err != nil {
-			log.Println("trying to load map overview image from current directory:", err)
+			errorString := fmt.Sprintf("trying to load map overview image from current directory: \n"+
+				"%v\n%v\nFollow the instructions on https://github.com/linus4/csgoverview "+
+				"to place the overview images in this directory.", err, c.OverviewDir)
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 			return err
 		}
 	}
@@ -123,7 +135,8 @@ func run(c *Config) error {
 
 	mapTexture, err := renderer.CreateTextureFromSurface(mapSurface)
 	if err != nil {
-		log.Println("trying to create mapTexture from Surface", err)
+		errorString := fmt.Sprintf("trying to create mapTexture from Surface:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer mapTexture.Destroy()
