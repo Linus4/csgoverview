@@ -6,7 +6,7 @@ csgoverview installation instructions
    (e.g. C:\Users\Username\csgoverview)
 3. Move the .ttf file from the .zip archive into the csgoverview folder.
 4. Download the overview images from https://github.com/zoidbergwill/csgo-overviews 
-   and put them into the csgoverview folder
+   and put them into the csgoverview folder.
 5. Right click a demo and select 'Open with' to open it with csgoverview.
 
 Updates

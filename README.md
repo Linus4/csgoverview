@@ -4,7 +4,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 Package match povides a high-level parser you can use for your own demoviewer.
 
-Current version is `0.5.1`. Master branch is currently used for development.
+Current version is `0.5.1`.
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE)
 
@@ -31,18 +31,14 @@ I keep track of ideas and todos.
 
 I did not sign the application - Windows *will* prevent the app from running.
 
-1. Download the latest compiled version (`.zip`) from the [releases
-  page](https://github.com/Linus4/csgoverview/releases).
-1. Create a folder and extract the `.zip` file into it.
+1. Create a folder and extract `csgoverview.exe` into it.
+1. Create a folder called 'csgoverview' in your user directory. (e.g.
+   `C:\Users\Username\csgoverview`)
+1. Move the `.ttf` file from the .zip archive into the csgoverview folder.
 1. Download the overview images from [this
    repository](https://github.com/zoidbergwill/csgo-overviews) and put them
-   into the same folder.
-1. Put the demo you want to watch into the same folder.
-1. Right click the demo; Open with; Choose another app; check 'Always use this
-   app to open .dem files'; More apps; Look for another app on this PC; select
-   `csgoverview.exe` (weirdly, this does not open the demo yet).
-1. Double click any demo in the folder to open it with csgoverview.
-1. *alternatively*, you can launch the app from the command-line.
+   into the csgoverview folder.
+1. Right click a demo and select 'Open with' to open it with csgoverview.
 
 ### Dependencies
 
@@ -98,15 +94,6 @@ git clone https://github.com/Linus4/csgoverview.git
 cd csgoverview
 ```
 
-#### Switch to new go-sdl2 version
-
-Edit line in `go.mod`:
-
-```sh
--       github.com/veandco/go-sdl2 v0.3.3
-+       github.com/veandco/go-sdl2 v0.4.0-rc.0
-```
-
 #### Build
 
 ```sh
@@ -115,11 +102,11 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -tags
 
 #### Required files
 
-Put the font file (`.ttf`) from the repository, the required map overviews
-(next section) and the executable (`.exe`) into a directory. You can launch the
-application from the command-line or by double-clicking on a demo in the same
-directory after you have set `csgoverview.exe` to be your default app to use
-for `.dem` files.
+Put the font file (`.ttf`) from the repository and the required map overviews
+(next section) into a folder called 'csgoverview' in the user-directory
+(`C:\Users\Name\csgoverview`). You can launch the application from the
+command-line or right-clicking a demo file and selecting 'Open with' to open
+the file with csgoverview.
 
 ### Get overviews
 
@@ -174,6 +161,8 @@ Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
     	Path to font file (.ttf) (default "/usr/share/fonts/dejavu/DejaVuSans.ttf")
     -framerate float
     	Fallback GOTV Framerate (default -1)
+    -overviewdir string
+        Path to overview directory (default "$HOME/.local/share/csgoverview")
     -tickrate float
     	Fallback Gameserver Tickrate (default -1)
 
@@ -186,14 +175,6 @@ demo with the GUI.
 After you've created the `.desktop` file, you can right click on a demo and
 select csgoverview when you select 'Open With'. This way, you can just
 double-click on a demo to watch it with csgoverview.
-
-Looking for font file in the following directories: the one you supply with the
-`-fontpath` flag, `/usr/share/fonts/dejavu/DejaVuSans.ttf`,
-`./DejaVuSans.ttf`.
-
-Looking for overview file in the following directories:
-`$HOME/.local/share/csgoverview` and in the current directory.
-
 
 ### Keybinds
 
