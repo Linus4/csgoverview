@@ -70,20 +70,18 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	match.FrameRate = header.FrameRate()
 	if math.IsNaN(match.FrameRate) {
 		if fallbackFrameRate == -1 {
-			err := errors.New("Could not parse Framerate from demo. Please provide a fallback value.")
+			err := errors.New("could not parse Framerate from demo. Please provide a fallback value")
 			return nil, err
-		} else {
-			match.FrameRate = fallbackFrameRate
 		}
+		match.FrameRate = fallbackFrameRate
 	}
 	match.TickRate = header.TickRate()
 	if math.IsNaN(match.TickRate) {
 		if fallbackTickRate == -1 {
-			err := errors.New("Could not parse Tickrate from demo. Please provide a fallback value.")
+			err := errors.New("could not parse Tickrate from demo. Please provide a fallback value")
 			return nil, err
-		} else {
-			match.TickRate = fallbackTickRate
 		}
+		match.TickRate = fallbackTickRate
 	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	match.MapName = header.MapName

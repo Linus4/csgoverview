@@ -29,6 +29,7 @@ var (
 	curFrame int
 )
 
+// Config contains information the application requires in order to run
 type Config struct {
 	// Path to font file (.ttf)
 	FontPath string
@@ -43,6 +44,7 @@ type Config struct {
 	TickRate float64
 }
 
+// DefaultConfig contains standard parameters for the application.
 var DefaultConfig = Config{
 	FrameRate: -1,
 	TickRate:  -1,
@@ -381,7 +383,6 @@ func isShiftPressed(event *sdl.KeyboardEvent) bool {
 
 	if pressed > 0 {
 		return true
-	} else {
-		return false
 	}
+	return false
 }

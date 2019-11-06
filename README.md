@@ -4,20 +4,12 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 Package match povides a high-level parser you can use for your own demoviewer.
 
-Current version is `0.5.1`.
+Current version is `0.6.0`.
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE)
 
 Check out the [Roadmap](https://github.com/Linus4/csgoverview/projects/1) where
 I keep track of ideas and todos.
-
-## Tools
-
-* [golang](https://golang.org/)
-* [SDL2](https://wiki.libsdl.org/Introduction)
-* [go-sdl2](https://github.com/veandco/go-sdl2)
-* [demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang)
-* [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
 ## Hardware Requirements
 
@@ -189,6 +181,21 @@ double-click on a demo to watch it with csgoverview.
 * Q -> to start of previous half
 * E -> to start of next half
 * space -> toggle pause
+
+## Tool recommendations
+
+* [gInk](https://github.com/geovens/gInk): draw on the screen (windows, free
+  software)
+* [mixer.com](https://mixer.com/): streaming service without delay (FTL)
+* [join.me](https://www.join.me/): streaming service without delay and drawing on the
+  screen
+* [Applications](https://askubuntu.com/questions/4428/how-can-i-record-my-screen)
+  to record your screen (free software, linux)
+* [Draw on your Screen GNOME Shell
+  Extension](https://extensions.gnome.org/extension/1683/draw-on-you-screen/):
+  draw on the screen (linux, GNOME, free software)
+* [Gfycat.com](https://gfycat.com): share videos/gifs
+
 
 ![Screenshot 1 de_mirage](https://i.imgur.com/BKTTBfW.png)
 
