@@ -293,8 +293,10 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 		var colorKiller, colorVictim sdl.Color
 		if kill.KillerTeam == common.TeamCounterTerrorists {
 			colorKiller = colorCounter
-		} else {
+		} else if kill.KillerTeam == common.TeamTerrorists {
 			colorKiller = colorTerror
+		} else {
+			colorKiller = colorDarkWhite
 		}
 		if kill.VictimTeam == common.TeamCounterTerrorists {
 			colorVictim = colorCounter
