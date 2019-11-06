@@ -345,6 +345,11 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	drawInfobars(renderer, match, font)
 	renderer.Copy(mapTexture, nil, mapRect)
 
+	shots := match.Shots[curFrame]
+	for _, shot := range shots {
+		drawShot(renderer, &shot, match)
+	}
+
 	infernos := match.States[curFrame].Infernos
 	for _, inferno := range infernos {
 		drawInferno(renderer, &inferno, match)

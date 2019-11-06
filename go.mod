@@ -4,7 +4,7 @@ require (
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
 	github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1 // indirect
 	github.com/gogo/protobuf v1.3.0 // indirect
-	github.com/golang/geo v0.0.0-20190916061304-5b978397cfec // indirect
+	github.com/golang/geo v0.0.0-20190916061304-5b978397cfec
 	github.com/jung-kurt/gofpdf v1.12.4 // indirect
 	github.com/llgcode/draw2d v0.0.0-20190810100245-79e59b6b8fbc // indirect
 	github.com/markus-wa/demoinfocs-golang v1.3.3

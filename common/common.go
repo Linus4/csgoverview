@@ -4,6 +4,7 @@ package common
 import (
 	"time"
 
+	"github.com/golang/geo/r3"
 	"github.com/markus-wa/demoinfocs-golang/common"
 	event "github.com/markus-wa/demoinfocs-golang/events"
 )
@@ -53,4 +54,11 @@ type Kill struct {
 type Timer struct {
 	TimeRemaining time.Duration
 	Phase         Phase
+}
+
+// Shot contains information about a shot from a weapon.
+type Shot struct {
+	Position       r3.Vector
+	ViewDirectionX float32
+	IsAwpShot      bool
 }

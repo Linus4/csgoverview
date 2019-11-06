@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math"
 	"sort"
 	"time"
 
@@ -16,9 +17,10 @@ import (
 )
 
 const (
-	radiusPlayer   int32 = 10
-	radiusSmoke    int32 = 25
-	killfeedHeight int32 = 15
+	radiusPlayer   int32   = 10
+	radiusSmoke    int32   = 25
+	killfeedHeight int32   = 15
+	shotLength     float64 = 1000
 )
 
 var (
@@ -36,6 +38,7 @@ var (
 	colorEqHE         = sdl.Color{85, 150, 0, 255}
 	colorDarkWhite    = sdl.Color{200, 200, 200, 255}
 	colorFlashEffect  = sdl.Color{200, 200, 200, 180}
+	colorAwpShot      = sdl.Color{255, 50, 0, 255}
 )
 
 func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
@@ -325,6 +328,27 @@ func drawTimer(renderer *sdl.Renderer, timer ocom.Timer, x, y int32, font *ttf.F
 		}
 		drawString(renderer, timeString, color, x+5, y, font)
 	}
+}
+
+func drawShot(renderer *sdl.Renderer, shot *ocom.Shot, match *match.Match) {
+	pos := shot.Position
+	viewAngleDegrees := -shot.ViewDirectionX // negated because of sdl
+	viewAngleRadian := viewAngleDegrees * math.Pi / 180
+	color := colorDarkWhite
+	if shot.IsAwpShot {
+		color = colorAwpShot
+	}
+
+	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+	scaledX += math.Cos(float64(viewAngleRadian)) * float64(radiusPlayer)
+	scaledY += math.Sin(float64(viewAngleRadian)) * float64(radiusPlayer)
+	var scaledXInt int32 = int32(scaledX) + mapXOffset
+	var scaledYInt int32 = int32(scaledY) + mapYOffset
+
+	targetX := scaledXInt + int32(math.Cos(float64(viewAngleRadian))*1000/meta.MapNameToMap[match.MapName].Scale)
+	targetY := scaledYInt + int32(math.Sin(float64(viewAngleRadian))*1000/meta.MapNameToMap[match.MapName].Scale)
+
+	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
 }
 
 func cropStringToN(s string, n int) string {

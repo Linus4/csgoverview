@@ -20,6 +20,8 @@ const (
 	heEffectLifetime    int = 10
 	killfeedLifetime    int = 10
 	c4timer             int = 40
+	shotLifetime        int = 1
+	shotLifetimeAwp     int = 4
 )
 
 // Match contains general information about the demo and all relevant, parsed
@@ -35,6 +37,7 @@ type Match struct {
 	States               []ocom.OverviewState
 	SmokeEffectLifetime  int
 	Killfeed             map[int][]ocom.Kill
+	Shots                map[int][]ocom.Shot
 	currentPhase         ocom.Phase
 	latestTimerEventTime time.Duration
 }
@@ -61,6 +64,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		RoundStarts:    make([]int, 0),
 		GrenadeEffects: make(map[int][]ocom.GrenadeEffect),
 		Killfeed:       make(map[int][]ocom.Kill),
+		Shots:          make(map[int][]ocom.Shot),
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -106,6 +110,33 @@ func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *M
 	}
 }
 
+func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
+	if e.Weapon.Class() == common.EqClassEquipment ||
+		e.Weapon.Class() == common.EqClassGrenade ||
+		e.Weapon.Class() == common.EqClassUnknown {
+		return
+	}
+	isAwpShot := e.Weapon.Weapon == common.EqAWP
+	shot := ocom.Shot{
+		Position:       e.Shooter.Position,
+		ViewDirectionX: e.Shooter.ViewDirectionX,
+		IsAwpShot:      isAwpShot,
+	}
+
+	lifetime := shotLifetime
+	if isAwpShot {
+		lifetime = shotLifetimeAwp
+	}
+	for i := 0; i < lifetime; i++ {
+		shots, ok := match.Shots[frame+i]
+		if ok {
+			match.Shots[frame+i] = append(shots, shot)
+		} else {
+			match.Shots[frame+i] = []ocom.Shot{shot}
+		}
+	}
+}
+
 func registerEventHandlers(parser *dem.Parser, match *Match) {
 	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
 		match.RoundStarts = append(match.RoundStarts, parser.CurrentFrame())
@@ -118,6 +149,10 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	})
 	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
+	})
+	h5 := parser.RegisterEventHandler(func(e event.WeaponFire) {
+		frame := parser.CurrentFrame()
+		weaponFireEventHandler(frame, e, match)
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
 		frame := parser.CurrentFrame()
@@ -178,6 +213,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 		parser.UnregisterEventHandler(h2)
 		parser.UnregisterEventHandler(h3)
 		parser.UnregisterEventHandler(h4)
+		parser.UnregisterEventHandler(h5)
 	})
 }
 
