@@ -11,18 +11,29 @@ Current version is `0.6.0`.
 Check out the [Roadmap](https://github.com/Linus4/csgoverview/projects/1) where
 I keep track of ideas and todos.
 
+## Table of Contents
+
+* [Hardware Requirements](#hardware-requirements)
+* [Windows Installation](#windows-installation)
+* [Linux Installation / Build Instructions](#linux-installation)
+* [Get overviews](#get-overviews)
+* [Keybinds](#keybinds)
+* [Tool recommendations](#tool-recommendations)
+* [Cross-compiling](#cross-compiling)
+* [Credits](#credits)
+
 ## Hardware Requirements
 
 * Display with a resolution of **1920x1080** or higher
 * about 1.5 GB of memory for a 32 tick demo
 * about 5 GB of memory for a 128 tick demo
 
-## Installation
-
-### Windows
+## Windows Installation
 
 I did not sign the application - Windows *will* prevent the app from running.
 
+1. Download latest version from the [releases
+   page](https://github.com/Linus4/csgoverview/releases).
 1. Create a folder and extract `csgoverview.exe` into it.
 1. Create a folder called 'csgoverview' in your user directory. (e.g.
    `C:\Users\Username\csgoverview`)
@@ -32,7 +43,7 @@ I did not sign the application - Windows *will* prevent the app from running.
    into the csgoverview folder.
 1. Right click a demo and select 'Open with' to open it with csgoverview.
 
-### Dependencies
+## Linux Installation
 
 #### Fedora
 
@@ -56,69 +67,6 @@ git clone https://github.com/Linus4/csgoverview.git
 cd csgoverview
 go build
 ```
-
-### Cross-compiling for Windows
-
-Using a Fedora 30 machine:
-
-#### Dependencies
-
-```sh
-sudo dnf install make git golang SDL2{,_gfx,_image,_ttf,_mixer} mingw64-SDL2{,_image,_ttf}
-```
-
-#### Installing SDL2_gfx library
-
-```sh
-wget http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.4.tar.gz
-tar xf SDL2_gfx-1.0.4.tar.gz
-cd SDL2_gfx-1.0.4
-mingw64-configure
-mingw64-make
-sudo mingw64-make install
-cd ..
-```
-
-#### Cloning the repository
-
-```sh
-git clone https://github.com/Linus4/csgoverview.git
-cd csgoverview
-```
-
-#### Build
-
-```sh
-CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -tags static -ldflags "-s -w"
-```
-
-#### Required files
-
-Put the font file (`.ttf`) from the repository and the required map overviews
-(next section) into a folder called 'csgoverview' in the user-directory
-(`C:\Users\Name\csgoverview`). You can launch the application from the
-command-line or right-clicking a demo file and selecting 'Open with' to open
-the file with csgoverview.
-
-### Get overviews
-
-Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
-(overviews directory), create a directory with `mkdir
-$HOME/.local/share/csgoverview`  and copy the overviews that you need to
-`$HOME/.local/share/csgoverview`.
-
-You can use other overviews as long as they are `.jpg` files and they match the
-naming pattern (e.g. `de_nuke.jpg`). Ideally, their size should be 1024x1024
-pixels or larger.
-
-More overviews are available here:
-
-* [alternative generated from game
-  files](https://github.com/CSGO-Analysis/csgo-maps-overviews)
-* [Simple Radar](www.simpleradar.com)
-
-On Linux, you can convert images with `convert image.png image.jpg` if you
-have `ImageMagick` installed.
 
 ### Executable
 
@@ -144,6 +92,26 @@ Type=Application
 Terminal=false
 Categories=Games;" > $HOME/.local/share/applications/csgoverview.desktop
 ```
+
+## Get overviews
+
+Use [this repository](https://github.com/zoidbergwill/csgo-overviews)
+(overviews directory), create a directory with `mkdir
+$HOME/.local/share/csgoverview`  and copy the overviews that you need to
+`$HOME/.local/share/csgoverview`.
+
+You can use other overviews as long as they are `.jpg` files and they match the
+naming pattern (e.g. `de_nuke.jpg`). Ideally, their size should be 1024x1024
+pixels or larger.
+
+More overviews are available here:
+
+* [alternative generated from game
+  files](https://github.com/CSGO-Analysis/csgo-maps-overviews)
+* [Simple Radar](www.simpleradar.com)
+
+On Linux, you can convert images with `convert image.png image.jpg` if you
+have `ImageMagick` installed.
 
 ## Usage
 
@@ -195,6 +163,49 @@ double-click on a demo to watch it with csgoverview.
   Extension](https://extensions.gnome.org/extension/1683/draw-on-you-screen/):
   draw on the screen (linux, GNOME, free software)
 * [Gfycat.com](https://gfycat.com): share videos/gifs
+
+## Cross-compiling
+
+Using a Fedora 30 machine:
+
+#### Dependencies
+
+```sh
+sudo dnf install make git golang SDL2{,_gfx,_image,_ttf,_mixer} mingw64-SDL2{,_image,_ttf}
+```
+
+#### Installing SDL2_gfx library
+
+```sh
+wget http://www.ferzkopp.net/Software/SDL2_gfx/SDL2_gfx-1.0.4.tar.gz
+tar xf SDL2_gfx-1.0.4.tar.gz
+cd SDL2_gfx-1.0.4
+mingw64-configure
+mingw64-make
+sudo mingw64-make install
+cd ..
+```
+
+#### Cloning the repository
+
+```sh
+git clone https://github.com/Linus4/csgoverview.git
+cd csgoverview
+```
+
+#### Build
+
+```sh
+CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -tags static -ldflags "-s -w"
+```
+
+#### Required files
+
+Put the font file (`.ttf`) from the repository and the required map overviews
+(next section) into a folder called 'csgoverview' in the user-directory
+(`C:\Users\Name\csgoverview`). You can launch the application from the
+command-line or right-clicking a demo file and selecting 'Open with' to open
+the file with csgoverview.
 
 
 ![Screenshot 1 de_mirage](https://i.imgur.com/BKTTBfW.png)
