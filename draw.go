@@ -345,8 +345,8 @@ func drawShot(renderer *sdl.Renderer, shot *ocom.Shot, match *match.Match) {
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	targetX := scaledXInt + int32(math.Cos(float64(viewAngleRadian))*1000/meta.MapNameToMap[match.MapName].Scale)
-	targetY := scaledYInt + int32(math.Sin(float64(viewAngleRadian))*1000/meta.MapNameToMap[match.MapName].Scale)
+	targetX := scaledXInt + int32(math.Cos(float64(viewAngleRadian))*shotLength/meta.MapNameToMap[match.MapName].Scale)
+	targetY := scaledYInt + int32(math.Sin(float64(viewAngleRadian))*shotLength/meta.MapNameToMap[match.MapName].Scale)
 
 	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
 }

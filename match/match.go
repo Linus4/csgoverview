@@ -20,8 +20,6 @@ const (
 	heEffectLifetime    int = 10
 	killfeedLifetime    int = 10
 	c4timer             int = 40
-	shotLifetime        int = 1
-	shotLifetimeAwp     int = 4
 )
 
 // Match contains general information about the demo and all relevant, parsed
@@ -121,9 +119,12 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 		IsAwpShot:      isAwpShot,
 	}
 
-	lifetime := shotLifetime
+	lifetime := int((match.FrameRate + 1) / 32)
+	if lifetime == 0 {
+		lifetime = 1
+	}
 	if isAwpShot {
-		lifetime = shotLifetimeAwp
+		lifetime = int((match.FrameRate + 1) / 8)
 	}
 	for i := 0; i < lifetime; i++ {
 		shots, ok := match.Shots[frame+i]
