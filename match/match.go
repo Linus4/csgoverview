@@ -169,8 +169,8 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	})
 	parser.RegisterEventHandler(func(e event.Kill) {
 		frame := parser.CurrentFrame()
-		var killerName string
-		var killerTeam common.Team
+		var killerName, victimName string
+		var killerTeam, victimTeam common.Team
 		if e.Killer == nil {
 			killerName = "World"
 			killerTeam = common.TeamUnassigned
@@ -178,11 +178,18 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 			killerName = e.Killer.Name
 			killerTeam = e.Killer.Team
 		}
+		if e.Victim == nil {
+			victimName = "World"
+			victimTeam = common.TeamUnassigned
+		} else {
+			victimName = e.Victim.Name
+			victimTeam = e.Victim.Team
+		}
 		kill := ocom.Kill{
 			KillerName: killerName,
 			KillerTeam: killerTeam,
-			VictimName: e.Victim.Name,
-			VictimTeam: e.Victim.Team,
+			VictimName: victimName,
+			VictimTeam: victimTeam,
 			Weapon:     e.Weapon.Weapon.String(),
 		}
 
