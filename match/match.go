@@ -109,6 +109,9 @@ func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *M
 }
 
 func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
+	if e.Shooter == nil {
+		return
+	}
 	if e.Weapon.Class() == common.EqClassEquipment ||
 		e.Weapon.Class() == common.EqClassGrenade ||
 		e.Weapon.Class() == common.EqClassUnknown {
