@@ -148,7 +148,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.MatchStart) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
-	parser.RegisterEventHandler(func(event.TeamSideSwitch) {
+	parser.RegisterEventHandler(func(event.GameHalfEnded) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
 	parser.RegisterEventHandler(func(e event.WeaponFire) {
