@@ -142,19 +142,19 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 }
 
 func registerEventHandlers(parser *dem.Parser, match *Match) {
-	h1 := parser.RegisterEventHandler(func(event.RoundStart) {
+	parser.RegisterEventHandler(func(event.RoundStart) {
 		match.RoundStarts = append(match.RoundStarts, parser.CurrentFrame())
 	})
-	h2 := parser.RegisterEventHandler(func(event.MatchStart) {
+	parser.RegisterEventHandler(func(event.MatchStart) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
-	h3 := parser.RegisterEventHandler(func(event.GameHalfEnded) {
+	parser.RegisterEventHandler(func(event.GameHalfEnded) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
-	h4 := parser.RegisterEventHandler(func(event.TeamSideSwitch) {
+	parser.RegisterEventHandler(func(event.TeamSideSwitch) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
-	h5 := parser.RegisterEventHandler(func(e event.WeaponFire) {
+	parser.RegisterEventHandler(func(e event.WeaponFire) {
 		frame := parser.CurrentFrame()
 		weaponFireEventHandler(frame, e, match)
 	})
@@ -227,13 +227,6 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
 		match.currentPhase = ocom.PhaseHalftime
 		match.latestTimerEventTime = parser.CurrentTime()
-	})
-	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
-		parser.UnregisterEventHandler(h1)
-		parser.UnregisterEventHandler(h2)
-		parser.UnregisterEventHandler(h3)
-		parser.UnregisterEventHandler(h4)
-		parser.UnregisterEventHandler(h5)
 	})
 }
 
