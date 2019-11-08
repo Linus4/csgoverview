@@ -148,9 +148,6 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.MatchStart) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
-	parser.RegisterEventHandler(func(event.GameHalfEnded) {
-		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
-	})
 	parser.RegisterEventHandler(func(event.TeamSideSwitch) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
@@ -227,6 +224,9 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
 		match.currentPhase = ocom.PhaseHalftime
 		match.latestTimerEventTime = parser.CurrentTime()
+	})
+	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
+		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
 }
 
