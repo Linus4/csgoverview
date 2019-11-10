@@ -30,7 +30,7 @@ I keep track of ideas and todos.
 
 ## Windows Installation
 
-I did not sign the application - Windows *will* prevent the app from running.
+I did not sign the application - Windows *will* prevent the app from running. [Here is a video](https://streamable.com/y24mq) that shows how to install and use csgoverview.
 
 1. Download latest version from the [releases
    page](https://github.com/Linus4/csgoverview/releases).
