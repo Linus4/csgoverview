@@ -15,10 +15,10 @@ I keep track of ideas and todos.
 
 * [Hardware Requirements](#hardware-requirements)
 * [Windows Installation](#windows-installation)
-* [Linux Installation / Build Instructions](#linux-installation)
-* [Get overviews](#get-overviews)
 * [Keybinds](#keybinds)
 * [Tool recommendations](#tool-recommendations)
+* [Linux Installation / Build Instructions](#linux-installation)
+* [Get overviews](#get-overviews)
 * [Cross-compiling](#cross-compiling)
 * [Credits](#credits)
 
@@ -30,7 +30,7 @@ I keep track of ideas and todos.
 
 ## Windows Installation
 
-I did not sign the application - Windows *will* prevent the app from running.
+I did not sign the application - Windows *will* prevent the app from running. [Here is a video](https://streamable.com/y24mq) that shows how to install and use csgoverview.
 
 1. Download latest version from the [releases
    page](https://github.com/Linus4/csgoverview/releases).
@@ -42,6 +42,35 @@ I did not sign the application - Windows *will* prevent the app from running.
    repository](https://github.com/zoidbergwill/csgo-overviews) and put them
    into the csgoverview folder.
 1. Right click a demo and select 'Open with' to open it with csgoverview.
+
+## Keybinds
+
+* a -> 5 s backwards
+* d -> 5 s forwards
+* A -> 10 s backwards
+* D -> 10 s forwards
+* w -> hold to speed up 5 x
+* s -> hold to slow down to 0.5 x
+* q -> round backwards
+* e -> round forwards
+* Q -> to start of previous half
+* E -> to start of next half
+* space -> toggle pause
+
+## Tool recommendations
+
+* [gInk](https://github.com/geovens/gInk): draw on the screen (windows, free
+  software)
+* [mixer.com](https://mixer.com/): streaming service without delay (FTL)
+* [join.me](https://www.join.me/): streaming service without delay and drawing on the
+  screen
+* [Applications](https://askubuntu.com/questions/4428/how-can-i-record-my-screen)
+  to record your screen (free software, linux)
+* [Draw on your Screen GNOME Shell
+  Extension](https://extensions.gnome.org/extension/1683/draw-on-you-screen/):
+  draw on the screen (linux, GNOME, free software)
+* [Gfycat.com](https://gfycat.com): share videos/gifs
+
 
 ## Linux Installation
 
@@ -135,34 +164,6 @@ demo with the GUI.
 After you've created the `.desktop` file, you can right click on a demo and
 select csgoverview when you select 'Open With'. This way, you can just
 double-click on a demo to watch it with csgoverview.
-
-### Keybinds
-
-* a -> 5 s backwards
-* d -> 5 s forwards
-* A -> 10 s backwards
-* D -> 10 s forwards
-* w -> hold to speed up 5 x
-* s -> hold to slow down to 0.5 x
-* q -> round backwards
-* e -> round forwards
-* Q -> to start of previous half
-* E -> to start of next half
-* space -> toggle pause
-
-## Tool recommendations
-
-* [gInk](https://github.com/geovens/gInk): draw on the screen (windows, free
-  software)
-* [mixer.com](https://mixer.com/): streaming service without delay (FTL)
-* [join.me](https://www.join.me/): streaming service without delay and drawing on the
-  screen
-* [Applications](https://askubuntu.com/questions/4428/how-can-i-record-my-screen)
-  to record your screen (free software, linux)
-* [Draw on your Screen GNOME Shell
-  Extension](https://extensions.gnome.org/extension/1683/draw-on-you-screen/):
-  draw on the screen (linux, GNOME, free software)
-* [Gfycat.com](https://gfycat.com): share videos/gifs
 
 ## Cross-compiling
 
