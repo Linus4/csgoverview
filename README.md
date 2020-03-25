@@ -56,6 +56,7 @@ I did not sign the application - Windows *will* prevent the app from running. [H
 * Q -> to start of previous half
 * E -> to start of next half
 * space -> toggle pause
+* mouse wheel -> scroll 1 second forwards/backwards
 
 ## Tool recommendations
 
