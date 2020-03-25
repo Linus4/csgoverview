@@ -356,7 +356,7 @@ func updateWindowTitle(window *sdl.Window, match *match.Match) {
 	if clanNameTs == "" {
 		clanNameTs = "Terrorists"
 	}
-	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s", clanNameCTs, cts.Score, ts.Score, clanNameTs)
+	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s - Round %d", clanNameCTs, cts.Score, ts.Score, clanNameTs, cts.Score+ts.Score+1)
 	// expensive?
 	window.SetTitle(windowTitle)
 }
