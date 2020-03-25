@@ -156,7 +156,28 @@ func run(c *Config) error {
 
 			case *sdl.KeyboardEvent:
 				handleKeyboardEvents(eventT, window, match)
+
+			case *sdl.MouseWheelEvent:
+				// back
+				if eventT.Type == sdl.MOUSEWHEEL {
+					if eventT.Y > 0 {
+						if curFrame < match.FrameRateRounded*1 {
+							curFrame = 0
+						} else {
+							curFrame -= match.FrameRateRounded * 1
+						}
+					}
+					if eventT.Y < 0 {
+						// forward
+						if curFrame+match.FrameRateRounded*1 > len(match.States)-1 {
+							curFrame = len(match.States) - 1
+						} else {
+							curFrame += match.FrameRateRounded * 1
+						}
+					}
+				}
 			}
+
 		}
 
 		if paused {
