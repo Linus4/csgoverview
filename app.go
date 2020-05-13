@@ -102,7 +102,7 @@ func run(c *Config) error {
 	}
 	defer window.Destroy()
 
-	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_SOFTWARE)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create SDL renderer:\n%v", err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
@@ -156,7 +156,28 @@ func run(c *Config) error {
 
 			case *sdl.KeyboardEvent:
 				handleKeyboardEvents(eventT, window, match)
+
+			case *sdl.MouseWheelEvent:
+				// back
+				if eventT.Type == sdl.MOUSEWHEEL {
+					if eventT.Y > 0 {
+						if curFrame < match.FrameRateRounded*1 {
+							curFrame = 0
+						} else {
+							curFrame -= match.FrameRateRounded * 1
+						}
+					}
+					if eventT.Y < 0 {
+						// forward
+						if curFrame+match.FrameRateRounded*1 > len(match.States)-1 {
+							curFrame = len(match.States) - 1
+						} else {
+							curFrame += match.FrameRateRounded * 1
+						}
+					}
+				}
 			}
+
 		}
 
 		if paused {
@@ -335,7 +356,7 @@ func updateWindowTitle(window *sdl.Window, match *match.Match) {
 	if clanNameTs == "" {
 		clanNameTs = "Terrorists"
 	}
-	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s", clanNameCTs, cts.Score, ts.Score, clanNameTs)
+	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s - Round %d", clanNameCTs, cts.Score, ts.Score, clanNameTs, cts.Score+ts.Score+1)
 	// expensive?
 	window.SetTitle(windowTitle)
 }
