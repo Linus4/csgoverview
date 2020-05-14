@@ -309,7 +309,7 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 		weaponName := cropStringToN(kill.Weapon, 10)
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
 		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
-		drawString(renderer, headshot, colorDrakWhite, x+200, y+yOffset, font)
+		drawString(renderer, headshot, colorDarkWhite, x+200, y+yOffset, font)
 		drawString(renderer, victimName, colorVictim, x+230, y+yOffset, font)
 		yOffset += killfeedHeight
 	}
