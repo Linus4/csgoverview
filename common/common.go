@@ -45,6 +45,7 @@ type GrenadeEffect struct {
 type Kill struct {
 	KillerName string
 	KillerTeam common.Team
+	Headshot   string
 	VictimName string
 	VictimTeam common.Team
 	Weapon     string

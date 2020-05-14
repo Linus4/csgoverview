@@ -304,6 +304,7 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 			colorVictim = colorTerror
 		}
 		killerName := cropStringToN(kill.KillerName, 10)
+		headshot:= cropStringToN(kill.Headshot, 10)
 		victimName := cropStringToN(kill.VictimName, 10)
 		weaponName := cropStringToN(kill.Weapon, 10)
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)

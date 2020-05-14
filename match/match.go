@@ -171,6 +171,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 		frame := parser.CurrentFrame()
 		var killerName, victimName string
 		var killerTeam, victimTeam common.Team
+		var headshot string
 		if e.Killer == nil {
 			killerName = "World"
 			killerTeam = common.TeamUnassigned
@@ -185,9 +186,16 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 			victimName = e.Victim.Name
 			victimTeam = e.Victim.Team
 		}
+		if e.IsHeadshot == true {
+			headshot = "(HS)"
+		} else {
+			headshot = ""
+		}
+
 		kill := ocom.Kill{
 			KillerName: killerName,
 			KillerTeam: killerTeam,
+			Headshot:   headshot,
 			VictimName: victimName,
 			VictimTeam: victimTeam,
 			Weapon:     e.Weapon.Weapon.String(),
