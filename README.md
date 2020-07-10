@@ -4,7 +4,7 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 
 Package match povides a high-level parser you can use for your own demoviewer.
 
-Current version is `0.7.0`.
+Current version is `0.7.1`.
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE) [![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.me/linuswbr)
 
