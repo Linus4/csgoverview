@@ -34,7 +34,7 @@ I did not sign the application - Windows *will* prevent the app from running. [H
 
 1. Download latest version from the [releases
    page](https://github.com/Linus4/csgoverview/releases).
-1. Run `CertUtil -hashfile csgoverview_windows_v0.7.1.zip SHA256` on the command 
+1. Run `CertUtil -hashfile csgoverview_windows_v<VERSION_NUMBER>.zip SHA256` on the command 
   line and make sure the checksum matches the one provided on the corresponding
   release page.
 1. Create a folder and extract `csgoverview.exe` into it.
