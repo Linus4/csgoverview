@@ -52,6 +52,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	defer demo.Close()
 
 	parser := dem.NewParser(demo)
+	defer parser.Close()
 	header, err := parser.ParseHeader()
 	if err != nil {
 		return nil, err
