@@ -1,13 +1,16 @@
 csgoverview installation instructions
 =====================================
 
-1. Create a folder and extract csgoverview.exe into it.
-2. Create a folder called 'csgoverview' in your user directory.
+1. Run `CertUtil -hashfile csgoverview_windows_v0.7.1.zip SHA256` on the command 
+  line and make sure the checksum matches the one provided on the corresponding
+  release page.
+2. Create a folder and extract csgoverview.exe into it.
+3. Create a folder called 'csgoverview' in your user directory.
    (e.g. C:\Users\Username\csgoverview)
-3. Move the .ttf file from the .zip archive into the csgoverview folder.
-4. Download the overview images from https://github.com/zoidbergwill/csgo-overviews 
+4. Move the .ttf file from the .zip archive into the csgoverview folder.
+5. Download the overview images from https://github.com/zoidbergwill/csgo-overviews 
    and put them into the csgoverview folder.
-5. Right click a demo and select 'Open with' to open it with csgoverview.
+6. Right click a demo and select 'Open with' to open it with csgoverview.
 
 Updates
 =======
