@@ -124,13 +124,13 @@ func drawGrenade(renderer *sdl.Renderer, grenade *ocom.GrenadeProjectile, match 
 }
 
 func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
-	pos := effect.GrenadeEvent.Position
+	pos := effect.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	switch effect.GrenadeEvent.GrenadeType {
+	switch effect.GrenadeType {
 	case common.EqFlash:
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
 	case common.EqHE:

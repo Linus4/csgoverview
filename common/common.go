@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/geo/r2"
 	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
-	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 )
 
 // Phase corresponds to a phase of a round.
@@ -37,8 +36,9 @@ type OverviewState struct {
 // GrenadeEffect extends the GrenadeEvent type from the parser by the Lifetime
 // variable that is used to draw the effect.
 type GrenadeEffect struct {
-	event.GrenadeEvent
-	Lifetime int
+	Position    r2.Point
+	GrenadeType common.EquipmentType
+	Lifetime    int
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade

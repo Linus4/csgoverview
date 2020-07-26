@@ -99,8 +99,12 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *Match) {
 	for i := 0; i < lifetime; i++ {
 		effect := ocom.GrenadeEffect{
-			GrenadeEvent: e,
-			Lifetime:     i,
+			Position: r2.Point{
+				X: e.Position.X,
+				Y: e.Position.Y,
+			},
+			GrenadeType: e.GrenadeType,
+			Lifetime:    i,
 		}
 		effects, ok := match.GrenadeEffects[frame+i]
 		if ok {
