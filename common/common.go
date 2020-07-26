@@ -106,3 +106,9 @@ type Player struct {
 	HasDefuseKit       bool
 	HasBomb            bool
 }
+
+// TeamState contains information about a team in the match.
+type TeamState struct {
+	ClanName string
+	Score    byte
+}
