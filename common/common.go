@@ -6,8 +6,8 @@ import (
 
 	"github.com/golang/geo/r2"
 	"github.com/golang/geo/r3"
-	"github.com/markus-wa/demoinfocs-golang/common"
-	event "github.com/markus-wa/demoinfocs-golang/events"
+	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 )
 
 // Phase corresponds to a phase of a round.
@@ -26,7 +26,7 @@ const (
 // OverviewState contains all information that will be displayed for a single tick.
 type OverviewState struct {
 	IngameTick            int
-	Players               []common.Player
+	Players               []Player
 	Grenades              []common.GrenadeProjectile
 	Infernos              []common.Inferno
 	Bomb                  common.Bomb
@@ -90,7 +90,7 @@ type Player struct {
 	Team               common.Team
 	Position           r2.Point
 	LastAlivePosition  r2.Point
-	ViewXDirection     float32
+	ViewDirectionX     float32
 	FlashDuration      time.Duration
 	FlashTimeRemaining time.Duration
 	Inventory          []common.EquipmentType

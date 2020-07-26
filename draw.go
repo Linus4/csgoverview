@@ -9,8 +9,8 @@ import (
 
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
-	common "github.com/markus-wa/demoinfocs-golang/common"
-	meta "github.com/markus-wa/demoinfocs-golang/metadata"
+	common "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
@@ -243,7 +243,6 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		drawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
 		var nadeCounter int32
 		weapons := player.Weapons()
-		sort.Slice(weapons, func(i, j int) bool { return weapons[i].Weapon < weapons[j].Weapon })
 		for _, w := range weapons {
 			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
 				drawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)

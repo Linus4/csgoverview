@@ -6,13 +6,15 @@ import (
 	"log"
 	"math"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 
+	"github.com/golang/geo/r2"
 	ocom "github.com/linus4/csgoverview/common"
-	dem "github.com/markus-wa/demoinfocs-golang"
-	common "github.com/markus-wa/demoinfocs-golang/common"
-	event "github.com/markus-wa/demoinfocs-golang/events"
+	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
+	common "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 )
 
 const (
@@ -118,10 +120,10 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 		e.Weapon.Class() == common.EqClassUnknown {
 		return
 	}
-	isAwpShot := e.Weapon.Weapon == common.EqAWP
+	isAwpShot := e.Weapon.Type == common.EqAWP
 	shot := ocom.Shot{
-		Position:       e.Shooter.Position,
-		ViewDirectionX: e.Shooter.ViewDirectionX,
+		Position:       e.Shooter.Position(),
+		ViewDirectionX: e.Shooter.ViewDirectionX(),
 		IsAwpShot:      isAwpShot,
 	}
 
@@ -142,7 +144,7 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 	}
 }
 
-func registerEventHandlers(parser *dem.Parser, match *Match) {
+func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.RoundStart) {
 		match.RoundStarts = append(match.RoundStarts, parser.CurrentFrame())
 	})
@@ -191,7 +193,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 			KillerTeam: killerTeam,
 			VictimName: victimName,
 			VictimTeam: victimTeam,
-			Weapon:     e.Weapon.Weapon.String(),
+			Weapon:     e.Weapon.Type.String(),
 		}
 
 		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
@@ -232,7 +234,7 @@ func registerEventHandlers(parser *dem.Parser, match *Match) {
 }
 
 // parse demo and save GameStates in slice
-func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
+func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 	playbackFrames := parser.Header().PlaybackFrames
 	states := make([]ocom.OverviewState, 0, playbackFrames)
 
@@ -245,18 +247,48 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 
 		gameState := parser.GameState()
 
-		players := make([]common.Player, 0, 10)
+		players := make([]ocom.Player, 0, 10)
 
 		for _, p := range gameState.Participants().Playing() {
-			equipment := make(map[int]*common.Equipment)
-			for k := range p.RawWeapons {
-				eq := *p.RawWeapons[k]
-				equipment[k] = &eq
+			var hasBomb bool
+			inventory := make([]common.EquipmentType, 0)
+			for _, w := range p.Weapons() {
+				if w.Type == common.EqBomb {
+					hasBomb = true
+				}
+				if isWeaponOrGrenade(w.Type) {
+					inventory = append(inventory, w.Type)
+				}
 			}
-			player := *p
-			additionalPlayerInformation := *p.AdditionalPlayerInformation
-			player.AdditionalPlayerInformation = &additionalPlayerInformation
-			player.RawWeapons = equipment
+			sort.Slice(inventory, func(i, j int) bool { return inventory[i] < inventory[j] })
+			player := ocom.Player{
+				Name:      p.Name,
+				SteamID64: p.SteamID64,
+				Team:      p.Team,
+				Position: r2.Point{
+					X: p.Position().X,
+					Y: p.Position().Y,
+				},
+				LastAlivePosition: r2.Point{
+					X: p.LastAlivePosition.X,
+					Y: p.LastAlivePosition.Y,
+				},
+				ViewDirectionX:     p.ViewDirectionX(),
+				FlashDuration:      p.FlashDurationTime(),
+				FlashTimeRemaining: p.FlashDurationTimeRemaining(),
+				Inventory:          inventory,
+				Health:             int16(p.Health()),
+				Armor:              int16(p.Armor()),
+				Money:              int16(p.Money()),
+				Kills:              int16(p.Kills()),
+				Deaths:             int16(p.Deaths()),
+				Assists:            int16(p.Assists()),
+				IsAlive:            p.IsAlive(),
+				IsDefusing:         p.IsDefusing,
+				HasHelmet:          p.HasHelmet(),
+				HasDefuseKit:       p.HasDefuseKit(),
+				HasBomb:            hasBomb,
+			}
 			players = append(players, player)
 		}
 
@@ -341,4 +373,13 @@ func parseGameStates(parser *dem.Parser, match *Match) []ocom.OverviewState {
 	}
 
 	return states
+}
+
+func isWeaponOrGrenade(e common.EquipmentType) bool {
+	return e.Class() == common.EqClassSMG ||
+		e.Class() == common.EqClassHeavy ||
+		e.Class() == common.EqClassRifle ||
+		e.Class() == common.EqClassPistols ||
+		e.Class() == common.EqClassGrenade
+
 }
