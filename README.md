@@ -2,9 +2,7 @@
 
 A 2D demo replay tool for Counter Strike: Global Offensive.
 
-Package match povides a high-level parser you can use for your own demoviewer.
-
-Current version is `0.7.1`.
+Package `match` povides a high-level parser you can use for your own demoviewer.
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE) [![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.me/linuswbr)
 
@@ -35,7 +33,7 @@ I did not sign the application - Windows *will* prevent the app from running. [H
 1. Download latest version from the [releases
    page](https://github.com/Linus4/csgoverview/releases).
 1. Run `CertUtil -hashfile csgoverview_windows_v<VERSION_NUMBER>.zip SHA256` on the command 
-  line and make sure the checksum matches the one provided on the corresponding
+  line (in the directory where you downloaded the .zip file) and make sure the checksum matches the one provided on the corresponding
   release page.
 1. Create a folder and extract `csgoverview.exe` into it.
 1. Create a folder called 'csgoverview' in your user directory. (e.g.
@@ -65,9 +63,6 @@ I did not sign the application - Windows *will* prevent the app from running. [H
 
 * [gInk](https://github.com/geovens/gInk): draw on the screen (windows, free
   software)
-* [mixer.com](https://mixer.com/): streaming service without delay (FTL)
-* [join.me](https://www.join.me/): streaming service without delay and drawing on the
-  screen
 * [Applications](https://askubuntu.com/questions/4428/how-can-i-record-my-screen)
   to record your screen (free software, linux)
 * [Draw on your Screen GNOME Shell
