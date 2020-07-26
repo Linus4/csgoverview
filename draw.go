@@ -41,7 +41,7 @@ var (
 	colorAwpShot      = sdl.Color{255, 50, 0, 255}
 )
 
-func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
+func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, match *match.Match) {
 	var color sdl.Color
 	if player.Team == common.TeamTerrorists {
 		color = colorTerror
