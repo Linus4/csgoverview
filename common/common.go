@@ -41,6 +41,13 @@ type GrenadeEffect struct {
 	Lifetime int
 }
 
+// GrenadeProjectile conains all information that is used to draw a grenade
+// mid air on the map.
+type GrenadeProjectile struct {
+	Position r3.Vector
+	Type     common.EquipmentType
+}
+
 // Kill contains all information that is displayed on the killfeed.
 type Kill struct {
 	KillerName string
