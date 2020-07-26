@@ -4,6 +4,7 @@ package common
 import (
 	"time"
 
+	"github.com/golang/geo/r2"
 	"github.com/golang/geo/r3"
 	"github.com/markus-wa/demoinfocs-golang/common"
 	event "github.com/markus-wa/demoinfocs-golang/events"
@@ -68,4 +69,10 @@ type Shot struct {
 	Position       r3.Vector
 	ViewDirectionX float32
 	IsAwpShot      bool
+}
+
+// Inferno contains the hull points of the surface area of a molotov or
+// incendiary grenade.
+type Inferno struct {
+	ConvexHull2D []r2.Point
 }
