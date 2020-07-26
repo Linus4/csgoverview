@@ -27,7 +27,7 @@ const (
 type OverviewState struct {
 	IngameTick            int
 	Players               []Player
-	Grenades              []common.GrenadeProjectile
+	Grenades              []GrenadeProjectile
 	Infernos              []common.Inferno
 	Bomb                  common.Bomb
 	TeamCounterTerrorists TeamState
@@ -45,7 +45,7 @@ type GrenadeEffect struct {
 // GrenadeProjectile conains all information that is used to draw a grenade
 // mid air on the map.
 type GrenadeProjectile struct {
-	Position r3.Vector
+	Position r2.Point
 	Type     common.EquipmentType
 }
 

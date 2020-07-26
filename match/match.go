@@ -295,10 +295,17 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 			players = append(players, player)
 		}
 
-		grenades := make([]common.GrenadeProjectile, 0)
+		grenades := make([]ocom.GrenadeProjectile, 0)
 
 		for _, grenade := range gameState.GrenadeProjectiles() {
-			grenades = append(grenades, *grenade)
+			g := ocom.GrenadeProjectile{
+				Position: r2.Point{
+					X: grenade.Position().X,
+					Y: grenade.Position().Y,
+				},
+				Type: grenade.WeaponInstance.Type,
+			}
+			grenades = append(grenades, g)
 		}
 
 		infernos := make([]common.Inferno, 0)

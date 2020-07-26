@@ -97,7 +97,7 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 	}
 }
 
-func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
+func drawGrenade(renderer *sdl.Renderer, grenade *ocom.GrenadeProjectile, match *match.Match) {
 	pos := grenade.Position
 
 	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -105,7 +105,7 @@ func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var color sdl.Color
 
-	switch grenade.Weapon {
+	switch grenade.Type {
 	case common.EqDecoy:
 		color = colorEqDecoy
 	case common.EqMolotov:
