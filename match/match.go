@@ -306,8 +306,14 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 
 		bomb := *gameState.Bomb()
 
-		cts := *gameState.TeamCounterTerrorists()
-		ts := *gameState.TeamTerrorists()
+		cts := ocom.TeamState{
+			ClanName: gameState.TeamCounterTerrorists().ClanName(),
+			Score:    byte(gameState.TeamCounterTerrorists().Score()),
+		}
+		ts := ocom.TeamState{
+			ClanName: gameState.TeamTerrorists().ClanName(),
+			Score:    byte(gameState.TeamTerrorists().Score()),
+		}
 
 		var timer ocom.Timer
 

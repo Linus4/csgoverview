@@ -30,8 +30,8 @@ type OverviewState struct {
 	Grenades              []common.GrenadeProjectile
 	Infernos              []common.Inferno
 	Bomb                  common.Bomb
-	TeamCounterTerrorists common.TeamState
-	TeamTerrorists        common.TeamState
+	TeamCounterTerrorists TeamState
+	TeamTerrorists        TeamState
 	Timer                 Timer
 }
 
