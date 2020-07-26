@@ -76,3 +76,8 @@ type Shot struct {
 type Inferno struct {
 	ConvexHull2D []r2.Point
 }
+
+type Bomb struct {
+	Position       r2.Point
+	IsBeingCarried bool
+}
