@@ -257,6 +257,9 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 					hasBomb = true
 				}
 				if isWeaponOrGrenade(w.Type) {
+					if w.Type == common.EqFlash && w.AmmoReserve() > 0 {
+						inventory = append(inventory, w.Type)
+					}
 					inventory = append(inventory, w.Type)
 				}
 			}

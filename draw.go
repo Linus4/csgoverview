@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"sort"
-	"time"
 
 	ocom "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
@@ -49,7 +48,7 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 		color = colorCounter
 	}
 
-	if player.IsAlive() {
+	if player.IsAlive {
 		pos := player.Position
 
 		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
@@ -65,20 +64,19 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorDarkWhite)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
 
-		if player.FlashDuration > 0.5 {
-			timeSinceFlash := time.Duration(float64(match.States[curFrame].IngameTick-player.FlashTick) / match.TickRate * float64(time.Second))
+		if player.FlashDuration.Seconds() > 0.5 {
+			//timeSinceFlash := time.Duration(float64(match.States[curFrame].IngameTick-player.FlashTick) / match.TickRate * float64(time.Second))
 			// 2+ weird offset because player.FlashDuration is imprecise
-			remaining := time.Duration((2+player.FlashDuration)*float32(time.Second)) - timeSinceFlash
+			//remaining := time.Duration((2+player.FlashDuration)*float32(time.Second)) - timeSinceFlash
+			remaining := player.FlashTimeRemaining
 			// 2+ weird offset because player.FlashDuration is imprecise
 			colorFlashEffect.A = uint8((remaining.Seconds() * 255) / (2 + 5.5))
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 
-		for _, w := range player.Weapons() {
-			if w.Weapon == common.EqBomb {
-				gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
-				gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
-			}
+		if player.HasBomb {
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
 		}
 
 		if player.IsDefusing {
@@ -203,7 +201,7 @@ func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 }
 
 func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
-	var cts, ts []common.Player
+	var cts, ts []ocom.Player
 	for _, player := range match.States[curFrame].Players {
 		if player.Team == common.TeamCounterTerrorists {
 			cts = append(cts, player)
@@ -220,18 +218,18 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	drawTimer(renderer, match.States[curFrame].Timer, 0, mapYOffset+600, font)
 }
 
-func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
+func drawInfobar(renderer *sdl.Renderer, players []ocom.Player, x, y int32, color sdl.Color, font *ttf.Font) {
 	var yOffset int32
 	for _, player := range players {
-		if player.IsAlive() {
-			gfx.BoxColor(renderer, x+int32(player.Hp)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
+		if player.IsAlive {
+			gfx.BoxColor(renderer, x+int32(player.Health)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
-		if !player.IsAlive() {
+		if !player.IsAlive {
 			color.A = 150
 		}
 		drawString(renderer, cropStringToN(player.Name, 20), color, x+85, yOffset+10, font)
 		color.A = 255
-		drawString(renderer, fmt.Sprintf("%v", player.Hp), color, x+5, yOffset+10, font)
+		drawString(renderer, fmt.Sprintf("%v", player.Health), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {
 			drawString(renderer, "H", color, x+35, yOffset+10, font)
 		} else if player.Armor > 0 {
@@ -242,13 +240,13 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		}
 		drawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
 		var nadeCounter int32
-		weapons := player.Weapons()
-		for _, w := range weapons {
+		inventory := player.Inventory
+		for _, w := range inventory {
 			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
-				drawString(renderer, w.Weapon.String(), color, x+150, yOffset+25, font)
+				drawString(renderer, w.String(), color, x+150, yOffset+25, font)
 			}
 			if w.Class() == common.EqClassPistols {
-				drawString(renderer, w.Weapon.String(), color, x+150, yOffset+40, font)
+				drawString(renderer, w.String(), color, x+150, yOffset+40, font)
 			}
 			if w.Class() == common.EqClassGrenade {
 				var nadeColor sdl.Color
@@ -267,19 +265,14 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 					nadeColor = colorEqHE
 				}
 
-				for i := 0; i < player.AmmoLeft[w.AmmoType]; i++ {
-					gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
-					nadeCounter++
-				}
+				gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
+				nadeCounter++
 			}
-			if w.Class() == common.EqClassEquipment {
-				if w.Weapon == common.EqBomb {
-					gfx.BoxColor(renderer, x+50, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
-				}
+			if player.HasBomb {
+				gfx.BoxColor(renderer, x+50, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
 			}
 		}
-		addInfo := player.AdditionalPlayerInformation
-		kdaInfo := fmt.Sprintf("%v / %v / %v", addInfo.Kills, addInfo.Assists, addInfo.Deaths)
+		kdaInfo := fmt.Sprintf("%v / %v / %v", player.Kills, player.Assists, player.Deaths)
 		drawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
 
 		yOffset += infobarElementHeight
