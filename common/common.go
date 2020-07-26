@@ -28,7 +28,7 @@ type OverviewState struct {
 	IngameTick            int
 	Players               []Player
 	Grenades              []GrenadeProjectile
-	Infernos              []common.Inferno
+	Infernos              []Inferno
 	Bomb                  common.Bomb
 	TeamCounterTerrorists TeamState
 	TeamTerrorists        TeamState

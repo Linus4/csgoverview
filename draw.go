@@ -147,8 +147,8 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	}
 }
 
-func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
-	hull := inferno.ConvexHull2D()
+func drawInferno(renderer *sdl.Renderer, inferno *ocom.Inferno, match *match.Match) {
+	hull := inferno.ConvexHull2D
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
@@ -250,7 +250,7 @@ func drawInfobar(renderer *sdl.Renderer, players []ocom.Player, x, y int32, colo
 			}
 			if w.Class() == common.EqClassGrenade {
 				var nadeColor sdl.Color
-				switch w.Weapon {
+				switch w {
 				case common.EqDecoy:
 					nadeColor = colorEqDecoy
 				case common.EqMolotov:

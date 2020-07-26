@@ -308,10 +308,13 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 			grenades = append(grenades, g)
 		}
 
-		infernos := make([]common.Inferno, 0)
+		infernos := make([]ocom.Inferno, 0)
 
 		for _, inferno := range gameState.Infernos() {
-			infernos = append(infernos, *inferno)
+			i := ocom.Inferno{
+				ConvexHull2D: inferno.Fires().Active().ConvexHull2D(),
+			}
+			infernos = append(infernos, i)
 		}
 
 		bomb := *gameState.Bomb()
