@@ -77,7 +77,32 @@ type Inferno struct {
 	ConvexHull2D []r2.Point
 }
 
+// Bomb contains all relevant information about the C4.
 type Bomb struct {
 	Position       r2.Point
 	IsBeingCarried bool
+}
+
+// Player contains all relevant information about a player in the match.
+type Player struct {
+	Name               string
+	SteamID64          uint64
+	Team               common.Team
+	Position           r2.Point
+	LastAlivePosition  r2.Point
+	ViewXDirection     float32
+	FlashDuration      time.Duration
+	FlashTimeRemaining time.Duration
+	Inventory          []common.EquipmentType
+	Health             int16
+	Armor              int16
+	Money              int16
+	Kills              int16
+	Deaths             int16
+	Assists            int16
+	IsAlive            bool
+	IsDefusing         bool
+	HasHelmet          bool
+	HasDefuseKit       bool
+	HasBomb            bool
 }
