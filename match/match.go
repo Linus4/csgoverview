@@ -317,7 +317,19 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 			infernos = append(infernos, i)
 		}
 
-		bomb := *gameState.Bomb()
+		var isBeingCarried bool
+		if gameState.Bomb().Carrier != nil {
+			isBeingCarried = true
+		} else {
+			isBeingCarried = false
+		}
+		bomb := ocom.Bomb{
+			Position: r2.Point{
+				X: gameState.Bomb().Position().X,
+				Y: gameState.Bomb().Position().Y,
+			},
+			IsBeingCarried: isBeingCarried,
+		}
 
 		cts := ocom.TeamState{
 			ClanName: gameState.TeamCounterTerrorists().ClanName(),

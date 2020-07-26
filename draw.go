@@ -164,9 +164,9 @@ func drawInferno(renderer *sdl.Renderer, inferno *ocom.Inferno, match *match.Mat
 	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
 }
 
-func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
-	pos := bomb.Position()
-	if bomb.Carrier != nil {
+func drawBomb(renderer *sdl.Renderer, bomb *ocom.Bomb, match *match.Match) {
+	pos := bomb.Position
+	if bomb.IsBeingCarried {
 		return
 	}
 

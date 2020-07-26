@@ -29,7 +29,7 @@ type OverviewState struct {
 	Players               []Player
 	Grenades              []GrenadeProjectile
 	Infernos              []Inferno
-	Bomb                  common.Bomb
+	Bomb                  Bomb
 	TeamCounterTerrorists TeamState
 	TeamTerrorists        TeamState
 	Timer                 Timer
