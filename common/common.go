@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/geo/r2"
-	"github.com/golang/geo/r3"
 	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 )
@@ -66,7 +65,7 @@ type Timer struct {
 
 // Shot contains information about a shot from a weapon.
 type Shot struct {
-	Position       r3.Vector
+	Position       r2.Point
 	ViewDirectionX float32
 	IsAwpShot      bool
 }

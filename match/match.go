@@ -122,7 +122,10 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 	}
 	isAwpShot := e.Weapon.Type == common.EqAWP
 	shot := ocom.Shot{
-		Position:       e.Shooter.Position(),
+		Position: r2.Point{
+			X: e.Shooter.Position().X,
+			Y: e.Shooter.Position().Y,
+		},
 		ViewDirectionX: e.Shooter.ViewDirectionX(),
 		IsAwpShot:      isAwpShot,
 	}
