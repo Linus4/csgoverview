@@ -329,7 +329,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			for _, point := range r2Points {
 				commonPoint := common.Point{
 					X: float32(point.X),
-					Y: float32(point.X),
+					Y: float32(point.Y),
 				}
 				commonPoints = append(commonPoints, commonPoint)
 			}
