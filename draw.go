@@ -15,10 +15,11 @@ import (
 )
 
 const (
-	radiusPlayer   int32   = 10
-	radiusSmoke    float64 = 25
-	killfeedHeight int32   = 15
-	shotLength     float64 = 1000
+	radiusPlayer      int32   = 10
+	radiusPlayerFloat float64 = float64(radiusPlayer)
+	radiusSmoke       float64 = 25
+	killfeedHeight    int32   = 15
+	shotLength        float64 = 1000
 )
 
 var (
@@ -329,8 +330,8 @@ func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	}
 
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
-	scaledX += float32(math.Cos(float64(viewAngleRadian)) * float64(radiusPlayer))
-	scaledY += float32(math.Sin(float64(viewAngleRadian)) * float64(radiusPlayer))
+	scaledX += float32(math.Cos(float64(viewAngleRadian)) * radiusPlayerFloat)
+	scaledY += float32(math.Sin(float64(viewAngleRadian)) * radiusPlayerFloat)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
