@@ -128,9 +128,9 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, mat
 
 	switch effect.GrenadeType {
 	case demoinfo.EqFlash:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorEqFlash)
 	case demoinfo.EqHE:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorEqHE)
 	case demoinfo.EqSmoke:
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
 		scaledRadiusSmoke := int32(radiusSmoke * 4.9 / float64(match.MapScale))
@@ -139,7 +139,7 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, mat
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
 			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
 		}
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, int32(270+effect.Lifetime*360/match.SmokeEffectLifetime), 630, colorDarkWhite)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorDarkWhite)
 	}
 }
 

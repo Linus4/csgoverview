@@ -37,7 +37,7 @@ type OverviewState struct {
 type GrenadeEffect struct {
 	Position    Point
 	GrenadeType demoinfo.EquipmentType
-	Lifetime    int
+	Lifetime    int32
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade

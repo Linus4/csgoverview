@@ -18,10 +18,10 @@ import (
 )
 
 const (
-	flashEffectLifetime int = 10
-	heEffectLifetime    int = 10
-	killfeedLifetime    int = 10
-	c4timer             int = 40
+	flashEffectLifetime int32 = 10
+	heEffectLifetime    int32 = 10
+	killfeedLifetime    int   = 10
+	c4timer             int   = 40
 )
 
 // Match contains general information about the demo and all relevant, parsed
@@ -37,7 +37,7 @@ type Match struct {
 	TickRate             float64
 	FrameRateRounded     int
 	States               []common.OverviewState
-	SmokeEffectLifetime  int
+	SmokeEffectLifetime  int32
 	Killfeed             map[int][]common.Kill
 	Shots                map[int][]common.Shot
 	currentPhase         common.Phase
@@ -95,7 +95,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
 	}
 	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
-	match.SmokeEffectLifetime = int(18 * match.FrameRate)
+	match.SmokeEffectLifetime = int32(18 * match.FrameRate)
 
 	registerEventHandlers(parser, match)
 	match.States = parseGameStates(parser, match)
@@ -103,15 +103,16 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	return match, nil
 }
 
-func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *Match) {
-	for i := 0; i < lifetime; i++ {
+func grenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent, match *Match) {
+	effectLifetime := int(lifetime)
+	for i := 0; i < effectLifetime; i++ {
 		effect := common.GrenadeEffect{
 			Position: common.Point{
 				X: float32(e.Position.X),
 				Y: float32(e.Position.Y),
 			},
 			GrenadeType: e.GrenadeType,
-			Lifetime:    i,
+			Lifetime:    int32(i),
 		}
 		effects, ok := match.GrenadeEffects[frame+i]
 		if ok {
