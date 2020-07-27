@@ -323,20 +323,20 @@ func drawTimer(renderer *sdl.Renderer, timer common.Timer, x, y int32, font *ttf
 func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	pos := shot.Position
 	viewAngleDegrees := -shot.ViewDirectionX // negated because of sdl
-	viewAngleRadian := viewAngleDegrees * math.Pi / 180
+	viewAngleRadian := float64(viewAngleDegrees * math.Pi / 180)
 	color := colorDarkWhite
 	if shot.IsAwpShot {
 		color = colorAwpShot
 	}
 
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
-	scaledX += float32(math.Cos(float64(viewAngleRadian)) * radiusPlayerFloat)
-	scaledY += float32(math.Sin(float64(viewAngleRadian)) * radiusPlayerFloat)
+	scaledX += float32(math.Cos(viewAngleRadian) * radiusPlayerFloat)
+	scaledY += float32(math.Sin(viewAngleRadian) * radiusPlayerFloat)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	targetX := int32(scaledXInt) + int32(math.Cos(float64(viewAngleRadian))*shotLength/float64(match.MapScale))
-	targetY := int32(scaledYInt) + int32(math.Sin(float64(viewAngleRadian))*shotLength/float64(match.MapScale))
+	targetX := int32(scaledXInt) + int32(math.Cos(viewAngleRadian)*shotLength/float64(match.MapScale))
+	targetY := int32(scaledYInt) + int32(math.Sin(viewAngleRadian)*shotLength/float64(match.MapScale))
 
 	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
 }
