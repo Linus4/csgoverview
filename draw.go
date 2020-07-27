@@ -16,7 +16,7 @@ import (
 
 const (
 	radiusPlayer   int32   = 10
-	radiusSmoke    int32   = 25
+	radiusSmoke    float64 = 25
 	killfeedHeight int32   = 15
 	shotLength     float64 = 1000
 )
@@ -132,7 +132,7 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, mat
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
 	case demoinfo.EqSmoke:
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
-		scaledRadiusSmoke := int32(float64(radiusSmoke) * 4.9 / float64(match.MapScale))
+		scaledRadiusSmoke := int32(radiusSmoke * 4.9 / float64(match.MapScale))
 		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorSmoke)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
