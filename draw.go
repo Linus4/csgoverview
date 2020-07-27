@@ -6,10 +6,9 @@ import (
 	"math"
 	"sort"
 
-	ocom "github.com/linus4/csgoverview/common"
+	common "github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
-	common "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
-	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
@@ -40,9 +39,9 @@ var (
 	colorAwpShot      = sdl.Color{255, 50, 0, 255}
 )
 
-func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, match *match.Match) {
+func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
 	var color sdl.Color
-	if player.Team == common.TeamTerrorists {
+	if player.Team == demoinfo.TeamTerrorists {
 		color = colorTerror
 	} else {
 		color = colorCounter
@@ -51,7 +50,7 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 	if player.IsAlive {
 		pos := player.Position
 
-		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+		scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
@@ -65,11 +64,7 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
 
 		if player.FlashDuration.Seconds() > 0.5 {
-			//timeSinceFlash := time.Duration(float64(match.States[curFrame].IngameTick-player.FlashTick) / match.TickRate * float64(time.Second))
-			// 2+ weird offset because player.FlashDuration is imprecise
-			//remaining := time.Duration((2+player.FlashDuration)*float32(time.Second)) - timeSinceFlash
 			remaining := player.FlashTimeRemaining
-			// 2+ weird offset because player.FlashDuration is imprecise
 			colorFlashEffect.A = uint8((remaining.Seconds() * 255) / (2 + 5.5))
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
@@ -87,7 +82,7 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 	} else {
 		pos := player.LastAlivePosition
 
-		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+		scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
@@ -97,47 +92,47 @@ func drawPlayer(renderer *sdl.Renderer, player *ocom.Player, font *ttf.Font, mat
 	}
 }
 
-func drawGrenade(renderer *sdl.Renderer, grenade *ocom.GrenadeProjectile, match *match.Match) {
+func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
 	pos := grenade.Position
 
-	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var color sdl.Color
 
 	switch grenade.Type {
-	case common.EqDecoy:
+	case demoinfo.EqDecoy:
 		color = colorEqDecoy
-	case common.EqMolotov:
+	case demoinfo.EqMolotov:
 		color = colorEqMolotov
-	case common.EqIncendiary:
+	case demoinfo.EqIncendiary:
 		color = colorEqIncendiary
-	case common.EqFlash:
+	case demoinfo.EqFlash:
 		color = colorEqFlash
-	case common.EqSmoke:
+	case demoinfo.EqSmoke:
 		color = colorEqSmoke
-	case common.EqHE:
+	case demoinfo.EqHE:
 		color = colorEqHE
 	}
 
 	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
 
-func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match *match.Match) {
+func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, match *match.Match) {
 	pos := effect.Position
 
-	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
 	switch effect.GrenadeType {
-	case common.EqFlash:
+	case demoinfo.EqFlash:
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqFlash)
-	case common.EqHE:
+	case demoinfo.EqHE:
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, int32(effect.Lifetime), colorEqHE)
-	case common.EqSmoke:
+	case demoinfo.EqSmoke:
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
-		scaledRadiusSmoke := int32(float64(radiusSmoke) * 4.9 / meta.MapNameToMap[match.MapName].Scale)
+		scaledRadiusSmoke := int32(float64(radiusSmoke) * 4.9 / float64(match.MapScale))
 		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorSmoke)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
@@ -147,13 +142,13 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *ocom.GrenadeEffect, match
 	}
 }
 
-func drawInferno(renderer *sdl.Renderer, inferno *ocom.Inferno, match *match.Match) {
+func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
 	hull := inferno.ConvexHull2D
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
 	for _, v := range hull {
-		scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(v.X, v.Y)
+		scaledX, scaledY := match.TranslateScale(v.X, v.Y)
 		scaledXInt := int16(scaledX) + int16(mapXOffset)
 		scaledYInt := int16(scaledY) + int16(mapYOffset)
 		xCoordinates = append(xCoordinates, scaledXInt)
@@ -164,13 +159,13 @@ func drawInferno(renderer *sdl.Renderer, inferno *ocom.Inferno, match *match.Mat
 	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
 }
 
-func drawBomb(renderer *sdl.Renderer, bomb *ocom.Bomb, match *match.Match) {
+func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	pos := bomb.Position
 	if bomb.IsBeingCarried {
 		return
 	}
 
-	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
@@ -201,9 +196,9 @@ func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 }
 
 func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
-	var cts, ts []ocom.Player
+	var cts, ts []common.Player
 	for _, player := range match.States[curFrame].Players {
-		if player.Team == common.TeamCounterTerrorists {
+		if player.Team == demoinfo.TeamCounterTerrorists {
 			cts = append(cts, player)
 
 		} else {
@@ -218,7 +213,7 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	drawTimer(renderer, match.States[curFrame].Timer, 0, mapYOffset+600, font)
 }
 
-func drawInfobar(renderer *sdl.Renderer, players []ocom.Player, x, y int32, color sdl.Color, font *ttf.Font) {
+func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
 	var yOffset int32
 	for _, player := range players {
 		if player.IsAlive {
@@ -242,26 +237,26 @@ func drawInfobar(renderer *sdl.Renderer, players []ocom.Player, x, y int32, colo
 		var nadeCounter int32
 		inventory := player.Inventory
 		for _, w := range inventory {
-			if w.Class() == common.EqClassSMG || w.Class() == common.EqClassHeavy || w.Class() == common.EqClassRifle {
+			if w.Class() == demoinfo.EqClassSMG || w.Class() == demoinfo.EqClassHeavy || w.Class() == demoinfo.EqClassRifle {
 				drawString(renderer, w.String(), color, x+150, yOffset+25, font)
 			}
-			if w.Class() == common.EqClassPistols {
+			if w.Class() == demoinfo.EqClassPistols {
 				drawString(renderer, w.String(), color, x+150, yOffset+40, font)
 			}
-			if w.Class() == common.EqClassGrenade {
+			if w.Class() == demoinfo.EqClassGrenade {
 				var nadeColor sdl.Color
 				switch w {
-				case common.EqDecoy:
+				case demoinfo.EqDecoy:
 					nadeColor = colorEqDecoy
-				case common.EqMolotov:
+				case demoinfo.EqMolotov:
 					nadeColor = colorEqMolotov
-				case common.EqIncendiary:
+				case demoinfo.EqIncendiary:
 					nadeColor = colorEqIncendiary
-				case common.EqFlash:
+				case demoinfo.EqFlash:
 					nadeColor = colorEqFlash
-				case common.EqSmoke:
+				case demoinfo.EqSmoke:
 					nadeColor = colorEqSmoke
-				case common.EqHE:
+				case demoinfo.EqHE:
 					nadeColor = colorEqHE
 				}
 
@@ -279,18 +274,18 @@ func drawInfobar(renderer *sdl.Renderer, players []ocom.Player, x, y int32, colo
 	}
 }
 
-func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font *ttf.Font) {
+func drawKillfeed(renderer *sdl.Renderer, killfeed []common.Kill, x, y int32, font *ttf.Font) {
 	var yOffset int32
 	for _, kill := range killfeed {
 		var colorKiller, colorVictim sdl.Color
-		if kill.KillerTeam == common.TeamCounterTerrorists {
+		if kill.KillerTeam == demoinfo.TeamCounterTerrorists {
 			colorKiller = colorCounter
-		} else if kill.KillerTeam == common.TeamTerrorists {
+		} else if kill.KillerTeam == demoinfo.TeamTerrorists {
 			colorKiller = colorTerror
 		} else {
 			colorKiller = colorDarkWhite
 		}
-		if kill.VictimTeam == common.TeamCounterTerrorists {
+		if kill.VictimTeam == demoinfo.TeamCounterTerrorists {
 			colorVictim = colorCounter
 		} else {
 			colorVictim = colorTerror
@@ -305,17 +300,17 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []ocom.Kill, x, y int32, font
 	}
 }
 
-func drawTimer(renderer *sdl.Renderer, timer ocom.Timer, x, y int32, font *ttf.Font) {
-	if timer.Phase == ocom.PhaseWarmup {
+func drawTimer(renderer *sdl.Renderer, timer common.Timer, x, y int32, font *ttf.Font) {
+	if timer.Phase == common.PhaseWarmup {
 		drawString(renderer, "Warmup", colorDarkWhite, x+5, y, font)
 	} else {
 		minutes := int(timer.TimeRemaining.Minutes())
 		seconds := int(timer.TimeRemaining.Seconds()) - 60*minutes
 		timeString := fmt.Sprintf("%d:%2d", minutes, seconds)
 		var color sdl.Color
-		if timer.Phase == ocom.PhasePlanted {
+		if timer.Phase == common.PhasePlanted {
 			color = colorBomb
-		} else if timer.Phase == ocom.PhaseRestart {
+		} else if timer.Phase == common.PhaseRestart {
 			color = colorEqHE
 		} else {
 			color = colorDarkWhite
@@ -324,7 +319,7 @@ func drawTimer(renderer *sdl.Renderer, timer ocom.Timer, x, y int32, font *ttf.F
 	}
 }
 
-func drawShot(renderer *sdl.Renderer, shot *ocom.Shot, match *match.Match) {
+func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	pos := shot.Position
 	viewAngleDegrees := -shot.ViewDirectionX // negated because of sdl
 	viewAngleRadian := viewAngleDegrees * math.Pi / 180
@@ -333,14 +328,14 @@ func drawShot(renderer *sdl.Renderer, shot *ocom.Shot, match *match.Match) {
 		color = colorAwpShot
 	}
 
-	scaledX, scaledY := meta.MapNameToMap[match.MapName].TranslateScale(pos.X, pos.Y)
-	scaledX += math.Cos(float64(viewAngleRadian)) * float64(radiusPlayer)
-	scaledY += math.Sin(float64(viewAngleRadian)) * float64(radiusPlayer)
+	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+	scaledX += float32(math.Cos(float64(viewAngleRadian)) * float64(radiusPlayer))
+	scaledY += float32(math.Sin(float64(viewAngleRadian)) * float64(radiusPlayer))
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	targetX := scaledXInt + int32(math.Cos(float64(viewAngleRadian))*shotLength/meta.MapNameToMap[match.MapName].Scale)
-	targetY := scaledYInt + int32(math.Sin(float64(viewAngleRadian))*shotLength/meta.MapNameToMap[match.MapName].Scale)
+	targetX := int32(scaledXInt) + int32(math.Cos(float64(viewAngleRadian))*shotLength/float64(match.MapScale))
+	targetY := int32(scaledYInt) + int32(math.Sin(float64(viewAngleRadian))*shotLength/float64(match.MapScale))
 
 	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
 }

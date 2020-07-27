@@ -4,8 +4,7 @@ package common
 import (
 	"time"
 
-	"github.com/golang/geo/r2"
-	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 )
 
 // Phase corresponds to a phase of a round.
@@ -36,24 +35,24 @@ type OverviewState struct {
 // GrenadeEffect extends the GrenadeEvent type from the parser by the Lifetime
 // variable that is used to draw the effect.
 type GrenadeEffect struct {
-	Position    r2.Point
-	GrenadeType common.EquipmentType
+	Position    Point
+	GrenadeType demoinfo.EquipmentType
 	Lifetime    int
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade
 // mid air on the map.
 type GrenadeProjectile struct {
-	Position r2.Point
-	Type     common.EquipmentType
+	Position Point
+	Type     demoinfo.EquipmentType
 }
 
 // Kill contains all information that is displayed on the killfeed.
 type Kill struct {
 	KillerName string
-	KillerTeam common.Team
+	KillerTeam demoinfo.Team
 	VictimName string
-	VictimTeam common.Team
+	VictimTeam demoinfo.Team
 	Weapon     string
 }
 
@@ -65,7 +64,7 @@ type Timer struct {
 
 // Shot contains information about a shot from a weapon.
 type Shot struct {
-	Position       r2.Point
+	Position       Point
 	ViewDirectionX float32
 	IsAwpShot      bool
 }
@@ -73,12 +72,12 @@ type Shot struct {
 // Inferno contains the hull points of the surface area of a molotov or
 // incendiary grenade.
 type Inferno struct {
-	ConvexHull2D []r2.Point
+	ConvexHull2D []Point
 }
 
 // Bomb contains all relevant information about the C4.
 type Bomb struct {
-	Position       r2.Point
+	Position       Point
 	IsBeingCarried bool
 }
 
@@ -86,13 +85,13 @@ type Bomb struct {
 type Player struct {
 	Name               string
 	SteamID64          uint64
-	Team               common.Team
-	Position           r2.Point
-	LastAlivePosition  r2.Point
+	Team               demoinfo.Team
+	Position           Point
+	LastAlivePosition  Point
 	ViewDirectionX     float32
 	FlashDuration      time.Duration
 	FlashTimeRemaining time.Duration
-	Inventory          []common.EquipmentType
+	Inventory          []demoinfo.EquipmentType
 	Health             int16
 	Armor              int16
 	Money              int16
@@ -110,4 +109,10 @@ type Player struct {
 type TeamState struct {
 	ClanName string
 	Score    byte
+}
+
+// Point contains the coordinates for a point on the map.
+type Point struct {
+	X float32
+	Y float32
 }

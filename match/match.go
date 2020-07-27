@@ -10,11 +10,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/golang/geo/r2"
-	ocom "github.com/linus4/csgoverview/common"
+	common "github.com/linus4/csgoverview/common"
 	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
-	common "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
+	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
 )
 
 const (
@@ -28,17 +28,19 @@ const (
 // data from every tick of the demo that will be displayed.
 type Match struct {
 	MapName              string
+	MapPZero             common.Point
+	MapScale             float32
 	HalfStarts           []int
 	RoundStarts          []int
-	GrenadeEffects       map[int][]ocom.GrenadeEffect
+	GrenadeEffects       map[int][]common.GrenadeEffect
 	FrameRate            float64
 	TickRate             float64
 	FrameRateRounded     int
-	States               []ocom.OverviewState
+	States               []common.OverviewState
 	SmokeEffectLifetime  int
-	Killfeed             map[int][]ocom.Kill
-	Shots                map[int][]ocom.Shot
-	currentPhase         ocom.Phase
+	Killfeed             map[int][]common.Kill
+	Shots                map[int][]common.Shot
+	currentPhase         common.Phase
 	latestTimerEventTime time.Duration
 }
 
@@ -63,9 +65,9 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	match := &Match{
 		HalfStarts:     make([]int, 0),
 		RoundStarts:    make([]int, 0),
-		GrenadeEffects: make(map[int][]ocom.GrenadeEffect),
-		Killfeed:       make(map[int][]ocom.Kill),
-		Shots:          make(map[int][]ocom.Shot),
+		GrenadeEffects: make(map[int][]common.GrenadeEffect),
+		Killfeed:       make(map[int][]common.Kill),
+		Shots:          make(map[int][]common.Shot),
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -88,6 +90,11 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	match.MapName = header.MapName
+	match.MapPZero = common.Point{
+		X: float32(meta.MapNameToMap[match.MapName].PZero.X),
+		Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
+	}
+	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
 	match.SmokeEffectLifetime = int(18 * match.FrameRate)
 
 	registerEventHandlers(parser, match)
@@ -98,10 +105,10 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 
 func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *Match) {
 	for i := 0; i < lifetime; i++ {
-		effect := ocom.GrenadeEffect{
-			Position: r2.Point{
-				X: e.Position.X,
-				Y: e.Position.Y,
+		effect := common.GrenadeEffect{
+			Position: common.Point{
+				X: float32(e.Position.X),
+				Y: float32(e.Position.Y),
 			},
 			GrenadeType: e.GrenadeType,
 			Lifetime:    i,
@@ -110,7 +117,7 @@ func grenadeEventHandler(lifetime int, frame int, e event.GrenadeEvent, match *M
 		if ok {
 			match.GrenadeEffects[frame+i] = append(effects, effect)
 		} else {
-			match.GrenadeEffects[frame+i] = []ocom.GrenadeEffect{effect}
+			match.GrenadeEffects[frame+i] = []common.GrenadeEffect{effect}
 		}
 	}
 }
@@ -119,16 +126,16 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 	if e.Shooter == nil {
 		return
 	}
-	if e.Weapon.Class() == common.EqClassEquipment ||
-		e.Weapon.Class() == common.EqClassGrenade ||
-		e.Weapon.Class() == common.EqClassUnknown {
+	if e.Weapon.Class() == demoinfo.EqClassEquipment ||
+		e.Weapon.Class() == demoinfo.EqClassGrenade ||
+		e.Weapon.Class() == demoinfo.EqClassUnknown {
 		return
 	}
-	isAwpShot := e.Weapon.Type == common.EqAWP
-	shot := ocom.Shot{
-		Position: r2.Point{
-			X: e.Shooter.Position().X,
-			Y: e.Shooter.Position().Y,
+	isAwpShot := e.Weapon.Type == demoinfo.EqAWP
+	shot := common.Shot{
+		Position: common.Point{
+			X: float32(e.Shooter.Position().X),
+			Y: float32(e.Shooter.Position().Y),
 		},
 		ViewDirectionX: e.Shooter.ViewDirectionX(),
 		IsAwpShot:      isAwpShot,
@@ -146,7 +153,7 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 		if ok {
 			match.Shots[frame+i] = append(shots, shot)
 		} else {
-			match.Shots[frame+i] = []ocom.Shot{shot}
+			match.Shots[frame+i] = []common.Shot{shot}
 		}
 	}
 }
@@ -180,22 +187,22 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(e event.Kill) {
 		frame := parser.CurrentFrame()
 		var killerName, victimName string
-		var killerTeam, victimTeam common.Team
+		var killerTeam, victimTeam demoinfo.Team
 		if e.Killer == nil {
 			killerName = "World"
-			killerTeam = common.TeamUnassigned
+			killerTeam = demoinfo.TeamUnassigned
 		} else {
 			killerName = e.Killer.Name
 			killerTeam = e.Killer.Team
 		}
 		if e.Victim == nil {
 			victimName = "World"
-			victimTeam = common.TeamUnassigned
+			victimTeam = demoinfo.TeamUnassigned
 		} else {
 			victimName = e.Victim.Name
 			victimTeam = e.Victim.Team
 		}
-		kill := ocom.Kill{
+		kill := common.Kill{
 			KillerName: killerName,
 			KillerTeam: killerTeam,
 			VictimName: victimName,
@@ -211,28 +218,28 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 				}
 				match.Killfeed[frame+i] = append(kills, kill)
 			} else {
-				match.Killfeed[frame+i] = []ocom.Kill{kill}
+				match.Killfeed[frame+i] = []common.Kill{kill}
 			}
 		}
 	})
 	parser.RegisterEventHandler(func(e event.RoundStart) {
-		match.currentPhase = ocom.PhaseFreezetime
+		match.currentPhase = common.PhaseFreezetime
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundFreezetimeEnd) {
-		match.currentPhase = ocom.PhaseRegular
+		match.currentPhase = common.PhaseRegular
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.BombPlanted) {
-		match.currentPhase = ocom.PhasePlanted
+		match.currentPhase = common.PhasePlanted
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.RoundEnd) {
-		match.currentPhase = ocom.PhaseRestart
+		match.currentPhase = common.PhaseRestart
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(e event.GameHalfEnded) {
-		match.currentPhase = ocom.PhaseHalftime
+		match.currentPhase = common.PhaseHalftime
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
@@ -241,9 +248,9 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 }
 
 // parse demo and save GameStates in slice
-func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
+func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 	playbackFrames := parser.Header().PlaybackFrames
-	states := make([]ocom.OverviewState, 0, playbackFrames)
+	states := make([]common.OverviewState, 0, playbackFrames)
 
 	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
 		if err != nil {
@@ -254,34 +261,34 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 
 		gameState := parser.GameState()
 
-		players := make([]ocom.Player, 0, 10)
+		players := make([]common.Player, 0, 10)
 
 		for _, p := range gameState.Participants().Playing() {
 			var hasBomb bool
-			inventory := make([]common.EquipmentType, 0)
+			inventory := make([]demoinfo.EquipmentType, 0)
 			for _, w := range p.Weapons() {
-				if w.Type == common.EqBomb {
+				if w.Type == demoinfo.EqBomb {
 					hasBomb = true
 				}
 				if isWeaponOrGrenade(w.Type) {
-					if w.Type == common.EqFlash && w.AmmoReserve() > 0 {
+					if w.Type == demoinfo.EqFlash && w.AmmoReserve() > 0 {
 						inventory = append(inventory, w.Type)
 					}
 					inventory = append(inventory, w.Type)
 				}
 			}
 			sort.Slice(inventory, func(i, j int) bool { return inventory[i] < inventory[j] })
-			player := ocom.Player{
+			player := common.Player{
 				Name:      p.Name,
 				SteamID64: p.SteamID64,
 				Team:      p.Team,
-				Position: r2.Point{
-					X: p.Position().X,
-					Y: p.Position().Y,
+				Position: common.Point{
+					X: float32(p.Position().X),
+					Y: float32(p.Position().Y),
 				},
-				LastAlivePosition: r2.Point{
-					X: p.LastAlivePosition.X,
-					Y: p.LastAlivePosition.Y,
+				LastAlivePosition: common.Point{
+					X: float32(p.LastAlivePosition.X),
+					Y: float32(p.LastAlivePosition.Y),
 				},
 				ViewDirectionX:     p.ViewDirectionX(),
 				FlashDuration:      p.FlashDurationTime(),
@@ -302,24 +309,32 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 			players = append(players, player)
 		}
 
-		grenades := make([]ocom.GrenadeProjectile, 0)
+		grenades := make([]common.GrenadeProjectile, 0)
 
 		for _, grenade := range gameState.GrenadeProjectiles() {
-			g := ocom.GrenadeProjectile{
-				Position: r2.Point{
-					X: grenade.Position().X,
-					Y: grenade.Position().Y,
+			g := common.GrenadeProjectile{
+				Position: common.Point{
+					X: float32(grenade.Position().X),
+					Y: float32(grenade.Position().Y),
 				},
 				Type: grenade.WeaponInstance.Type,
 			}
 			grenades = append(grenades, g)
 		}
 
-		infernos := make([]ocom.Inferno, 0)
-
+		infernos := make([]common.Inferno, 0)
 		for _, inferno := range gameState.Infernos() {
-			i := ocom.Inferno{
-				ConvexHull2D: inferno.Fires().Active().ConvexHull2D(),
+			r2Points := inferno.Fires().Active().ConvexHull2D()
+			commonPoints := make([]common.Point, 0)
+			for _, point := range r2Points {
+				commonPoint := common.Point{
+					X: float32(point.X),
+					Y: float32(point.X),
+				}
+				commonPoints = append(commonPoints, commonPoint)
+			}
+			i := common.Inferno{
+				ConvexHull2D: commonPoints,
 			}
 			infernos = append(infernos, i)
 		}
@@ -330,73 +345,73 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 		} else {
 			isBeingCarried = false
 		}
-		bomb := ocom.Bomb{
-			Position: r2.Point{
-				X: gameState.Bomb().Position().X,
-				Y: gameState.Bomb().Position().Y,
+		bomb := common.Bomb{
+			Position: common.Point{
+				X: float32(gameState.Bomb().Position().X),
+				Y: float32(gameState.Bomb().Position().Y),
 			},
 			IsBeingCarried: isBeingCarried,
 		}
 
-		cts := ocom.TeamState{
+		cts := common.TeamState{
 			ClanName: gameState.TeamCounterTerrorists().ClanName(),
 			Score:    byte(gameState.TeamCounterTerrorists().Score()),
 		}
-		ts := ocom.TeamState{
+		ts := common.TeamState{
 			ClanName: gameState.TeamTerrorists().ClanName(),
 			Score:    byte(gameState.TeamTerrorists().Score()),
 		}
 
-		var timer ocom.Timer
+		var timer common.Timer
 
 		if gameState.IsWarmupPeriod() {
-			timer = ocom.Timer{
+			timer = common.Timer{
 				TimeRemaining: 0,
-				Phase:         ocom.PhaseWarmup,
+				Phase:         common.PhaseWarmup,
 			}
 		} else {
 			switch match.currentPhase {
-			case ocom.PhaseFreezetime:
+			case common.PhaseFreezetime:
 				freezetime, _ := strconv.Atoi(gameState.ConVars()["mp_freezetime"])
 				remaining := time.Duration(freezetime)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
-				timer = ocom.Timer{
+				timer = common.Timer{
 					TimeRemaining: remaining,
-					Phase:         ocom.PhaseFreezetime,
+					Phase:         common.PhaseFreezetime,
 				}
-			case ocom.PhaseRegular:
+			case common.PhaseRegular:
 				roundtime, _ := strconv.ParseFloat(gameState.ConVars()["mp_roundtime_defuse"], 64)
 				remaining := time.Duration(roundtime*60)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
-				timer = ocom.Timer{
+				timer = common.Timer{
 					TimeRemaining: remaining,
-					Phase:         ocom.PhaseRegular,
+					Phase:         common.PhaseRegular,
 				}
-			case ocom.PhasePlanted:
+			case common.PhasePlanted:
 				// mp_c4timer is not set in testdemo
 				//bombtime, _ := strconv.Atoi(gameState.ConVars()["mp_c4timer"])
 				bombtime := c4timer
 				remaining := time.Duration(bombtime)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
-				timer = ocom.Timer{
+				timer = common.Timer{
 					TimeRemaining: remaining,
-					Phase:         ocom.PhasePlanted,
+					Phase:         common.PhasePlanted,
 				}
-			case ocom.PhaseRestart:
+			case common.PhaseRestart:
 				restartDelay, _ := strconv.Atoi(gameState.ConVars()["mp_round_restart_delay"])
 				remaining := time.Duration(restartDelay)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
-				timer = ocom.Timer{
+				timer = common.Timer{
 					TimeRemaining: remaining,
-					Phase:         ocom.PhaseRestart,
+					Phase:         common.PhaseRestart,
 				}
-			case ocom.PhaseHalftime:
+			case common.PhaseHalftime:
 				halftimeDuration, _ := strconv.Atoi(gameState.ConVars()["mp_halftime_duration"])
 				remaining := time.Duration(halftimeDuration)*time.Second - (parser.CurrentTime() - match.latestTimerEventTime)
-				timer = ocom.Timer{
+				timer = common.Timer{
 					TimeRemaining: remaining,
-					Phase:         ocom.PhaseRestart,
+					Phase:         common.PhaseRestart,
 				}
 			}
 		}
 
-		state := ocom.OverviewState{
+		state := common.OverviewState{
 			IngameTick:            parser.GameState().IngameTick(),
 			Players:               players,
 			Grenades:              grenades,
@@ -413,11 +428,22 @@ func parseGameStates(parser dem.Parser, match *Match) []ocom.OverviewState {
 	return states
 }
 
-func isWeaponOrGrenade(e common.EquipmentType) bool {
-	return e.Class() == common.EqClassSMG ||
-		e.Class() == common.EqClassHeavy ||
-		e.Class() == common.EqClassRifle ||
-		e.Class() == common.EqClassPistols ||
-		e.Class() == common.EqClassGrenade
+func isWeaponOrGrenade(e demoinfo.EquipmentType) bool {
+	return e.Class() == demoinfo.EqClassSMG ||
+		e.Class() == demoinfo.EqClassHeavy ||
+		e.Class() == demoinfo.EqClassRifle ||
+		e.Class() == demoinfo.EqClassPistols ||
+		e.Class() == demoinfo.EqClassGrenade
 
+}
+
+// Translate translates in-game world-relative coordinates to (0, 0) relative coordinates.
+func (m Match) Translate(x, y float32) (float32, float32) {
+	return x - m.MapPZero.X, m.MapPZero.Y - y
+}
+
+// TranslateScale translates and scales in-game world-relative coordinates to (0, 0) relative coordinates.
+func (m Match) TranslateScale(x, y float32) (float32, float32) {
+	x, y = m.Translate(x, y)
+	return x / m.MapScale, y / m.MapScale
 }
