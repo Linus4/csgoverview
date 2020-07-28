@@ -7,6 +7,19 @@ A 2D demo replay tool for Counter Strike: Global Offensive.
 Check out the [Roadmap](https://github.com/Linus4/csgoverview/projects/1) where
 I keep track of ideas and todos.
 
+## Chat
+
+I created a chatroom on Gitter so we have a place to talk about suggestions, problems and other questions.
+
+[![Gitter chat](https://badges.gitter.im/csgodemos/demoinfo-lib.png)](https://gitter.im/csgodemos/demoinfo-lib)
+
+## Wiki
+
+* [Windows Installation](https://github.com/Linus4/csgoverview/wiki/Windows-Installation)
+* [Linux Installations / Building](https://github.com/Linus4/csgoverview/wiki/Linux-Installation---Building)
+* [Cross-Compiling](https://github.com/Linus4/csgoverview/wiki/Cross-compiling)
+* [Command-Line Usage](https://github.com/Linus4/csgoverview/wiki/Command-Line-Usage)
+
 ## Keybinds
 
 * a -> 5 s backwards
