@@ -11,7 +11,7 @@ I keep track of ideas and todos.
 
 I created a chatroom on Gitter so we have a place to talk about suggestions, problems and other questions.
 
-[![Gitter chat](https://badges.gitter.im/csgodemos/demoinfo-lib.png)](https://gitter.im/csgodemos/demoinfo-lib)
+[![Gitter](https://badges.gitter.im/csgoverview/community.svg)](https://gitter.im/csgoverview/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ## Wiki
 
