@@ -246,6 +246,12 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
 		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
 	})
+	parser.RegisterEventHandler(func(event.RoundStart) {
+		frame := parser.CurrentFrame()
+		for i := 1; i < int(match.SmokeEffectLifetime); i++ {
+			match.GrenadeEffects[frame+i] = make([]common.GrenadeEffect, 0)
+		}
+	})
 }
 
 // parse demo and save GameStates in slice
