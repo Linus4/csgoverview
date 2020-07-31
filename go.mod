@@ -3,7 +3,7 @@ module github.com/linus4/csgoverview
 require (
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
 	github.com/go-gl/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
-	github.com/golang/geo v0.0.0-20200319012246-673a6f80352d
+	github.com/golang/geo v0.0.0-20200730024412-e86565bf3f35
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc // indirect
 	github.com/markus-wa/demoinfocs-golang/v2 v2.3.0
@@ -11,7 +11,7 @@ require (
 	github.com/phpdave11/gofpdi v1.0.11 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/veandco/go-sdl2 v0.4.1
+	github.com/veandco/go-sdl2 v0.4.4
 	github.com/yuin/goldmark v1.1.26 // indirect
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
