@@ -43,7 +43,8 @@ type Match struct {
 	currentPhase         common.Phase
 	latestTimerEventTime time.Duration
 	takeNthFrame         int
-	currentFrame         int
+	// used when handling events
+	currentFrame int
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -171,24 +172,16 @@ func weaponFireEventHandler(e event.WeaponFire, match *Match) {
 
 func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.RoundStart) {
-		diff := parser.CurrentFrame() % match.takeNthFrame
-		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
-		match.RoundStarts = append(match.RoundStarts, frame)
+		match.RoundStarts = append(match.RoundStarts, match.currentFrame+1)
 	})
 	parser.RegisterEventHandler(func(event.MatchStart) {
-		diff := parser.CurrentFrame() % match.takeNthFrame
-		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
-		match.HalfStarts = append(match.HalfStarts, frame)
+		match.HalfStarts = append(match.HalfStarts, match.currentFrame+1)
 	})
 	parser.RegisterEventHandler(func(event.GameHalfEnded) {
-		diff := parser.CurrentFrame() % match.takeNthFrame
-		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
-		match.HalfStarts = append(match.HalfStarts, frame)
+		match.HalfStarts = append(match.HalfStarts, match.currentFrame+1)
 	})
 	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
-		diff := parser.CurrentFrame() % match.takeNthFrame
-		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
-		match.HalfStarts = append(match.HalfStarts, frame)
+		match.HalfStarts = append(match.HalfStarts, match.currentFrame+1)
 	})
 	parser.RegisterEventHandler(func(e event.WeaponFire) {
 		weaponFireEventHandler(e, match)
@@ -260,10 +253,8 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
 	parser.RegisterEventHandler(func(event.RoundStart) {
-		diff := parser.CurrentFrame() % match.takeNthFrame
-		frame := parser.CurrentFrame() + diff
-		for i := 1; i < int(match.SmokeEffectLifetime); i = i + match.takeNthFrame {
-			match.GrenadeEffects[frame+i] = make([]common.GrenadeEffect, 0)
+		for i := 1; i < int(match.SmokeEffectLifetime); i++ {
+			match.GrenadeEffects[match.currentFrame+i] = make([]common.GrenadeEffect, 0)
 		}
 	})
 }
