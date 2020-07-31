@@ -201,13 +201,13 @@ func run(c *Config) error {
 		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
 			playbackSpeed = 0.5
 		}
-		delay := (1/playbackSpeed)*(1000/match.FrameRate) - frameDuration
+		delay := (1/playbackSpeed)*(1000/float64(match.FrameRateRounded)) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
 		sdl.Delay(uint32(delay))
 		if curFrame < len(match.States)-1 {
-			curFrame++
+			curFrame = curFrame + 1
 		}
 	}
 

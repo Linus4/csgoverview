@@ -42,6 +42,8 @@ type Match struct {
 	Shots                map[int][]common.Shot
 	currentPhase         common.Phase
 	latestTimerEventTime time.Duration
+	takeNthFrame         int
+	currentFrame         int
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -68,6 +70,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		GrenadeEffects: make(map[int][]common.GrenadeEffect),
 		Killfeed:       make(map[int][]common.Kill),
 		Shots:          make(map[int][]common.Shot),
+		takeNthFrame:   1,
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -89,13 +92,21 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		match.TickRate = fallbackTickRate
 	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
+	if match.FrameRateRounded == 128 {
+		match.takeNthFrame = 4
+		match.FrameRateRounded = 32
+	}
+	if match.FrameRateRounded == 64 {
+		match.takeNthFrame = 2
+		match.FrameRateRounded = 32
+	}
 	match.MapName = header.MapName
 	match.MapPZero = common.Point{
 		X: float32(meta.MapNameToMap[match.MapName].PZero.X),
 		Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
 	}
 	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
-	match.SmokeEffectLifetime = int32(18 * match.FrameRate)
+	match.SmokeEffectLifetime = int32(18 * match.FrameRateRounded)
 
 	registerEventHandlers(parser, match)
 	match.States = parseGameStates(parser, match)
@@ -103,7 +114,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	return match, nil
 }
 
-func grenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent, match *Match) {
+func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
 	effectLifetime := int(lifetime)
 	for i := 0; i < effectLifetime; i++ {
 		effect := common.GrenadeEffect{
@@ -114,16 +125,16 @@ func grenadeEventHandler(lifetime int32, frame int, e event.GrenadeEvent, match 
 			GrenadeType: e.GrenadeType,
 			Lifetime:    int32(i),
 		}
-		effects, ok := match.GrenadeEffects[frame+i]
+		effects, ok := match.GrenadeEffects[match.currentFrame+i]
 		if ok {
-			match.GrenadeEffects[frame+i] = append(effects, effect)
+			match.GrenadeEffects[match.currentFrame+i] = append(effects, effect)
 		} else {
-			match.GrenadeEffects[frame+i] = []common.GrenadeEffect{effect}
+			match.GrenadeEffects[match.currentFrame+i] = []common.GrenadeEffect{effect}
 		}
 	}
 }
 
-func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
+func weaponFireEventHandler(e event.WeaponFire, match *Match) {
 	if e.Shooter == nil {
 		return
 	}
@@ -141,52 +152,57 @@ func weaponFireEventHandler(frame int, e event.WeaponFire, match *Match) {
 		ViewDirectionX: e.Shooter.ViewDirectionX(),
 		IsAwpShot:      isAwpShot,
 	}
+	var lifetime int
 
-	lifetime := int((match.FrameRate + 1) / 32)
-	if lifetime == 0 {
+	if isAwpShot {
+		lifetime = 4
+	} else {
 		lifetime = 1
 	}
-	if isAwpShot {
-		lifetime = int((match.FrameRate + 1) / 8)
-	}
 	for i := 0; i < lifetime; i++ {
-		shots, ok := match.Shots[frame+i]
+		shots, ok := match.Shots[match.currentFrame+i]
 		if ok {
-			match.Shots[frame+i] = append(shots, shot)
+			match.Shots[match.currentFrame+i] = append(shots, shot)
 		} else {
-			match.Shots[frame+i] = []common.Shot{shot}
+			match.Shots[match.currentFrame+i] = []common.Shot{shot}
 		}
 	}
 }
 
 func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(event.RoundStart) {
-		match.RoundStarts = append(match.RoundStarts, parser.CurrentFrame())
+		diff := parser.CurrentFrame() % match.takeNthFrame
+		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
+		match.RoundStarts = append(match.RoundStarts, frame)
 	})
 	parser.RegisterEventHandler(func(event.MatchStart) {
-		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
+		diff := parser.CurrentFrame() % match.takeNthFrame
+		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
+		match.HalfStarts = append(match.HalfStarts, frame)
 	})
 	parser.RegisterEventHandler(func(event.GameHalfEnded) {
-		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
+		diff := parser.CurrentFrame() % match.takeNthFrame
+		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
+		match.HalfStarts = append(match.HalfStarts, frame)
+	})
+	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
+		diff := parser.CurrentFrame() % match.takeNthFrame
+		frame := (parser.CurrentFrame() - diff) / match.takeNthFrame
+		match.HalfStarts = append(match.HalfStarts, frame)
 	})
 	parser.RegisterEventHandler(func(e event.WeaponFire) {
-		frame := parser.CurrentFrame()
-		weaponFireEventHandler(frame, e, match)
+		weaponFireEventHandler(e, match)
 	})
 	parser.RegisterEventHandler(func(e event.FlashExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(flashEffectLifetime, frame, e.GrenadeEvent, match)
+		grenadeEventHandler(flashEffectLifetime, e.GrenadeEvent, match)
 	})
 	parser.RegisterEventHandler(func(e event.HeExplode) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(heEffectLifetime, frame, e.GrenadeEvent, match)
+		grenadeEventHandler(heEffectLifetime, e.GrenadeEvent, match)
 	})
 	parser.RegisterEventHandler(func(e event.SmokeStart) {
-		frame := parser.CurrentFrame()
-		grenadeEventHandler(match.SmokeEffectLifetime, frame, e.GrenadeEvent, match)
+		grenadeEventHandler(match.SmokeEffectLifetime, e.GrenadeEvent, match)
 	})
 	parser.RegisterEventHandler(func(e event.Kill) {
-		frame := parser.CurrentFrame()
 		var killerName, victimName string
 		var killerTeam, victimTeam demoinfo.Team
 		if e.Killer == nil {
@@ -212,14 +228,14 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 		}
 
 		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
-			kills, ok := match.Killfeed[frame+i]
+			kills, ok := match.Killfeed[match.currentFrame+i]
 			if ok {
 				if len(kills) > 5 {
-					match.Killfeed[frame+i] = match.Killfeed[frame+i][1:]
+					match.Killfeed[match.currentFrame+i] = match.Killfeed[match.currentFrame+i][1:]
 				}
-				match.Killfeed[frame+i] = append(kills, kill)
+				match.Killfeed[match.currentFrame+i] = append(kills, kill)
 			} else {
-				match.Killfeed[frame+i] = []common.Kill{kill}
+				match.Killfeed[match.currentFrame+i] = []common.Kill{kill}
 			}
 		}
 	})
@@ -243,12 +259,10 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 		match.currentPhase = common.PhaseHalftime
 		match.latestTimerEventTime = parser.CurrentTime()
 	})
-	parser.RegisterEventHandler(func(event.AnnouncementWinPanelMatch) {
-		match.HalfStarts = append(match.HalfStarts, parser.CurrentFrame())
-	})
 	parser.RegisterEventHandler(func(event.RoundStart) {
-		frame := parser.CurrentFrame()
-		for i := 1; i < int(match.SmokeEffectLifetime); i++ {
+		diff := parser.CurrentFrame() % match.takeNthFrame
+		frame := parser.CurrentFrame() + diff
+		for i := 1; i < int(match.SmokeEffectLifetime); i = i + match.takeNthFrame {
 			match.GrenadeEffects[frame+i] = make([]common.GrenadeEffect, 0)
 		}
 	})
@@ -265,6 +279,10 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			// return here or not?
 			continue
 		}
+		if parser.CurrentFrame()%match.takeNthFrame != 0 {
+			continue
+		}
+		match.currentFrame = len(states)
 
 		gameState := parser.GameState()
 
