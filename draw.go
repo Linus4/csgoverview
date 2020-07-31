@@ -206,8 +206,8 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 			ts = append(ts, player)
 		}
 	}
-	sort.Slice(cts, func(i, j int) bool { return cts[i].SteamID64 < cts[j].SteamID64 })
-	sort.Slice(ts, func(i, j int) bool { return ts[i].SteamID64 < ts[j].SteamID64 })
+	sort.Slice(cts, func(i, j int) bool { return cts[i].ID < cts[j].ID })
+	sort.Slice(ts, func(i, j int) bool { return ts[i].ID < ts[j].ID })
 	drawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
 	drawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 	drawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)

@@ -84,7 +84,7 @@ type Bomb struct {
 // Player contains all relevant information about a player in the match.
 type Player struct {
 	Name               string
-	SteamID64          uint64
+	ID                 int
 	Team               demoinfo.Team
 	Position           Point
 	LastAlivePosition  Point

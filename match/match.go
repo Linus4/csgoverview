@@ -295,9 +295,9 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			}
 			sort.Slice(inventory, func(i, j int) bool { return inventory[i] < inventory[j] })
 			player := common.Player{
-				Name:      p.Name,
-				SteamID64: p.SteamID64,
-				Team:      p.Team,
+				Name: p.Name,
+				ID:   p.UserID,
+				Team: p.Team,
 				Position: common.Point{
 					X: float32(p.Position().X),
 					Y: float32(p.Position().Y),
