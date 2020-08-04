@@ -15,6 +15,7 @@ const (
 
 func main() {
 	conf := DefaultConfig
+	flag.BoolVar(&conf.PrintVersion, "version", false, "Print version number")
 	flag.Float64Var(&conf.FrameRate, "framerate", conf.FrameRate, "Fallback GOTV Framerate")
 	flag.Float64Var(&conf.TickRate, "tickrate", conf.TickRate, "Fallback Gameserver Tickrate")
 	cmd := fmt.Sprintf("fc-list | grep %v.ttf", fontName)

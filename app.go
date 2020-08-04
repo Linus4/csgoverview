@@ -14,14 +14,15 @@ import (
 )
 
 const (
-	winWidth             int32 = 1624
-	winHeight            int32 = 1024
-	nameMapFontSize      int   = 14
-	mapOverviewWidth     int32 = 1024
-	mapOverviewHeight    int32 = 1024
-	mapXOffset           int32 = 300
-	mapYOffset           int32 = 0
-	infobarElementHeight int32 = 100
+	winWidth             int32  = 1624
+	winHeight            int32  = 1024
+	nameMapFontSize      int    = 14
+	mapOverviewWidth     int32  = 1024
+	mapOverviewHeight    int32  = 1024
+	mapXOffset           int32  = 300
+	mapYOffset           int32  = 0
+	infobarElementHeight int32  = 100
+	appVersion           string = "v0.7.1"
 )
 
 var (
@@ -42,6 +43,9 @@ type Config struct {
 
 	// Fallback Gameserver Tickrate
 	TickRate float64
+
+	// Whether to just print the version number
+	PrintVersion bool
 }
 
 // DefaultConfig contains standard parameters for the application.
@@ -52,6 +56,10 @@ var DefaultConfig = Config{
 
 func run(c *Config) error {
 	var demoFileName string
+	if c.PrintVersion {
+		fmt.Println(appVersion)
+		return nil
+	}
 	if len(flag.Args()) < 1 {
 		demoFileNameB, err := exec.Command("zenity", "--file-selection").Output()
 		if err != nil {
