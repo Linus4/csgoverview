@@ -386,9 +386,9 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 		drawInferno(renderer, &inferno, match)
 	}
 
-	effects := match.GrenadeEffects[curFrame]
+	effects := match.Effects[curFrame]
 	for _, effect := range effects {
-		drawGrenadeEffect(renderer, &effect, match)
+		drawEffects(renderer, &effect, match)
 	}
 
 	grenades := match.States[curFrame].Grenades

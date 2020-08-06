@@ -32,12 +32,11 @@ type OverviewState struct {
 	Timer                 Timer
 }
 
-// GrenadeEffect extends the GrenadeEvent type from the parser by the Lifetime
-// variable that is used to draw the effect.
-type GrenadeEffect struct {
-	Position    Point
-	GrenadeType demoinfo.EquipmentType
-	Lifetime    int32
+// Effect contains information about graphical effects from grenades, bombs, defuses
+type Effect struct {
+	Position Point
+	Type     demoinfo.EquipmentType
+	Lifetime int32
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade

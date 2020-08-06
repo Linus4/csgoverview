@@ -18,10 +18,12 @@ import (
 )
 
 const (
-	flashEffectLifetime int32 = 10
-	heEffectLifetime    int32 = 10
-	killfeedLifetime    int   = 10
-	c4timer             int   = 40
+	flashEffectLifetime  int32 = 10
+	heEffectLifetime     int32 = 10
+	defuseEffectLifetime int32 = 30
+	bombEffectLifetime   int32 = 60
+	killfeedLifetime     int   = 10
+	c4timer              int   = 40
 )
 
 // Match contains general information about the demo and all relevant, parsed
@@ -32,7 +34,7 @@ type Match struct {
 	MapScale             float32
 	HalfStarts           []int
 	RoundStarts          []int
-	GrenadeEffects       map[int][]common.GrenadeEffect
+	Effects              map[int][]common.Effect
 	FrameRate            float64
 	TickRate             float64
 	FrameRateRounded     int
@@ -66,12 +68,12 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	}
 
 	match := &Match{
-		HalfStarts:     make([]int, 0),
-		RoundStarts:    make([]int, 0),
-		GrenadeEffects: make(map[int][]common.GrenadeEffect),
-		Killfeed:       make(map[int][]common.Kill),
-		Shots:          make(map[int][]common.Shot),
-		takeNthFrame:   1,
+		HalfStarts:   make([]int, 0),
+		RoundStarts:  make([]int, 0),
+		Effects:      make(map[int][]common.Effect),
+		Killfeed:     make(map[int][]common.Kill),
+		Shots:        make(map[int][]common.Shot),
+		takeNthFrame: 1,
 	}
 
 	match.FrameRate = header.FrameRate()
@@ -118,19 +120,39 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
 	effectLifetime := int(lifetime)
 	for i := 0; i < effectLifetime; i++ {
-		effect := common.GrenadeEffect{
+		effect := common.Effect{
 			Position: common.Point{
 				X: float32(e.Position.X),
 				Y: float32(e.Position.Y),
 			},
-			GrenadeType: e.GrenadeType,
-			Lifetime:    int32(i),
+			Type:     e.GrenadeType,
+			Lifetime: int32(i),
 		}
-		effects, ok := match.GrenadeEffects[match.currentFrame+i]
+		effects, ok := match.Effects[match.currentFrame+i]
 		if ok {
-			match.GrenadeEffects[match.currentFrame+i] = append(effects, effect)
+			match.Effects[match.currentFrame+i] = append(effects, effect)
 		} else {
-			match.GrenadeEffects[match.currentFrame+i] = []common.GrenadeEffect{effect}
+			match.Effects[match.currentFrame+i] = []common.Effect{effect}
+		}
+	}
+}
+
+func bombEventHandler(lifetime int32, eqType demoinfo.EquipmentType, bomb *demoinfo.Bomb, match *Match) {
+	effectLifetime := int(lifetime)
+	for i := 0; i < effectLifetime; i++ {
+		effect := common.Effect{
+			Position: common.Point{
+				X: float32(bomb.Position().X),
+				Y: float32(bomb.Position().Y),
+			},
+			Type:     eqType,
+			Lifetime: int32(i),
+		}
+		effects, ok := match.Effects[match.currentFrame+i]
+		if ok {
+			match.Effects[match.currentFrame+i] = append(effects, effect)
+		} else {
+			match.Effects[match.currentFrame+i] = []common.Effect{effect}
 		}
 	}
 }
@@ -195,6 +217,12 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 	parser.RegisterEventHandler(func(e event.SmokeStart) {
 		grenadeEventHandler(match.SmokeEffectLifetime, e.GrenadeEvent, match)
 	})
+	parser.RegisterEventHandler(func(e event.BombDefused) {
+		bombEventHandler(defuseEffectLifetime, demoinfo.EqDefuseKit, parser.GameState().Bomb(), match)
+	})
+	parser.RegisterEventHandler(func(e event.BombExplode) {
+		bombEventHandler(bombEffectLifetime, demoinfo.EqBomb, parser.GameState().Bomb(), match)
+	})
 	parser.RegisterEventHandler(func(e event.Kill) {
 		var killerName, victimName string
 		var killerTeam, victimTeam demoinfo.Team
@@ -254,7 +282,7 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 	})
 	parser.RegisterEventHandler(func(event.RoundStart) {
 		for i := 1; i < int(match.SmokeEffectLifetime); i++ {
-			match.GrenadeEffects[match.currentFrame+i] = make([]common.GrenadeEffect, 0)
+			match.Effects[match.currentFrame+i] = make([]common.Effect, 0)
 		}
 	})
 }

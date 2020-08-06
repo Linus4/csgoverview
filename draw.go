@@ -119,14 +119,14 @@ func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
 
-func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, match *match.Match) {
+func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Match) {
 	pos := effect.Position
 
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	switch effect.GrenadeType {
+	switch effect.Type {
 	case demoinfo.EqFlash:
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorEqFlash)
 	case demoinfo.EqHE:
@@ -140,6 +140,10 @@ func drawGrenadeEffect(renderer *sdl.Renderer, effect *common.GrenadeEffect, mat
 			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
 		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorDarkWhite)
+	case demoinfo.EqDefuseKit:
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorMoney)
+	case demoinfo.EqBomb:
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorBomb)
 	}
 }
 
