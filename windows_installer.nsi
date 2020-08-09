@@ -1,11 +1,11 @@
 ;General
 
+Unicode True
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
 OutFile "${APP_NAME}_windows_v0.7.1_install.exe"
-LicenseData "LICENSE" ;FIXME correct?
+LicenseData "LICENSE"
 RequestExecutionLevel admin
-Unicode True
 ;set default InstallDir
 InstallDir "$PROGRAMFILES\${APP_NAME}"
 ; check string in registry and use it as the install dir if that string is valid
@@ -26,7 +26,7 @@ Section "Install csgoverview" SecCSGOverview
 
     FILE csgoverview.exe
     FILE DejaVuSans.ttf
-    FILE LICENSE ;FIXME?
+    FILE LICENSE
 
     CreateDirectory $INSTDIR\assets\maps
 
@@ -43,24 +43,18 @@ Section "Download Maps" SecMaps
     SetOutPath "$INSTDIR\assets\maps"
 
     ; DOWNLOADS
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_overpass.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_mirage.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo_lower.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke_lower.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_cache.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_inferno.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_train.jpg"
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_dust2.jpg"
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_overpass.jpg" de_overpass.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_mirage.jpg" de_mirage.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo.jpg" de_vertigo.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo_lower.jpg" de_vertigo_lower.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke.jpg" de_nuke.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke_lower.jpg" de_nuke_lower.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_cache.jpg" de_cache.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_inferno.jpg" de_inferno.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_train.jpg" de_train.jpg
+    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_dust2.jpg" de_dust2.jpg
 
 SectionEnd
-
-;Descriptions
-
-;LangString DESC_SecCSGOverview ${LANG_ENGLISH} "Install csgoverview program."
-;LangString DESC_SecMaps ${LANG_ENGLISH} "Download overview maps (requires internet connection)."
-;FIXME need to assign descriptions to sections (only modern ui?)
 
 ;Uninstaller Section
 
@@ -83,9 +77,10 @@ Section "un.Uninstall"
     Delete "$INSTDIR\csgoverview.exe"
     Delete "$INSTDIR\DejaVuSans.ttf"
     Delete "$INSTDIR\LICENSE"
+    Delete "$INSTDIR\Uninstall.exe"
 
     RMDir "$INSTDIR"
 
-    DeleteRegKey /ifempty HKCU "Software\${APP_NAME}"
+    DeleteRegKey ifempty HKCU "Software\${APP_NAME}"
 
 SectionEnd
