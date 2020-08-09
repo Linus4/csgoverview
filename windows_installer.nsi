@@ -81,6 +81,6 @@ Section "un.Uninstall"
 
     RMDir "$INSTDIR"
 
-    DeleteRegKey ifempty HKCU "Software\${APP_NAME}"
+    DeleteRegKey /ifempty HKCU "Software\${APP_NAME}"
 
 SectionEnd
