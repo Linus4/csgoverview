@@ -9,7 +9,7 @@ RequestExecutionLevel admin
 ;set default InstallDir
 InstallDir "$PROGRAMFILES\${APP_NAME}"
 ; check string in registry and use it as the install dir if that string is valid
-InstallDirRegKey HKCU "Software\${APP_NAME}" ""
+InstallDirRegKey HKCU "Software\${APP_NAME}" "InstallLocation"
 
 ;Pages
 
@@ -31,7 +31,7 @@ Section "Install csgoverview" SecCSGOverview
     CreateDirectory $INSTDIR\assets\maps
 
     ;Store installation folder
-    WriteRegStr HKCU "Software\${APP_NAME}" "" $INSTDIR
+    WriteRegStr HKCU "Software\${APP_NAME}" "InstallLocation" $INSTDIR
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
