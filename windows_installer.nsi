@@ -1,6 +1,7 @@
 ;General
 
 Unicode True
+!include "FileAssociation.nsh"
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
 OutFile "${APP_NAME}_windows_v0.7.1_install.exe"
@@ -32,6 +33,9 @@ Section "Install csgoverview" SecCSGOverview
 
     ;Store installation folder
     WriteRegStr HKCU "Software\${APP_NAME}" "InstallLocation" $INSTDIR
+
+    ;register file association
+    ${registerExtension} "$INSTDIR\${APP_NAME}.exe" ".dem" "DEM_File"
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -82,5 +86,8 @@ Section "un.Uninstall"
     RMDir "$INSTDIR"
 
     DeleteRegKey /ifempty HKCU "Software\${APP_NAME}"
+
+    ;unregister file association
+    ${unregisterExtension} ".dem" "DEM_File"
 
 SectionEnd
