@@ -4,7 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
+
+	"golang.org/x/sys/windows/registry"
 )
 
 const (
@@ -16,12 +17,17 @@ func main() {
 	flag.BoolVar(&conf.PrintVersion, "version", false, "Print version number")
 	flag.Float64Var(&conf.FrameRate, "framerate", conf.FrameRate, "Fallback GOTV Framerate")
 	flag.Float64Var(&conf.TickRate, "tickrate", conf.TickRate, "Fallback Gameserver Tickrate")
-	userHomeDir, err := os.UserHomeDir()
+	instDirKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\csgoverview`, registry.QUERY_VALUE)
 	if err != nil {
-		log.Fatalln("trying to get user home directory:", err)
+		log.Fatalln("trying to open csgoverview registry key:", err)
 	}
-	defaultFontPath := fmt.Sprintf("%v\\csgoverview\\%v.ttf", userHomeDir, fontName)
-	defaultOverviewDirectory := fmt.Sprintf("%v\\csgoverview\\", userHomeDir)
+	defer instDirKey.Close()
+	instDir, _, err := instDirKey.GetStringValue("InstallLocation")
+	if err != nil {
+		log.Fatalln("trying to get install directory from registry key:", err)
+	}
+	defaultFontPath := fmt.Sprintf("%v\\%v.ttf", instDir, fontName)
+	defaultOverviewDirectory := fmt.Sprintf("%v\\assets\\maps\\", instDir)
 	flag.StringVar(&conf.FontPath, "fontpath", defaultFontPath, "Path to font file (.ttf)")
 	flag.StringVar(&conf.OverviewDir, "overviewdir", defaultOverviewDirectory, "Path to overview directory")
 	flag.Parse()
