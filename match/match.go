@@ -73,6 +73,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		Effects:      make(map[int][]common.Effect),
 		Killfeed:     make(map[int][]common.Kill),
 		Shots:        make(map[int][]common.Shot),
+		currentPhase: common.PhaseRegular,
 		takeNthFrame: 1,
 	}
 
