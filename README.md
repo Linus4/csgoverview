@@ -19,6 +19,7 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * [Linux Installation / Building](https://github.com/Linus4/csgoverview/wiki/Linux-Installation---Building)
 * [Cross-Compiling](https://github.com/Linus4/csgoverview/wiki/Cross-compiling)
 * [Command-Line Usage](https://github.com/Linus4/csgoverview/wiki/Command-Line-Usage)
+* [Build Windows Installer](https://github.com/Linus4/csgoverview/wiki/Build-Windows-Installer)
 
 ## Keybinds
 
