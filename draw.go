@@ -312,6 +312,12 @@ func drawTimer(renderer *sdl.Renderer, timer common.Timer, x, y int32, font *ttf
 		minutes := int(timer.TimeRemaining.Minutes())
 		seconds := int(timer.TimeRemaining.Seconds()) - 60*minutes
 		timeString := fmt.Sprintf("%d:%2d", minutes, seconds)
+		/* ESEA demos have no RoundFreezetimeEnd events so in what
+		should be PhaseRegular the minutes and seconds are negative.
+		if minutes < 0 || seconds < 0 {
+			timeString = "Paused / Timeout"
+		}
+		*/
 		var color sdl.Color
 		if timer.Phase == common.PhasePlanted {
 			color = colorBomb
