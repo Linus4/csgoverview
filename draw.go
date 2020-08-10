@@ -66,7 +66,11 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 
 		if player.FlashDuration.Seconds() > 0.5 {
 			remaining := player.FlashTimeRemaining
-			colorFlashEffect.A = uint8((remaining.Seconds() * 255) / (2 + 5.5))
+			if remaining.Seconds() >= 3.1 {
+				colorFlashEffect.A = 255
+			} else {
+				colorFlashEffect.A = uint8((remaining.Seconds() * 255) / 3.1)
+			}
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
 		}
 
