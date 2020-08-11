@@ -115,3 +115,32 @@ type Point struct {
 	X float32
 	Y float32
 }
+
+// MapInfo contains information about maps in regards to alternate versions
+// of the overview image (normal/lower/upper).
+type MapInfo struct {
+	AlternateOverview string
+	// Height threshold to determine if a player is on the normal or on the
+	// alternate version of the overview map
+	HeightThreshold float64
+}
+
+// Golang Maps return default values for keys that are not in a map.
+var mapInfos = map[string]MapInfo{
+	"de_vertigo": MapInfo{"de_vertigo_lower.jpg", 0},
+	"de_nuke":    MapInfo{"de_nuke_lower.jpg", 0},
+}
+
+// MapHasAlternateVersion returns whether a map has an alternative overview image.
+func MapHasAlternateVersion(mapName string) bool {
+	if mapInfos[mapName].AlternateOverview != "" {
+		return true
+	} else {
+		return false
+	}
+}
+
+// MapGetAlternateVersion returns the filename for the alternate overview file.
+func MapGetAlternateVersion(mapName string) string {
+	return mapInfos[mapName].AlternateOverview
+}

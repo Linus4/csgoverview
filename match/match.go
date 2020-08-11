@@ -113,7 +113,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 				Window: nil,
 				Title:  "Error",
 				Message: "Could not parse GOTV framerate from demo." +
-					"Please choose framerate from options below.",
+					" Please choose framerate from options below.",
 				Buttons:     messageBoxButtonData,
 				ColorScheme: nil,
 			}

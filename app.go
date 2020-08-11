@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
@@ -132,7 +133,7 @@ func run(c *Config) error {
 			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
 			"to place the overview images in this directory.", c.OverviewDir, err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
-		mapSurface, err = img.Load(fmt.Sprintf("%v.jpg", match.MapName))
+		return err
 	}
 	defer mapSurface.Free()
 
@@ -143,6 +144,28 @@ func run(c *Config) error {
 		return err
 	}
 	defer mapTexture.Destroy()
+
+	var alternateMapTexture *sdl.Texture
+	if common.MapHasAlternateVersion(match.MapName) {
+		alternateFileName := common.MapGetAlternateVersion(match.MapName)
+		alternateMapSurface, err := img.Load(filepath.Join(c.OverviewDir, fmt.Sprintf("%v", alternateFileName)))
+		if err != nil {
+			errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
+				"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
+				"to place the overview images in this directory.", c.OverviewDir, err)
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+			return err
+		}
+		defer alternateMapSurface.Free()
+
+		alternateMapTexture, err = renderer.CreateTextureFromSurface(alternateMapSurface)
+		if err != nil {
+			errorString := fmt.Sprintf("trying to create alternateMapTexture from Surface:\n%v", err)
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+			return err
+		}
+		defer alternateMapTexture.Destroy()
+	}
 
 	mapRect := &sdl.Rect{mapXOffset, mapYOffset, mapOverviewWidth, mapOverviewHeight}
 
@@ -157,6 +180,13 @@ func run(c *Config) error {
 
 			case *sdl.KeyboardEvent:
 				handleKeyboardEvents(eventT, window, match)
+				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_c {
+					if common.MapHasAlternateVersion(match.MapName) {
+						tmp := mapTexture
+						mapTexture = alternateMapTexture
+						alternateMapTexture = tmp
+					}
+				}
 
 			case *sdl.MouseWheelEvent:
 				// back
@@ -366,7 +396,6 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	renderer.SetDrawColor(10, 10, 10, 255)
 	renderer.Clear()
 
-	font.SetStyle(ttf.STYLE_BOLD)
 	drawInfobars(renderer, match, font)
 	renderer.Copy(mapTexture, nil, mapRect)
 
@@ -393,7 +422,6 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	bomb := match.States[curFrame].Bomb
 	drawBomb(renderer, &bomb, match)
 
-	font.SetStyle(ttf.STYLE_NORMAL)
 	players := match.States[curFrame].Players
 	var indexT, indexCT int
 	for _, player := range players {
