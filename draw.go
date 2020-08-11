@@ -40,7 +40,7 @@ var (
 	colorAwpShot      = sdl.Color{255, 50, 0, 255}
 )
 
-func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, match *match.Match) {
+func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, index int, match *match.Match) {
 	var color sdl.Color
 	if player.Team == demoinfo.TeamTerrorists {
 		color = colorTerror
@@ -57,7 +57,8 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, m
 
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		drawString(renderer, cropStringToN(player.Name, 10), color, scaledXInt+10, scaledYInt+10, font)
+		name := fmt.Sprintf("%v %v", index+1, player.Name)
+		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorDarkWhite)
@@ -224,14 +225,15 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 
 func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
 	var yOffset int32
-	for _, player := range players {
+	for i, player := range players {
 		if player.IsAlive {
 			gfx.BoxColor(renderer, x+int32(player.Health)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
 		if !player.IsAlive {
 			color.A = 150
 		}
-		drawString(renderer, cropStringToN(player.Name, 20), color, x+85, yOffset+10, font)
+		name := fmt.Sprintf("%v %v", i+1, player.Name)
+		drawString(renderer, cropStringToN(name, 20), color, x+85, yOffset+10, font)
 		color.A = 255
 		drawString(renderer, fmt.Sprintf("%v", player.Health), color, x+5, yOffset+10, font)
 		if player.Armor > 0 && player.HasHelmet {

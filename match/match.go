@@ -438,6 +438,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			}
 			players = append(players, player)
 		}
+		sort.Slice(players, func(i, j int) bool { return players[i].ID < players[j].ID })
 
 		grenades := make([]common.GrenadeProjectile, 0)
 

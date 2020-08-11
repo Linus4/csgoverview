@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/linus4/csgoverview/match"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
@@ -400,8 +401,15 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	drawBomb(renderer, &bomb, match)
 
 	players := match.States[curFrame].Players
+	var indexT, indexCT int
 	for _, player := range players {
-		drawPlayer(renderer, &player, font, match)
+		if player.Team == demoinfo.TeamTerrorists {
+			drawPlayer(renderer, &player, font, indexT, match)
+			indexT++
+		} else {
+			drawPlayer(renderer, &player, font, indexCT, match)
+			indexCT++
+		}
 	}
 
 	renderer.Present()
