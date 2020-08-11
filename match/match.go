@@ -15,6 +15,7 @@ import (
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
+	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
@@ -80,20 +81,104 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	match.FrameRate = header.FrameRate()
 	if math.IsNaN(match.FrameRate) || match.FrameRate == 0 {
 		if fallbackFrameRate == -1 {
-			err := errors.New("could not parse Framerate from demo." +
-				"Please provide a fallback value (command-line option -framerate)")
-			return nil, err
+			messageBoxButtonData := []sdl.MessageBoxButtonData{
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 0,
+					Text:     "128",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 1,
+					Text:     "64",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 2,
+					Text:     "32",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 3,
+					Text:     "24",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 4,
+					Text:     "Cancel",
+				},
+			}
+			messageBoxData := sdl.MessageBoxData{
+				Flags:  sdl.MESSAGEBOX_ERROR,
+				Window: nil,
+				Title:  "Error",
+				Message: "Could not parse GOTV framerate from demo." +
+					"Please choose framerate from options below.",
+				Buttons:     messageBoxButtonData,
+				ColorScheme: nil,
+			}
+			buttonid, _ := sdl.ShowMessageBox(&messageBoxData)
+			switch buttonid {
+			case 0:
+				match.FrameRate = 128
+			case 1:
+				match.FrameRate = 64
+			case 2:
+				match.FrameRate = 32
+			case 3:
+				match.FrameRate = 24
+			case 4:
+				err := errors.New("could not parse Framerate from demo." +
+					" Please provide a fallback value (command-line option -framerate)")
+				return nil, err
+			}
+		} else {
+			match.FrameRate = fallbackFrameRate
 		}
-		match.FrameRate = fallbackFrameRate
 	}
 	match.TickRate = parser.TickRate()
 	if math.IsNaN(match.TickRate) || match.TickRate == 0 {
 		if fallbackTickRate == -1 {
-			err := errors.New("could not parse Tickrate from demo." +
-				"Please provide a fallback value (command-line option -tickrate)")
-			return nil, err
+			messageBoxButtonData := []sdl.MessageBoxButtonData{
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 0,
+					Text:     "128",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 1,
+					Text:     "64",
+				},
+				sdl.MessageBoxButtonData{
+					Flags:    0,
+					ButtonID: 2,
+					Text:     "Cancel",
+				},
+			}
+			messageBoxData := sdl.MessageBoxData{
+				Flags:  sdl.MESSAGEBOX_ERROR,
+				Window: nil,
+				Title:  "Error",
+				Message: "Could not parse server tickrate from demo." +
+					" Please choose tickrate from options below.",
+				Buttons:     messageBoxButtonData,
+				ColorScheme: nil,
+			}
+			buttonid, _ := sdl.ShowMessageBox(&messageBoxData)
+			switch buttonid {
+			case 0:
+				match.TickRate = 128
+			case 1:
+				match.TickRate = 64
+			case 2:
+				err := errors.New("could not parse Tickrate from demo." +
+					"Please provide a fallback value (command-line option -tickrate)")
+				return nil, err
+			}
+		} else {
+			match.TickRate = fallbackTickRate
 		}
-		match.TickRate = fallbackTickRate
 	}
 	match.FrameRateRounded = int(math.Round(match.FrameRate))
 	if match.FrameRateRounded == 128 {
