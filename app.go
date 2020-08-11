@@ -100,7 +100,6 @@ func run(c *Config) error {
 		}
 	}
 	defer font.Close()
-	font.SetStyle(ttf.STYLE_BOLD)
 
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
@@ -374,6 +373,7 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	renderer.SetDrawColor(10, 10, 10, 255)
 	renderer.Clear()
 
+	font.SetStyle(ttf.STYLE_BOLD)
 	drawInfobars(renderer, match, font)
 	renderer.Copy(mapTexture, nil, mapRect)
 
@@ -400,6 +400,7 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 	bomb := match.States[curFrame].Bomb
 	drawBomb(renderer, &bomb, match)
 
+	font.SetStyle(ttf.STYLE_NORMAL)
 	players := match.States[curFrame].Players
 	var indexT, indexCT int
 	for _, player := range players {
