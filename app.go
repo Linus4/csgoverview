@@ -133,13 +133,6 @@ func run(c *Config) error {
 			"to place the overview images in this directory.", c.OverviewDir, err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		mapSurface, err = img.Load(fmt.Sprintf("%v.jpg", match.MapName))
-		if err != nil {
-			errorString := fmt.Sprintf("trying to load map overview image from current directory: \n"+
-				"%v\n%v\nFollow the instructions on https://github.com/linus4/csgoverview "+
-				"to place the overview images in this directory.", err, c.OverviewDir)
-			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
-			return err
-		}
 	}
 	defer mapSurface.Free()
 

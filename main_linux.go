@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("trying to get user home directory:", err)
 	}
-	defaultOverviewDirectory := fmt.Sprintf("%v/.local/share/csgoverview", userHomeDir)
+	defaultOverviewDirectory := fmt.Sprintf("%v/.local/share/csgoverview/assets/maps", userHomeDir)
 	flag.StringVar(&conf.OverviewDir, "overviewdir", defaultOverviewDirectory, "Path to overview directory")
 	flag.Parse()
 
