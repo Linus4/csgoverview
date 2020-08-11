@@ -21,7 +21,7 @@ import (
 const (
 	flashEffectLifetime  int32 = 10
 	heEffectLifetime     int32 = 10
-	defuseEffectLifetime int32 = 30
+	defuseEffectLifetime int32 = 45
 	bombEffectLifetime   int32 = 60
 	killfeedLifetime     int   = 10
 	c4timer              int   = 40
