@@ -38,6 +38,7 @@ var (
 	colorDarkWhite    = sdl.Color{200, 200, 200, 255}
 	colorFlashEffect  = sdl.Color{200, 200, 200, 180}
 	colorAwpShot      = sdl.Color{255, 50, 0, 255}
+	hidePlayerNames   bool
 )
 
 func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, index int, match *match.Match) {
@@ -65,7 +66,12 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		}
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
-		name := fmt.Sprintf("%v %v", index+1, player.Name)
+		var name string
+		if !hidePlayerNames {
+			name = fmt.Sprintf("%v %v", index+1, player.Name)
+		} else {
+			name = fmt.Sprintf("%v", index+1)
+		}
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl

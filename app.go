@@ -359,6 +359,10 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 		}
 	}
 
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_h {
+		hidePlayerNames = !hidePlayerNames
+	}
+
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
