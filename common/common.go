@@ -34,16 +34,18 @@ type OverviewState struct {
 
 // Effect contains information about graphical effects from grenades, bombs, defuses
 type Effect struct {
-	Position Point
-	Type     demoinfo.EquipmentType
-	Lifetime int32
+	Position            Point
+	Type                demoinfo.EquipmentType
+	Lifetime            int32
+	IsOnNormalElevation bool
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade
 // mid air on the map.
 type GrenadeProjectile struct {
-	Position Point
-	Type     demoinfo.EquipmentType
+	Position            Point
+	Type                demoinfo.EquipmentType
+	IsOnNormalElevation bool
 }
 
 // Kill contains all information that is displayed on the killfeed.
@@ -71,13 +73,15 @@ type Shot struct {
 // Inferno contains the hull points of the surface area of a molotov or
 // incendiary grenade.
 type Inferno struct {
-	ConvexHull2D []Point
+	ConvexHull2D        []Point
+	IsOnNormalElevation bool
 }
 
 // Bomb contains all relevant information about the C4.
 type Bomb struct {
-	Position       Point
-	IsBeingCarried bool
+	Position            Point
+	IsBeingCarried      bool
+	IsOnNormalElevation bool
 }
 
 // Player contains all relevant information about a player in the match.

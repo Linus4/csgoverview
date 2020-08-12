@@ -83,7 +83,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			}
 			if (!player.IsOnNormalElevation && isOnNormalElevation) ||
 				(player.IsOnNormalElevation && !isOnNormalElevation) {
-				colorFlash.A -= 100
+				colorFlash.A /= 2
 			}
 			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlash)
 		}
@@ -107,7 +107,6 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 
 		color.A -= 105
 		gfx.CharacterColor(renderer, scaledXInt, scaledYInt, 'X', color)
-		color.A += 105
 	}
 }
 
@@ -133,6 +132,10 @@ func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	case demoinfo.EqHE:
 		color = colorEqHE
 	}
+	if (!grenade.IsOnNormalElevation && isOnNormalElevation) ||
+		(grenade.IsOnNormalElevation && !isOnNormalElevation) {
+		color.A = 100
+	}
 
 	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
@@ -143,21 +146,36 @@ func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Mat
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
+	var alphaModifier uint8
+	if (!effect.IsOnNormalElevation && isOnNormalElevation) ||
+		(effect.IsOnNormalElevation && !isOnNormalElevation) {
+		alphaModifier = 2
+	} else {
+		alphaModifier = 1
+	}
 
 	switch effect.Type {
 	case demoinfo.EqFlash:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorEqFlash)
+		color := colorEqFlash
+		color.A /= alphaModifier
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
 	case demoinfo.EqHE:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorEqHE)
+		color := colorEqHE
+		color.A /= alphaModifier
+		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
 	case demoinfo.EqSmoke:
+		color := colorSmoke
+		color.A /= alphaModifier
+		colorCircles := colorDarkWhite
+		colorCircles.A /= alphaModifier
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
 		scaledRadiusSmoke := int32(radiusSmoke * 4.9 / float64(match.MapScale))
-		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorSmoke)
+		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, color)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorDarkWhite)
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorCircles)
 		}
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorDarkWhite)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorCircles)
 	case demoinfo.EqDefuseKit:
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorMoney)
 	case demoinfo.EqBomb:
@@ -167,6 +185,7 @@ func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Mat
 
 func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
 	hull := inferno.ConvexHull2D
+	color := colorInferno
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
@@ -177,9 +196,13 @@ func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 		xCoordinates = append(xCoordinates, scaledXInt)
 		yCoordinates = append(yCoordinates, scaledYInt)
 	}
+	if (!inferno.IsOnNormalElevation && isOnNormalElevation) ||
+		(inferno.IsOnNormalElevation && !isOnNormalElevation) {
+		color.A /= 2
+	}
 
-	gfx.FilledPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
-	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, colorInferno)
+	gfx.FilledPolygonColor(renderer, xCoordinates, yCoordinates, color)
+	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, color)
 }
 
 func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
@@ -191,8 +214,13 @@ func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
+	color := colorBomb
+	if (!bomb.IsOnNormalElevation && isOnNormalElevation) ||
+		(bomb.IsOnNormalElevation && !isOnNormalElevation) {
+		color.A = 100
+	}
 
-	gfx.BoxColor(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, colorBomb)
+	gfx.BoxColor(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, color)
 }
 
 func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {

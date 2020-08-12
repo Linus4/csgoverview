@@ -205,14 +205,23 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 
 func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
 	effectLifetime := int(lifetime)
+	var isOnNormalElevation bool
+	if common.MapHasAlternateVersion(match.MapName) {
+		if e.Position.Z > common.MapGetHeightThreshold(match.MapName) {
+			isOnNormalElevation = true
+		} else {
+			isOnNormalElevation = false
+		}
+	}
 	for i := 0; i < effectLifetime; i++ {
 		effect := common.Effect{
 			Position: common.Point{
 				X: float32(e.Position.X),
 				Y: float32(e.Position.Y),
 			},
-			Type:     e.GrenadeType,
-			Lifetime: int32(i),
+			Type:                e.GrenadeType,
+			Lifetime:            int32(i),
+			IsOnNormalElevation: isOnNormalElevation,
 		}
 		effects, ok := match.Effects[match.currentFrame+i]
 		if ok {
@@ -231,8 +240,9 @@ func bombEventHandler(lifetime int32, eqType demoinfo.EquipmentType, bomb *demoi
 				X: float32(bomb.Position().X),
 				Y: float32(bomb.Position().Y),
 			},
-			Type:     eqType,
-			Lifetime: int32(i),
+			Type:                eqType,
+			Lifetime:            int32(i),
+			IsOnNormalElevation: true,
 		}
 		effects, ok := match.Effects[match.currentFrame+i]
 		if ok {
@@ -391,6 +401,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 
 		gameState := parser.GameState()
 
+		var isOnNormalElevation bool
 		players := make([]common.Player, 0, 10)
 
 		for _, p := range gameState.Participants().Playing() {
@@ -408,7 +419,6 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				}
 			}
 			sort.Slice(inventory, func(i, j int) bool { return inventory[i] < inventory[j] })
-			var isOnNormalElevation bool
 			if common.MapHasAlternateVersion(match.MapName) {
 				if p.Position().Z > common.MapGetHeightThreshold(match.MapName) {
 					isOnNormalElevation = true
@@ -452,12 +462,20 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 		grenades := make([]common.GrenadeProjectile, 0)
 
 		for _, grenade := range gameState.GrenadeProjectiles() {
+			if common.MapHasAlternateVersion(match.MapName) {
+				if grenade.Position().Z > common.MapGetHeightThreshold(match.MapName) {
+					isOnNormalElevation = true
+				} else {
+					isOnNormalElevation = false
+				}
+			}
 			g := common.GrenadeProjectile{
 				Position: common.Point{
 					X: float32(grenade.Position().X),
 					Y: float32(grenade.Position().Y),
 				},
-				Type: grenade.WeaponInstance.Type,
+				Type:                grenade.WeaponInstance.Type,
+				IsOnNormalElevation: isOnNormalElevation,
 			}
 			grenades = append(grenades, g)
 		}
@@ -473,8 +491,16 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				}
 				commonPoints = append(commonPoints, commonPoint)
 			}
+			if common.MapHasAlternateVersion(match.MapName) {
+				if inferno.Fires().Active().ConvexHull3D().Vertices[0].Z > common.MapGetHeightThreshold(match.MapName) {
+					isOnNormalElevation = true
+				} else {
+					isOnNormalElevation = false
+				}
+			}
 			i := common.Inferno{
-				ConvexHull2D: commonPoints,
+				ConvexHull2D:        commonPoints,
+				IsOnNormalElevation: isOnNormalElevation,
 			}
 			infernos = append(infernos, i)
 		}
@@ -485,12 +511,20 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 		} else {
 			isBeingCarried = false
 		}
+		if common.MapHasAlternateVersion(match.MapName) {
+			if gameState.Bomb().Position().Z > common.MapGetHeightThreshold(match.MapName) {
+				isOnNormalElevation = true
+			} else {
+				isOnNormalElevation = false
+			}
+		}
 		bomb := common.Bomb{
 			Position: common.Point{
 				X: float32(gameState.Bomb().Position().X),
 				Y: float32(gameState.Bomb().Position().Y),
 			},
-			IsBeingCarried: isBeingCarried,
+			IsBeingCarried:      isBeingCarried,
+			IsOnNormalElevation: isOnNormalElevation,
 		}
 
 		cts := common.TeamState{
