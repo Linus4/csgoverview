@@ -65,9 +65,10 @@ type Timer struct {
 
 // Shot contains information about a shot from a weapon.
 type Shot struct {
-	Position       Point
-	ViewDirectionX float32
-	IsAwpShot      bool
+	Position            Point
+	ViewDirectionX      float32
+	IsAwpShot           bool
+	IsOnNormalElevation bool
 }
 
 // Inferno contains the hull points of the surface area of a molotov or

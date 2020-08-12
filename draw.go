@@ -58,7 +58,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-		if (!player.IsOnNormalElevation && isOnNormalElevation) ||
+		if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
 			(player.IsOnNormalElevation && !isOnNormalElevation) {
 			color.A = 100
 			colorLOS.A = 100
@@ -87,7 +87,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			} else {
 				colorFlash.A = uint8((remaining.Seconds() * 255) / 3.1)
 			}
-			if (!player.IsOnNormalElevation && isOnNormalElevation) ||
+			if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
 				(player.IsOnNormalElevation && !isOnNormalElevation) {
 				colorFlash.A /= 2
 			}
@@ -138,7 +138,7 @@ func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	case demoinfo.EqHE:
 		color = colorEqHE
 	}
-	if (!grenade.IsOnNormalElevation && isOnNormalElevation) ||
+	if common.MapHasAlternateVersion(match.MapName) && (!grenade.IsOnNormalElevation && isOnNormalElevation) ||
 		(grenade.IsOnNormalElevation && !isOnNormalElevation) {
 		color.A = 100
 	}
@@ -153,7 +153,7 @@ func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Mat
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var alphaModifier uint8
-	if (!effect.IsOnNormalElevation && isOnNormalElevation) ||
+	if common.MapHasAlternateVersion(match.MapName) && (!effect.IsOnNormalElevation && isOnNormalElevation) ||
 		(effect.IsOnNormalElevation && !isOnNormalElevation) {
 		alphaModifier = 2
 	} else {
@@ -202,7 +202,7 @@ func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.M
 		xCoordinates = append(xCoordinates, scaledXInt)
 		yCoordinates = append(yCoordinates, scaledYInt)
 	}
-	if (!inferno.IsOnNormalElevation && isOnNormalElevation) ||
+	if common.MapHasAlternateVersion(match.MapName) && (!inferno.IsOnNormalElevation && isOnNormalElevation) ||
 		(inferno.IsOnNormalElevation && !isOnNormalElevation) {
 		color.A /= 2
 	}
@@ -221,7 +221,7 @@ func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	color := colorBomb
-	if (!bomb.IsOnNormalElevation && isOnNormalElevation) ||
+	if common.MapHasAlternateVersion(match.MapName) && (!bomb.IsOnNormalElevation && isOnNormalElevation) ||
 		(bomb.IsOnNormalElevation && !isOnNormalElevation) {
 		color.A = 100
 	}
@@ -390,6 +390,10 @@ func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	color := colorDarkWhite
 	if shot.IsAwpShot {
 		color = colorAwpShot
+	}
+	if common.MapHasAlternateVersion(match.MapName) && (!shot.IsOnNormalElevation && isOnNormalElevation) ||
+		(shot.IsOnNormalElevation && !isOnNormalElevation) {
+		color.A = 100
 	}
 
 	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)

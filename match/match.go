@@ -263,13 +263,20 @@ func weaponFireEventHandler(e event.WeaponFire, match *Match) {
 		return
 	}
 	isAwpShot := e.Weapon.Type == demoinfo.EqAWP
+	var isOnNormalElevation bool
+	if e.Shooter.Position().Z > common.MapGetHeightThreshold(match.MapName) {
+		isOnNormalElevation = true
+	} else {
+		isOnNormalElevation = false
+	}
 	shot := common.Shot{
 		Position: common.Point{
 			X: float32(e.Shooter.Position().X),
 			Y: float32(e.Shooter.Position().Y),
 		},
-		ViewDirectionX: e.Shooter.ViewDirectionX(),
-		IsAwpShot:      isAwpShot,
+		ViewDirectionX:      e.Shooter.ViewDirectionX(),
+		IsAwpShot:           isAwpShot,
+		IsOnNormalElevation: isOnNormalElevation,
 	}
 	var lifetime int
 
