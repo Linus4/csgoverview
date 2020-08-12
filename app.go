@@ -28,8 +28,9 @@ const (
 )
 
 var (
-	paused   bool
-	curFrame int
+	paused              bool
+	curFrame            int
+	isOnNormalElevation bool = true
 )
 
 // Config contains information the application requires in order to run
@@ -185,6 +186,7 @@ func run(c *Config) error {
 						tmp := mapTexture
 						mapTexture = alternateMapTexture
 						alternateMapTexture = tmp
+						isOnNormalElevation = !isOnNormalElevation
 					}
 				}
 

@@ -408,6 +408,14 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				}
 			}
 			sort.Slice(inventory, func(i, j int) bool { return inventory[i] < inventory[j] })
+			var isOnNormalElevation bool
+			if common.MapHasAlternateVersion(match.MapName) {
+				if p.Position().Z > common.MapGetHeightThreshold(match.MapName) {
+					isOnNormalElevation = true
+				} else {
+					isOnNormalElevation = false
+				}
+			}
 			player := common.Player{
 				Name: p.Name,
 				ID:   p.UserID,
@@ -420,21 +428,22 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 					X: float32(p.LastAlivePosition.X),
 					Y: float32(p.LastAlivePosition.Y),
 				},
-				ViewDirectionX:     p.ViewDirectionX(),
-				FlashDuration:      p.FlashDurationTime(),
-				FlashTimeRemaining: p.FlashDurationTimeRemaining(),
-				Inventory:          inventory,
-				Health:             int16(p.Health()),
-				Armor:              int16(p.Armor()),
-				Money:              int16(p.Money()),
-				Kills:              int16(p.Kills()),
-				Deaths:             int16(p.Deaths()),
-				Assists:            int16(p.Assists()),
-				IsAlive:            p.IsAlive(),
-				IsDefusing:         p.IsDefusing,
-				HasHelmet:          p.HasHelmet(),
-				HasDefuseKit:       p.HasDefuseKit(),
-				HasBomb:            hasBomb,
+				ViewDirectionX:      p.ViewDirectionX(),
+				FlashDuration:       p.FlashDurationTime(),
+				FlashTimeRemaining:  p.FlashDurationTimeRemaining(),
+				Inventory:           inventory,
+				Health:              int16(p.Health()),
+				Armor:               int16(p.Armor()),
+				Money:               int16(p.Money()),
+				Kills:               int16(p.Kills()),
+				Deaths:              int16(p.Deaths()),
+				Assists:             int16(p.Assists()),
+				IsAlive:             p.IsAlive(),
+				IsDefusing:          p.IsDefusing,
+				IsOnNormalElevation: isOnNormalElevation,
+				HasHelmet:           p.HasHelmet(),
+				HasDefuseKit:        p.HasDefuseKit(),
+				HasBomb:             hasBomb,
 			}
 			players = append(players, player)
 		}

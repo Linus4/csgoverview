@@ -47,6 +47,8 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 	} else {
 		color = colorCounter
 	}
+	colorLOS := colorDarkWhite
+	colorC4 := colorBomb
 
 	if player.IsAlive {
 		pos := player.Position
@@ -55,35 +57,46 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
+		if (!player.IsOnNormalElevation && isOnNormalElevation) ||
+			(player.IsOnNormalElevation && !isOnNormalElevation) {
+			color.A = 100
+			colorLOS.A = 100
+			colorC4.A = 100
+		}
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		name := fmt.Sprintf("%v %v", index+1, player.Name)
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorDarkWhite)
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorDarkWhite)
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorDarkWhite)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorLOS)
+		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorLOS)
 
+		colorFlash := colorFlashEffect
 		if player.FlashDuration.Seconds() > 0.5 {
 			remaining := player.FlashTimeRemaining
 			if remaining.Seconds() >= 3.1 {
-				colorFlashEffect.A = 255
+				colorFlash.A = 255
 			} else {
-				colorFlashEffect.A = uint8((remaining.Seconds() * 255) / 3.1)
+				colorFlash.A = uint8((remaining.Seconds() * 255) / 3.1)
 			}
-			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlashEffect)
+			if (!player.IsOnNormalElevation && isOnNormalElevation) ||
+				(player.IsOnNormalElevation && !isOnNormalElevation) {
+				colorFlash.A -= 100
+			}
+			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlash)
 		}
 
 		if player.HasBomb {
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorBomb)
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorBomb)
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorC4)
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorC4)
 		}
 
 		if player.IsDefusing {
-			color.A = 200
+			color.A -= 55
 			gfx.CharacterColor(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', color)
-			color.A = 255
+			color.A += 55
 		}
 	} else {
 		pos := player.LastAlivePosition
@@ -92,9 +105,9 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-		color.A = 150
+		color.A -= 105
 		gfx.CharacterColor(renderer, scaledXInt, scaledYInt, 'X', color)
-		color.A = 255
+		color.A += 105
 	}
 }
 

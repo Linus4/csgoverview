@@ -82,26 +82,27 @@ type Bomb struct {
 
 // Player contains all relevant information about a player in the match.
 type Player struct {
-	Name               string
-	ID                 int
-	Team               demoinfo.Team
-	Position           Point
-	LastAlivePosition  Point
-	ViewDirectionX     float32
-	FlashDuration      time.Duration
-	FlashTimeRemaining time.Duration
-	Inventory          []demoinfo.EquipmentType
-	Health             int16
-	Armor              int16
-	Money              int16
-	Kills              int16
-	Deaths             int16
-	Assists            int16
-	IsAlive            bool
-	IsDefusing         bool
-	HasHelmet          bool
-	HasDefuseKit       bool
-	HasBomb            bool
+	Name                string
+	ID                  int
+	Team                demoinfo.Team
+	Position            Point
+	LastAlivePosition   Point
+	ViewDirectionX      float32
+	FlashDuration       time.Duration
+	FlashTimeRemaining  time.Duration
+	Inventory           []demoinfo.EquipmentType
+	Health              int16
+	Armor               int16
+	Money               int16
+	Kills               int16
+	Deaths              int16
+	Assists             int16
+	IsAlive             bool
+	IsDefusing          bool
+	IsOnNormalElevation bool
+	HasHelmet           bool
+	HasDefuseKit        bool
+	HasBomb             bool
 }
 
 // TeamState contains information about a team in the match.
@@ -127,8 +128,8 @@ type MapInfo struct {
 
 // Golang Maps return default values for keys that are not in a map.
 var mapInfos = map[string]MapInfo{
-	"de_vertigo": MapInfo{"de_vertigo_lower.jpg", 0},
-	"de_nuke":    MapInfo{"de_nuke_lower.jpg", 0},
+	"de_vertigo": MapInfo{"de_vertigo_lower.jpg", 11598},
+	"de_nuke":    MapInfo{"de_nuke_lower.jpg", -550},
 }
 
 // MapHasAlternateVersion returns whether a map has an alternative overview image.
@@ -143,4 +144,9 @@ func MapHasAlternateVersion(mapName string) bool {
 // MapGetAlternateVersion returns the filename for the alternate overview file.
 func MapGetAlternateVersion(mapName string) string {
 	return mapInfos[mapName].AlternateOverview
+}
+
+// MapGetHeightThreshold returns the corresponding field of the specified map.
+func MapGetHeightThreshold(mapName string) float64 {
+	return mapInfos[mapName].HeightThreshold
 }
