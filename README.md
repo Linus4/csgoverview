@@ -36,6 +36,7 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * space -> toggle pause
 * mouse wheel -> scroll 1 second forwards/backwards
 * C -> switch to alternate overview image (normal / lower)
+* H -> hide player names on map
 
 ## Tool recommendations
 
