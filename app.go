@@ -94,7 +94,7 @@ func run(c *Config) error {
 	if err != nil {
 		errorString := fmt.Sprintf("trying to open font file (system):\n%v", err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
-		font, err = ttf.OpenFont("DejaVuSans.ttf", nameMapFontSize)
+		return err
 	}
 	defer font.Close()
 
