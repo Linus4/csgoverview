@@ -24,7 +24,7 @@ const (
 	mapXOffset           int32  = 300
 	mapYOffset           int32  = 0
 	infobarElementHeight int32  = 100
-	appVersion           string = "v0.7.1"
+	appVersion           string = "v1.0.0"
 )
 
 var (

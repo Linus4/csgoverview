@@ -4,7 +4,7 @@ Unicode True
 !include "FileAssociation.nsh"
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
-OutFile "${APP_NAME}_windows_v0.7.1_install.exe"
+OutFile "${APP_NAME}_windows_v1.0.0_install.exe"
 LicenseData "LICENSE"
 RequestExecutionLevel admin
 ;set default InstallDir
