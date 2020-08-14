@@ -12,7 +12,7 @@ require (
 	github.com/phpdave11/gofpdi v1.0.11 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/veandco/go-sdl2 v0.4.4
+	github.com/veandco/go-sdl2 v0.4.5-0.20200814083547-e1e6fddc529f
 	github.com/yuin/goldmark v1.1.26 // indirect
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
