@@ -16,6 +16,7 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 ## Wiki
 
 * [Windows Installation](https://github.com/Linus4/csgoverview/wiki/Windows-Installation)
+* [Overview Images](https://github.com/Linus4/csgoverview/wiki/Overview-Images)
 * [Linux Installation / Building](https://github.com/Linus4/csgoverview/wiki/Linux-Installation---Building)
 * [Cross-Compiling](https://github.com/Linus4/csgoverview/wiki/Cross-compiling)
 * [Command-Line Usage](https://github.com/Linus4/csgoverview/wiki/Command-Line-Usage)
