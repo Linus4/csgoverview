@@ -9,7 +9,8 @@ csgoverview installation instructions
     - Run `CertUtil -hashfile csgoverview_windows_v1.0.0.zip SHA256 | findstr -v "hash"` on the command
   line and make sure the checksum matches the one provided [here](https://github.com/Linus4/csgoverview/blob/master/README_WINDOWS.txt).
     - If the numbers don't match, try downloading the installer again and if 
-    they still don't match please let me know in the [chat](https://gitter.im/csgoverview/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge).
+    they still don't match please let me know in the [chat](https://gitter.im/csgoverview/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+    and do NOT install csgoverview.
 3. Run the installer.
 4. Right click a demo and select 'Open with' to open it with csgoverview.
 
