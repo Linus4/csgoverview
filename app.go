@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/linus4/csgoverview/common"
+	"github.com/linus4/csgoverview/display"
 	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
@@ -15,15 +16,15 @@ import (
 	"github.com/veandco/go-sdl2/ttf"
 )
 
-const (
-	winWidth             int32  = 1624
-	winHeight            int32  = 1024
-	nameMapFontSize      int    = 14
-	mapOverviewWidth     int32  = 1024
-	mapOverviewHeight    int32  = 1024
-	mapXOffset           int32  = 300
-	mapYOffset           int32  = 0
-	infobarElementHeight int32  = 100
+var (
+	winWidth             int32
+	winHeight            int32
+	nameMapFontSize      int = 14
+	mapOverviewWidth     int32
+	mapOverviewHeight    int32
+	mapXOffset           int32
+	mapYOffset           int32
+	infobarElementHeight int32
 	appVersion           string = "v1.0.0"
 )
 
@@ -57,7 +58,20 @@ var DefaultConfig = Config{
 	TickRate:  -1,
 }
 
+func setUp() {
+	bounds := display.GetBounds()
+	winWidth = int32(bounds.Dx())
+	winHeight = int32(bounds.Dy())
+	mapOverviewWidth = winHeight
+	mapOverviewHeight = winHeight
+	mapXOffset = (winWidth - winHeight) / 2
+	mapYOffset = 0
+	infobarElementHeight = 100 * winHeight / winWidth
+}
+
 func run(c *Config) error {
+	setUp()
+
 	var demoFileName string
 	if c.PrintVersion {
 		fmt.Println(appVersion)

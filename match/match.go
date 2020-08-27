@@ -11,6 +11,7 @@ import (
 	"time"
 
 	common "github.com/linus4/csgoverview/common"
+	display "github.com/linus4/csgoverview/display"
 	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
@@ -194,7 +195,7 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 		X: float32(meta.MapNameToMap[match.MapName].PZero.X),
 		Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
 	}
-	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
+	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale) * 1024.0 / float32(display.GetHeight())
 	match.SmokeEffectLifetime = int32(18 * match.FrameRateRounded)
 
 	registerEventHandlers(parser, match)

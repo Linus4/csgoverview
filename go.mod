@@ -1,11 +1,15 @@
 module github.com/linus4/csgoverview
 
 require (
+	github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843 // indirect
+	github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 // indirect
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
 	github.com/go-gl/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
 	github.com/golang/geo v0.0.0-20200730024412-e86565bf3f35
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
+	github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f
 	github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc // indirect
+	github.com/lxn/win v0.0.0-20191128105842-2da648fda5b4 // indirect
 	github.com/markus-wa/demoinfocs-golang/v2 v2.3.0
 	github.com/markus-wa/quickhull-go v0.0.0-20190116183559-9fb9702adbda // indirect
 	github.com/markus-wa/quickhull-go/v2 v2.1.0

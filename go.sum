@@ -1,8 +1,12 @@
+github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843 h1:3iF31c7rp7nGZVDv7YQ+VxOgpipVfPKotLXykjZmwM8=
+github.com/BurntSushi/xgb v0.0.0-20200324125942-20f126ea2843/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
 github.com/boombuler/barcode v1.0.0/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dustin/go-heatmap v0.0.0-20180603032536-b89dbd73785a/go.mod h1:VBmwC4U3p2SMEKr+/m5j0eby7rmUtSoA5TGLwe6P+3A=
+github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5 h1:Y5Q2mEwfzjMt5+3u70Gtw93ZOu2UuPeeeTBDntF7FoY=
+github.com/gen2brain/shm v0.0.0-20200228170931-49f9650110c5/go.mod h1:uF6rMu/1nvu+5DpiRLwusA6xB8zlkNoGzKn8lmYONUo=
 github.com/go-gl/gl v0.0.0-20180407155706-68e253793080/go.mod h1:482civXOzJJCPzJ4ZOX/pwvXBWSnzD4OKMdH4ClKGbk=
 github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7/go.mod h1:482civXOzJJCPzJ4ZOX/pwvXBWSnzD4OKMdH4ClKGbk=
 github.com/go-gl/glfw v0.0.0-20180426074136-46a8d530c326/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
@@ -32,6 +36,8 @@ github.com/jung-kurt/gofpdf v1.0.0/go.mod h1:7Id9E/uU8ce6rXgefFLlgrJj/GYY22cpxn+
 github.com/jung-kurt/gofpdf v1.10.1/go.mod h1:s/VXv+TdctEOx2wCEguezYaR7f0OwUAd6H9VGfRkcSs=
 github.com/jung-kurt/gofpdf v1.12.4/go.mod h1:PUFlk38sbwAJn0qocZnkWxDXLFa+Mqry8o6ilSOzWw8=
 github.com/jung-kurt/gofpdf v1.16.2/go.mod h1:1hl7y57EsiPAkLbOwzpzqgx1A30nQCk/YmFV8S2vmK0=
+github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f h1:5hWo+DzJQSOBl6X+TDac0SPWffRonuRJ2///OYtYRT8=
+github.com/kbinani/screenshot v0.0.0-20191211154542-3a185f1ce18f/go.mod h1:f8GY5V3lRzakvEyr49P7hHRYoHtPr8zvj/7JodCoRzw=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
 github.com/kisielk/errcheck v1.2.0/go.mod h1:/BMXB+zMLi60iA8Vv6Ksmxu/1UDYcXs4uQLJ+jE2L00=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
@@ -39,6 +45,8 @@ github.com/llgcode/draw2d v0.0.0-20180124133339-274031cf2abe/go.mod h1:th5ThsEAh
 github.com/llgcode/draw2d v0.0.0-20190810100245-79e59b6b8fbc/go.mod h1:mVa0dA29Db2S4LVqDYLlsePDzRJLDfdhVZiI15uY0FA=
 github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc/go.mod h1:mVa0dA29Db2S4LVqDYLlsePDzRJLDfdhVZiI15uY0FA=
 github.com/llgcode/ps v0.0.0-20150911083025-f1443b32eedb/go.mod h1:1l8ky+Ew27CMX29uG+a2hNOKpeNYEQjjtiALiBlFQbY=
+github.com/lxn/win v0.0.0-20191128105842-2da648fda5b4 h1:5BmtGkQbch91lglMHQ9JIDGiYCL3kBRBA0ItZTvOcEI=
+github.com/lxn/win v0.0.0-20191128105842-2da648fda5b4/go.mod h1:ouWl4wViUNh8tPSIwxTVMuS014WakR1hqvBc2I0bMoA=
 github.com/markus-wa/demoinfocs-golang v1.1.1 h1:DbYqBbsI9vOsPu7TL95QxZ5XZfq1zaDrQVTLpghgtBI=
 github.com/markus-wa/demoinfocs-golang v1.1.1/go.mod h1:mSvLLx4VAU4oHrjnC1DaLqWetgCa6sSHS+7OE5YeN9c=
 github.com/markus-wa/demoinfocs-golang v1.3.1 h1:jDr8xZU3Dyk9UlRdNu3LF7IJ3I9VbKq9hUWti2I3bdw=
