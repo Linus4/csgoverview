@@ -68,3 +68,5 @@ Thank you for helping me or contributing to the project!
   ([demoinfocs-golang](https://github.com/markus-wa/demoinfocs-golang))
 * [veeableful](https://github.com/veeableful)
   ([go-sdl2](https://github.com/veandco/go-sdl2/))
+* ptr6
+  (Mac wiki and testing)
