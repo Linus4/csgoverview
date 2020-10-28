@@ -23,22 +23,24 @@ const (
 )
 
 var (
-	colorTerror       = sdl.Color{252, 176, 12, 255}
-	colorCounter      = sdl.Color{89, 206, 200, 255}
-	colorMoney        = sdl.Color{45, 135, 45, 255}
-	colorBomb         = sdl.Color{255, 0, 0, 255}
-	colorEqDecoy      = sdl.Color{102, 34, 0, 255}
-	colorEqMolotov    = sdl.Color{255, 153, 0, 255}
-	colorEqIncendiary = sdl.Color{255, 153, 0, 255}
-	colorInferno      = sdl.Color{255, 153, 0, 100}
-	colorEqFlash      = sdl.Color{128, 170, 255, 255}
-	colorEqSmoke      = sdl.Color{153, 153, 153, 255}
-	colorSmoke        = sdl.Color{153, 153, 153, 100}
-	colorEqHE         = sdl.Color{85, 150, 0, 255}
-	colorDarkWhite    = sdl.Color{200, 200, 200, 255}
-	colorFlashEffect  = sdl.Color{200, 200, 200, 180}
-	colorAwpShot      = sdl.Color{255, 50, 0, 255}
-	hidePlayerNames   bool
+	colorTerror                = sdl.Color{252, 176, 12, 255}
+	colorCounter               = sdl.Color{89, 206, 200, 255}
+	colorMoney                 = sdl.Color{45, 135, 45, 255}
+	colorBomb                  = sdl.Color{255, 0, 0, 255}
+	colorEqDecoy               = sdl.Color{102, 34, 0, 255}
+	colorEqMolotov             = sdl.Color{255, 153, 0, 255}
+	colorEqIncendiary          = sdl.Color{255, 153, 0, 255}
+	colorInferno               = sdl.Color{255, 153, 0, 100}
+	colorEqFlash               = sdl.Color{128, 170, 255, 255}
+	colorEqSmoke               = sdl.Color{153, 153, 153, 255}
+	colorEqSmokeOutlineTerror  = sdl.Color{252, 176, 12, 120}
+	colorEqSmokeOutlineCounter = sdl.Color{89, 206, 200, 120}
+	colorSmoke                 = sdl.Color{153, 153, 153, 100}
+	colorEqHE                  = sdl.Color{85, 150, 0, 255}
+	colorDarkWhite             = sdl.Color{200, 200, 200, 255}
+	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
+	colorAwpShot               = sdl.Color{255, 50, 0, 255}
+	hidePlayerNames            bool
 )
 
 func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, index int, match *match.Match) {
@@ -179,7 +181,11 @@ func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Mat
 		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, color)
 		// only draw the outline if the smoke is not fading
 		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, colorCircles)
+			var smokeOutlineColor = colorEqSmokeOutlineTerror
+			if effect.Team == demoinfo.TeamCounterTerrorists {
+				smokeOutlineColor = colorEqSmokeOutlineCounter
+			}
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, smokeOutlineColor)
 		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorCircles)
 	case demoinfo.EqDefuseKit:

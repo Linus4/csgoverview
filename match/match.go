@@ -222,6 +222,7 @@ func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
 			Type:                e.GrenadeType,
 			Lifetime:            int32(i),
 			IsOnNormalElevation: isOnNormalElevation,
+			Team:                e.Thrower.Team,
 		}
 		effects, ok := match.Effects[match.currentFrame+i]
 		if ok {

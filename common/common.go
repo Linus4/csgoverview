@@ -38,6 +38,7 @@ type Effect struct {
 	Type                demoinfo.EquipmentType
 	Lifetime            int32
 	IsOnNormalElevation bool
+	Team                demoinfo.Team
 }
 
 // GrenadeProjectile conains all information that is used to draw a grenade
