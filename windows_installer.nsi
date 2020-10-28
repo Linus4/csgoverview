@@ -1,16 +1,16 @@
 ;General
 
 Unicode True
-!include "FileAssociation.nsh"
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
+Icon "csgoverview.ico"
 OutFile "${APP_NAME}_windows_v1.0.0_install.exe"
 LicenseData "LICENSE"
 RequestExecutionLevel admin
-;set default InstallDir
-InstallDir "$PROGRAMFILES\${APP_NAME}"
+; Set default InstallDir
+InstallDir "$PROGRAMFILES64\${APP_NAME}"
 ; check string in registry and use it as the install dir if that string is valid
-InstallDirRegKey HKCU "Software\${APP_NAME}" "InstallLocation"
+InstallDirRegKey HKLM "Software\${APP_NAME}" "InstallLocation"
 
 ;Pages
 
@@ -21,7 +21,9 @@ Page instfiles
 UninstPage uninstConfirm
 UninstPage instfiles
 
-Section "Install csgoverview" SecCSGOverview
+Section "Install CSGOverview" SecCSGOverview
+
+    SetRegView 64
 
     SetOutPath "$INSTDIR"
 
@@ -32,13 +34,28 @@ Section "Install csgoverview" SecCSGOverview
     CreateDirectory $INSTDIR\assets\maps
 
     ;Store installation folder
-    WriteRegStr HKCU "Software\${APP_NAME}" "InstallLocation" $INSTDIR
-
-    ;register file association
-    ${registerExtension} "$INSTDIR\${APP_NAME}.exe" ".dem" "DEM_File"
+    WriteRegStr HKLM "Software\${APP_NAME}" "InstallLocation" $INSTDIR
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" "CSGOverview - CS:GO Demo Viewer"
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" "$\"$INSTDIR\Uninstall.exe$\""
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayIcon" "$\"$INSTDIR\csgoverview.exe$\""
+
+SectionEnd
+
+Section "Register .dem Files" SecFile
+
+    SetRegView 64
+
+    ;register file association
+    WriteRegStr HKLM "Software\${APP_NAME}" "RegisterDemFiles" "Yes"
+    ;just overwrite lul
+    WriteRegStr HKCR ".dem" "" "CSGOverview.demo"
+    WriteRegStr HKCR "CSGOverview.demo" "" "CS:GO Demo File"
+    WriteRegStr HKCR "CSGOverview.demo\DefaultIcon" "" "$INSTDIR\csgoverview.exe,0"
+    WriteRegStr HKCR "CSGOverview.demo\shell" "" "open"
+    WriteRegStr HKCR "CSGOverview.demo\shell\open\command" "" '"$INSTDIR\csgoverview.exe" "%1"'
 
 SectionEnd
 
@@ -64,6 +81,8 @@ SectionEnd
 
 Section "un.Uninstall"
 
+    SetRegView 64
+
     Delete "$INSTDIR\assets\maps\de_overpass.jpg"
     Delete "$INSTDIR\assets\maps\de_mirage.jpg"
     Delete "$INSTDIR\assets\maps\de_vertigo.jpg"
@@ -85,9 +104,15 @@ Section "un.Uninstall"
 
     RMDir "$INSTDIR"
 
-    DeleteRegKey /ifempty HKCU "Software\${APP_NAME}"
-
     ;unregister file association
-    ${unregisterExtension} ".dem" "DEM_File"
+    ReadRegStr $1 HKLM "Software\${APP_NAME}" "RegisterDemFiles"
+    StrCmp $1 "Yes" UnregisterFile NoUnregisterFile
+    UnregisterFile:
+    DeleteRegKey HKCR ".dem"
+    DeleteRegKey HKCR "CSGOverview.demo"
+    NoUnregisterFile:
+
+    DeleteRegKey HKLM "Software\${APP_NAME}"
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
 SectionEnd

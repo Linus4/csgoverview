@@ -17,7 +17,7 @@ func main() {
 	flag.BoolVar(&conf.PrintVersion, "version", false, "Print version number")
 	flag.Float64Var(&conf.FrameRate, "framerate", conf.FrameRate, "Fallback GOTV Framerate")
 	flag.Float64Var(&conf.TickRate, "tickrate", conf.TickRate, "Fallback Gameserver Tickrate")
-	instDirKey, err := registry.OpenKey(registry.CURRENT_USER, `Software\csgoverview`, registry.QUERY_VALUE)
+	instDirKey, err := registry.OpenKey(registry.LOCAL_MACHINE, `Software\csgoverview`, registry.QUERY_VALUE)
 	if err != nil {
 		log.Fatalln("trying to open csgoverview registry key:", err)
 	}
