@@ -93,6 +93,7 @@ type Player struct {
 	Position            Point
 	LastAlivePosition   Point
 	ViewDirectionX      float32
+	ViewDirectionY      float32
 	FlashDuration       time.Duration
 	FlashTimeRemaining  time.Duration
 	Inventory           []demoinfo.EquipmentType

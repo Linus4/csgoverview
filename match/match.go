@@ -446,6 +446,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 					Y: float32(p.LastAlivePosition.Y),
 				},
 				ViewDirectionX:      p.ViewDirectionX(),
+				ViewDirectionY:      p.ViewDirectionY(),
 				FlashDuration:       p.FlashDurationTime(),
 				FlashTimeRemaining:  p.FlashDurationTimeRemaining(),
 				Inventory:           inventory,
