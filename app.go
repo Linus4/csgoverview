@@ -363,33 +363,32 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 		copyPositionToClipboard(0, match)
 	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_1 {
-                copyPositionToClipboard(1, match)
-        }
+		copyPositionToClipboard(1, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_2 {
-                copyPositionToClipboard(2, match)
-        }
+		copyPositionToClipboard(2, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_3 {
-                copyPositionToClipboard(3, match)
-        }
+		copyPositionToClipboard(3, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_4 {
-                copyPositionToClipboard(4, match)
-        }
+		copyPositionToClipboard(4, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_5 {
-                copyPositionToClipboard(5, match)
-        }
+		copyPositionToClipboard(5, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_6 {
-                copyPositionToClipboard(6, match)
-        }
+		copyPositionToClipboard(6, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_7 {
-                copyPositionToClipboard(7, match)
-        }
+		copyPositionToClipboard(7, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_8 {
-                copyPositionToClipboard(8, match)
-        }
+		copyPositionToClipboard(8, match)
+	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
-                copyPositionToClipboard(9, match)
-        }
-
+		copyPositionToClipboard(9, match)
+	}
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
@@ -412,12 +411,11 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 func copyPositionToClipboard(player int, match *match.Match) {
 	clipboard.WriteAll("setpos " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.X), 'f', 2, 32) + " " + 
-                strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " + 
-                ";setang " +
-                strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " + 
-                strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionX), 'f', 2, 32)) 
-
-	//fmt.Printf("%s\n", match.States[curFrame].Players[player].Name)
+        strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " + 
+        strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Z), 'f', 2, 32) +
+		";setang " +
+        strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " + 
+        strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionX), 'f', 2, 32)) 
 }
 
 func updateWindowTitle(window *sdl.Window, match *match.Match) {

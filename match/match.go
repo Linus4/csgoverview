@@ -440,6 +440,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				Position: common.Point{
 					X: float32(p.Position().X),
 					Y: float32(p.Position().Y),
+					Z: float32(p.Position().Z),
 				},
 				LastAlivePosition: common.Point{
 					X: float32(p.LastAlivePosition.X),
