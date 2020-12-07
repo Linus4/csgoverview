@@ -41,6 +41,7 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * mouse wheel -> scroll 1 second forwards/backwards
 * C -> switch to alternate overview image (normal / lower)
 * H -> hide player names on map
+* 0-9 -> copy players position and view angle to clipboard
 
 ## Tool recommendations
 
