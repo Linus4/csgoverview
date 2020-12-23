@@ -70,6 +70,7 @@ Thank you for helping me or contributing to the project!
   ([go-sdl2](https://github.com/veandco/go-sdl2/))
 * ptr6
   (Mac wiki and testing)
-* [xXxhaxmeister42xXx](https://github.com/xXxhaxmeister42xXx)(x64 Installer)
-* [langhillie](https://github.com/langhillie)(smoke team outlines, get player
+* [xXxhaxmeister42xXx](https://github.com/xXxhaxmeister42xXx) (x64 Installer)
+* [langhillie](https://github.com/langhillie) (smoke team outlines, get player
   view angle)
+
