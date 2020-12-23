@@ -9,7 +9,8 @@ require (
 	github.com/golang/geo v0.0.0-20200730024412-e86565bf3f35
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
 	github.com/llgcode/draw2d v0.0.0-20200110163050-b96d8208fcfc // indirect
-	github.com/markus-wa/demoinfocs-golang/v2 v2.3.0
+	github.com/markus-wa/demoinfocs-golang v1.11.0 // indirect
+	github.com/markus-wa/demoinfocs-golang/v2 v2.5.0
 	github.com/markus-wa/quickhull-go v0.0.0-20190116183559-9fb9702adbda // indirect
 	github.com/markus-wa/quickhull-go/v2 v2.1.0
 	github.com/mdempsky/maligned v0.0.0-20180708014732-6e39bd26a8c8 // indirect
