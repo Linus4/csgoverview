@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"sort"
 	"os/exec"
 	"path/filepath"
 	"time"
+	"strconv"
 
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
@@ -13,6 +15,7 @@ import (
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
+	"github.com/atotto/clipboard"
 )
 
 const (
@@ -357,7 +360,36 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_h {
 		hidePlayerNames = !hidePlayerNames
 	}
-
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_0 {
+		copyPositionToClipboard(9, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_1 {
+		copyPositionToClipboard(0, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_2 {
+		copyPositionToClipboard(1, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_3 {
+		copyPositionToClipboard(2, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_4 {
+		copyPositionToClipboard(3, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_5 {
+		copyPositionToClipboard(4, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_6 {
+		copyPositionToClipboard(5, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_7 {
+		copyPositionToClipboard(6, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_8 {
+		copyPositionToClipboard(7, match)
+	}
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
+		copyPositionToClipboard(8, match)
+	}
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
@@ -375,6 +407,31 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 			}
 		}
 	*/
+}
+
+func copyPositionToClipboard(player int, match *match.Match) {
+	players := match.States[curFrame].Players
+	if player >= len(players) {
+		return
+	}
+
+	sort.Slice(players, func(i, j int) bool {
+		if players[i].Team > players[j].Team {
+			return true
+		}
+		if players[i].Team < players[j].Team {
+			return false
+		}
+		return players[i].ID < players[j].ID
+	})
+
+        clipboard.WriteAll("setpos " +
+		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Z), 'f', 2, 32) +
+		";setang " +
+		strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionX), 'f', 2, 32))
 }
 
 func updateWindowTitle(window *sdl.Window, match *match.Match) {

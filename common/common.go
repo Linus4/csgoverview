@@ -94,6 +94,7 @@ type Player struct {
 	Position            Point
 	LastAlivePosition   Point
 	ViewDirectionX      float32
+	ViewDirectionY      float32
 	FlashDuration       time.Duration
 	FlashTimeRemaining  time.Duration
 	Inventory           []demoinfo.EquipmentType
@@ -121,6 +122,7 @@ type TeamState struct {
 type Point struct {
 	X float32
 	Y float32
+	Z float32
 }
 
 // MapInfo contains information about maps in regards to alternate versions
