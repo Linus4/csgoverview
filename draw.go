@@ -69,10 +69,14 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		var name string
+		number := index + 1
+		if player.Team == demoinfo.TeamTerrorists {
+			number = (number + 5) % 10
+		}
 		if !hidePlayerNames {
-			name = fmt.Sprintf("%v %v", index+1, player.Name)
+			name = fmt.Sprintf("%v %v", number, player.Name)
 		} else {
-			name = fmt.Sprintf("%v", index+1)
+			name = fmt.Sprintf("%v", number)
 		}
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
@@ -285,7 +289,11 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 		if !player.IsAlive {
 			color.A = 150
 		}
-		name := fmt.Sprintf("%v %v", i+1, player.Name)
+		number := i + 1
+		if player.Team == demoinfo.TeamTerrorists {
+			number = (number + 5) % 10
+		}
+		name := fmt.Sprintf("%v %v", number, player.Name)
 		drawString(renderer, cropStringToN(name, 20), color, x+85, yOffset+10, font)
 		color.A = 255
 		drawString(renderer, fmt.Sprintf("%v", player.Health), color, x+5, yOffset+10, font)
