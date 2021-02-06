@@ -3,6 +3,7 @@ module github.com/linus4/csgoverview
 require (
 	github.com/alecthomas/gocyclo v0.0.0-20150208221726-aa8f8b160214 // indirect
 	github.com/alexkohler/nakedret v1.0.0 // indirect
+	github.com/atotto/clipboard v0.1.2
 	github.com/client9/misspell v0.3.4 // indirect
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
 	github.com/go-gl/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
