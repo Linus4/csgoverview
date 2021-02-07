@@ -452,6 +452,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				FlashDuration:       p.FlashDurationTime(),
 				FlashTimeRemaining:  p.FlashDurationTimeRemaining(),
 				Inventory:           inventory,
+				ActiveWeapon:        p.ActiveWeapon(),
 				Health:              int16(p.Health()),
 				Armor:               int16(p.Armor()),
 				Money:               int16(p.Money()),
