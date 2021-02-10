@@ -48,6 +48,8 @@ type Match struct {
 	takeNthFrame         int
 	// used when handling events
 	currentFrame int
+	ctPrefix     string
+	tPrefix      string
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -334,14 +336,22 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 			killerName = "World"
 			killerTeam = demoinfo.TeamUnassigned
 		} else {
-			killerName = e.Killer.Name
+			if e.Killer.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
+				killerName = e.Killer.Name[len(match.ctPrefix):]
+			} else if e.Killer.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
+				killerName = e.Killer.Name[len(match.tPrefix):]
+			}
 			killerTeam = e.Killer.Team
 		}
 		if e.Victim == nil {
 			victimName = "World"
 			victimTeam = demoinfo.TeamUnassigned
 		} else {
-			victimName = e.Victim.Name
+			if e.Victim.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
+				victimName = e.Victim.Name[len(match.ctPrefix):]
+			} else if e.Victim.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
+				victimName = e.Victim.Name[len(match.tPrefix):]
+			}
 			victimTeam = e.Victim.Team
 		}
 		kill := common.Kill{
@@ -411,6 +421,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 
 		var isOnNormalElevation bool
 		players := make([]common.Player, 0, 10)
+		match.ctPrefix, match.tPrefix = getTeamPrefixes(gameState.Participants().Playing())
 
 		for _, p := range gameState.Participants().Playing() {
 			var hasBomb bool
@@ -434,8 +445,14 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 					isOnNormalElevation = false
 				}
 			}
+			name := p.Name
+			if p.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
+				name = name[len(match.ctPrefix):]
+			} else if p.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
+				name = name[len(match.tPrefix):]
+			}
 			player := common.Player{
-				Name: p.Name,
+				Name: name,
 				ID:   p.UserID,
 				Team: p.Team,
 				Position: common.Point{
@@ -630,4 +647,56 @@ func (m Match) Translate(x, y float32) (float32, float32) {
 func (m Match) TranslateScale(x, y float32) (float32, float32) {
 	x, y = m.Translate(x, y)
 	return x / m.MapScale, y / m.MapScale
+}
+
+// getTeamPrefixes checks for common prefixes in player names and returns both the CT and T prefixes.
+func getTeamPrefixes(players []*demoinfo.Player) (string, string) {
+	ctNames := make([]string, 0)
+	tNames := make([]string, 0)
+	for _, p := range players {
+		if p.Team == demoinfo.TeamCounterTerrorists {
+			ctNames = append(ctNames, p.Name)
+		} else {
+			tNames = append(tNames, p.Name)
+		}
+	}
+	return longestCommonPrefix(ctNames), longestCommonPrefix(tNames)
+}
+
+// longestCommonPrefix returns the longest common prefix of the provided strings.
+func longestCommonPrefix(strs []string) string {
+	// short-circuit empty list
+	if len(strs) == 0 {
+		return ""
+	}
+
+	compare := strs[0]
+	// short-circuit single element list
+	if len(strs) == 1 {
+		return compare
+	}
+
+	// compare first string to rest
+	for _, str := range strs[1:] {
+		comparel := len(compare)
+		strl := len(str)
+
+		// short-circuit empty strings
+		if comparel == 0 || strl == 0 {
+			return ""
+		}
+		// maximum possible length
+		maxl := comparel
+		if strl < maxl {
+			maxl = strl
+		}
+		// compare characters
+		for i := 0; i < maxl; i++ {
+			if compare[i] != str[i] {
+				compare = compare[:i]
+				break
+			}
+		}
+	}
+	return compare
 }
