@@ -48,8 +48,6 @@ type Match struct {
 	takeNthFrame         int
 	// used when handling events
 	currentFrame int
-	ctPrefix     string
-	tPrefix      string
 }
 
 // NewMatch parses the demo at the specified path in the argument and returns a
@@ -336,22 +334,14 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 			killerName = "World"
 			killerTeam = demoinfo.TeamUnassigned
 		} else {
-			if e.Killer.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
-				killerName = e.Killer.Name[len(match.ctPrefix):]
-			} else if e.Killer.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
-				killerName = e.Killer.Name[len(match.tPrefix):]
-			}
+			killerName = e.Killer.Name
 			killerTeam = e.Killer.Team
 		}
 		if e.Victim == nil {
 			victimName = "World"
 			victimTeam = demoinfo.TeamUnassigned
 		} else {
-			if e.Victim.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
-				victimName = e.Victim.Name[len(match.ctPrefix):]
-			} else if e.Victim.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
-				victimName = e.Victim.Name[len(match.tPrefix):]
-			}
+			victimName = e.Victim.Name
 			victimTeam = e.Victim.Team
 		}
 		kill := common.Kill{
@@ -421,7 +411,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 
 		var isOnNormalElevation bool
 		players := make([]common.Player, 0, 10)
-		match.ctPrefix, match.tPrefix = getTeamPrefixes(gameState.Participants().Playing())
+		ctPrefix, tPrefix := getTeamPrefixes(gameState.Participants().Playing())
 
 		for _, p := range gameState.Participants().Playing() {
 			var hasBomb bool
@@ -446,10 +436,10 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				}
 			}
 			name := p.Name
-			if p.Team == demoinfo.TeamCounterTerrorists && len(match.ctPrefix) > 1 {
-				name = name[len(match.ctPrefix):]
-			} else if p.Team == demoinfo.TeamTerrorists && len(match.tPrefix) > 1 {
-				name = name[len(match.tPrefix):]
+			if p.Team == demoinfo.TeamCounterTerrorists && len(ctPrefix) > 1 {
+				name = name[len(ctPrefix):]
+			} else if p.Team == demoinfo.TeamTerrorists && len(tPrefix) > 1 {
+				name = name[len(tPrefix):]
 			}
 			player := common.Player{
 				Name: name,
@@ -660,7 +650,14 @@ func getTeamPrefixes(players []*demoinfo.Player) (string, string) {
 			tNames = append(tNames, p.Name)
 		}
 	}
-	return longestCommonPrefix(ctNames), longestCommonPrefix(tNames)
+	ctPrefix, tPrefix := longestCommonPrefix(ctNames), longestCommonPrefix(tNames)
+	if len(ctNames) == 1 {
+		ctPrefix = ""
+	}
+	if len(tNames) == 1 {
+		tPrefix = ""
+	}
+	return ctPrefix, tPrefix
 }
 
 // longestCommonPrefix returns the longest common prefix of the provided strings.
