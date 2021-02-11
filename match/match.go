@@ -411,7 +411,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 
 		var isOnNormalElevation bool
 		players := make([]common.Player, 0, 10)
-		ctPrefix, tPrefix := getTeamPrefixes(gameState.Participants().Playing())
+		ctPrefix, tPrefix, ctPostfix, tPostfix := getTeamXfixes(gameState.Participants().Playing())
 
 		for _, p := range gameState.Participants().Playing() {
 			var hasBomb bool
@@ -436,10 +436,20 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				}
 			}
 			name := p.Name
-			if p.Team == demoinfo.TeamCounterTerrorists && len(ctPrefix) > 1 {
-				name = name[len(ctPrefix):]
-			} else if p.Team == demoinfo.TeamTerrorists && len(tPrefix) > 1 {
-				name = name[len(tPrefix):]
+			if p.Team == demoinfo.TeamCounterTerrorists {
+				if len(ctPrefix) > 1 {
+					name = name[len(ctPrefix):]
+				}
+				if len(ctPostfix) > 1 {
+					name = name[:len(name)-len(ctPostfix)]
+				}
+			} else if p.Team == demoinfo.TeamTerrorists {
+				if len(tPrefix) > 1 {
+					name = name[len(tPrefix):]
+				}
+				if len(tPostfix) > 1 {
+					name = name[:len(name)-len(tPostfix)]
+				}
 			}
 			player := common.Player{
 				Name: name,
@@ -639,8 +649,9 @@ func (m Match) TranslateScale(x, y float32) (float32, float32) {
 	return x / m.MapScale, y / m.MapScale
 }
 
-// getTeamPrefixes checks for common prefixes in player names and returns both the CT and T prefixes.
-func getTeamPrefixes(players []*demoinfo.Player) (string, string) {
+// getTeamXfixes checks for common pre- and postfixes in player names and returns both the CT and T prefixes
+// and the CT and T postfixes.
+func getTeamXfixes(players []*demoinfo.Player) (string, string, string, string) {
 	ctNames := make([]string, 0)
 	tNames := make([]string, 0)
 	for _, p := range players {
@@ -650,18 +661,21 @@ func getTeamPrefixes(players []*demoinfo.Player) (string, string) {
 			tNames = append(tNames, p.Name)
 		}
 	}
-	ctPrefix, tPrefix := longestCommonPrefix(ctNames), longestCommonPrefix(tNames)
+	ctPrefix, tPrefix := longestCommonXfix(ctNames, true), longestCommonXfix(tNames, true)
+	ctPostfix, tPostfix := longestCommonXfix(ctNames, false), longestCommonXfix(tNames, false)
 	if len(ctNames) == 1 {
 		ctPrefix = ""
+		ctPostfix = ""
 	}
 	if len(tNames) == 1 {
 		tPrefix = ""
+		tPostfix = ""
 	}
-	return ctPrefix, tPrefix
+	return ctPrefix, tPrefix, ctPostfix, tPostfix
 }
 
-// longestCommonPrefix returns the longest common prefix of the provided strings.
-func longestCommonPrefix(strs []string) string {
+// longestCommonXfix returns the longest common prefix or postfix of the provided strings.
+func longestCommonXfix(strs []string, prefix bool) string {
 	// short-circuit empty list
 	if len(strs) == 0 {
 		return ""
@@ -688,10 +702,21 @@ func longestCommonPrefix(strs []string) string {
 			maxl = strl
 		}
 		// compare characters
-		for i := 0; i < maxl; i++ {
-			if compare[i] != str[i] {
-				compare = compare[:i]
-				break
+		if prefix {
+			for i := 0; i < maxl; i++ {
+				if compare[i] != str[i] {
+					compare = compare[:i]
+					break
+				}
+			}
+		} else {
+			for i := 0; i < maxl; i++ {
+				ci := comparel - i - 1
+				si := strl - i - 1
+				if compare[ci] != str[si] {
+					compare = compare[ci+1:]
+					break
+				}
 			}
 		}
 	}
