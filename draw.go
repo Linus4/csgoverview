@@ -298,6 +298,7 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	drawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 	drawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
 	drawTimer(renderer, match.States[curFrame].Timer, 0, mapYOffset+600, font)
+	drawPlaybackSpeedModifier(renderer, 5, mapYOffset+630, font)
 }
 
 func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
@@ -440,6 +441,11 @@ func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	targetY := int32(scaledYInt) + int32(math.Sin(viewAngleRadian)*shotLength/float64(match.MapScale))
 
 	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
+}
+
+func drawPlaybackSpeedModifier(renderer *sdl.Renderer, x, y int32, font *ttf.Font) {
+	str := fmt.Sprintf("Playback-Speed: x %v", staticPlaybackSpeedModifier*playbackSpeedModifier)
+	drawString(renderer, str, colorDarkWhite, x, y, font)
 }
 
 func cropStringToN(s string, n int) string {
