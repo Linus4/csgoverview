@@ -3,19 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	"sort"
 	"os/exec"
 	"path/filepath"
-	"time"
+	"sort"
 	"strconv"
+	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
-	"github.com/atotto/clipboard"
 )
 
 const (
@@ -425,7 +425,7 @@ func copyPositionToClipboard(player int, match *match.Match) {
 		return players[i].ID < players[j].ID
 	})
 
-        clipboard.WriteAll("setpos " +
+	clipboard.WriteAll("setpos " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Z), 'f', 2, 32) +
