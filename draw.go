@@ -66,7 +66,6 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			colorLOS.A = 100
 			colorC4.A = 100
 		}
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		var name string
 		number := index + 1
@@ -79,6 +78,24 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			name = fmt.Sprintf("%v", number)
 		}
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
+
+		if player.Health == 100 {
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
+		} else {
+			// start == 0 is facing right
+			// health left
+			var healthArc int32 = int32(player.Health) * 360 / 100
+			start := 90 - (healthArc / 2)
+			end := 90 + (healthArc / 2)
+			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+			// health lost
+			color.R = uint8(float32(color.R) * 0.6)
+			color.G = uint8(float32(color.G) * 0.6)
+			color.B = uint8(float32(color.B) * 0.6)
+			start = -90 - ((360 - healthArc) / 2)
+			end = -90 + ((360 - healthArc) / 2)
+			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+		}
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
