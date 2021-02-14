@@ -158,3 +158,13 @@ func MapGetAlternateVersion(mapName string) string {
 func MapGetHeightThreshold(mapName string) float64 {
 	return mapInfos[mapName].HeightThreshold
 }
+
+// HasAwp returns whether the player has an AWP in their inventory.
+func (player *Player) HasAwp() bool {
+	for _, eq := range player.Inventory {
+		if eq == demoinfo.EqAWP {
+			return true
+		}
+	}
+	return false
+}

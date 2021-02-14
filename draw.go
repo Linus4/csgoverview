@@ -98,6 +98,9 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		}
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
+		if player.HasAwp() {
+			colorLOS = colorAwpShot
+		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorLOS)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorLOS)
