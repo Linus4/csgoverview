@@ -42,6 +42,7 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * c -> switch to alternate overview image (normal / lower)
 * h -> hide player names on map
 * 0-9 -> copy players position and view angle to clipboard
+* k -> show hotkeys
 
 ## Tool recommendations
 

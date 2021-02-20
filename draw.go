@@ -38,6 +38,7 @@ var (
 	colorSmoke                 = sdl.Color{153, 153, 153, 100}
 	colorEqHE                  = sdl.Color{85, 150, 0, 255}
 	colorDarkWhite             = sdl.Color{200, 200, 200, 255}
+	colorDarkGrey              = sdl.Color{125, 125, 125, 255}
 	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
 	colorAwpShot               = sdl.Color{255, 50, 0, 255}
 	hidePlayerNames            bool

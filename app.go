@@ -28,6 +28,27 @@ const (
 	mapYOffset           int32  = 0
 	infobarElementHeight int32  = 100
 	appVersion           string = "v1.0.0"
+	hotkeysString        string = `
+* a -> 5 s backwards
+* d -> 5 s forwards
+* A -> 10 s backwards
+* D -> 10 s forwards
+* w -> increase playback speed
+* s -> decrease playback speed
+* r -> reset playback speed to x 1
+* W -> hold to speed up 5 x
+* S -> hold to slow down to 0.5 x
+* q -> round backwards
+* e -> round forwards
+* Q -> to start of previous half
+* E -> to start of next half
+* space -> toggle pause
+* mouse wheel -> scroll 1 second forwards/backwards
+* c -> switch to alternate overview image (normal / lower)
+* h -> hide player names on map
+* 0-9 -> copy players position and view angle to clipboard
+* k -> show hotkeys
+`
 )
 
 var (
@@ -427,6 +448,10 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_r {
 		staticPlaybackSpeedModifier = 1
 	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_k {
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
+	}
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
 			fmt.Println("take screenshot")
@@ -528,6 +553,8 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 			indexCT++
 		}
 	}
+
+	drawString(renderer, "k shows hotkeys", colorDarkGrey, mapXOffset+mapOverviewWidth+150, mapYOffset+mapOverviewHeight-40, font)
 
 	renderer.Present()
 }
