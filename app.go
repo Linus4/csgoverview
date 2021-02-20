@@ -3,19 +3,19 @@ package main
 import (
 	"flag"
 	"fmt"
-	"sort"
 	"os/exec"
 	"path/filepath"
-	"time"
+	"sort"
 	"strconv"
+	"time"
 
+	"github.com/atotto/clipboard"
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
-	"github.com/atotto/clipboard"
 )
 
 const (
@@ -28,12 +28,35 @@ const (
 	mapYOffset           int32  = 0
 	infobarElementHeight int32  = 100
 	appVersion           string = "v1.0.0"
+	hotkeysString        string = `
+* a -> 5 s backwards
+* d -> 5 s forwards
+* A -> 10 s backwards
+* D -> 10 s forwards
+* w -> increase playback speed
+* s -> decrease playback speed
+* r -> reset playback speed to x 1
+* W -> hold to speed up 5 x
+* S -> hold to slow down to 0.5 x
+* q -> round backwards
+* e -> round forwards
+* Q -> to start of previous half
+* E -> to start of next half
+* space -> toggle pause
+* mouse wheel -> scroll 1 second forwards/backwards
+* c -> switch to alternate overview image (normal / lower)
+* h -> hide player names on map
+* 0-9 -> copy players position and view angle to clipboard
+* k -> show hotkeys
+`
 )
 
 var (
-	paused              bool
-	curFrame            int
-	isOnNormalElevation bool = true
+	paused                      bool
+	curFrame                    int
+	isOnNormalElevation         bool    = true
+	playbackSpeedModifier       float64 = 1
+	staticPlaybackSpeedModifier float64 = 1
 )
 
 // Config contains information the application requires in order to run
@@ -178,8 +201,11 @@ func run(c *Config) error {
 				return err
 
 			case *sdl.KeyboardEvent:
+				if eventT.Type != sdl.KEYDOWN {
+					break
+				}
 				handleKeyboardEvents(eventT, window, match)
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_c {
+				if eventT.Keysym.Sym == sdl.K_c {
 					if common.MapHasAlternateVersion(match.MapName) {
 						tmp := mapTexture
 						mapTexture = alternateMapTexture
@@ -220,19 +246,20 @@ func run(c *Config) error {
 
 		updateGraphics(renderer, match, font, mapTexture, mapRect)
 		updateWindowTitle(window, match)
-
-		var playbackSpeed float64 = 1
+		playbackSpeedModifier = 1
 
 		// frameDuration is in ms
 		frameDuration := float64(time.Since(frameStart) / 1000000)
 		keyboardState := sdl.GetKeyboardState()
-		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 {
-			playbackSpeed = 5
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 &&
+			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
+			playbackSpeedModifier = 5
 		}
-		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
-			playbackSpeed = 0.5
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 &&
+			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
+			playbackSpeedModifier = 0.5
 		}
-		delay := (1/playbackSpeed)*(1000/float64(match.FrameRateRounded)) - frameDuration
+		delay := (1/(playbackSpeedModifier*staticPlaybackSpeedModifier))*(1000/float64(match.FrameRateRounded)) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
@@ -245,11 +272,11 @@ func run(c *Config) error {
 }
 
 func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *match.Match) {
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
+	switch eventT.Keysym.Sym {
+	case sdl.K_SPACE:
 		paused = !paused
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
+	case sdl.K_a:
 		if isShiftPressed(eventT) {
 			if curFrame < match.FrameRateRounded*10 {
 				curFrame = 0
@@ -263,9 +290,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame -= match.FrameRateRounded * 5
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
+	case sdl.K_d:
 		if isShiftPressed(eventT) {
 			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
 				curFrame = len(match.States) - 1
@@ -279,9 +305,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame += match.FrameRateRounded * 5
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
+	case sdl.K_q:
 		if isShiftPressed(eventT) {
 			set := false
 			for i, frame := range match.HalfStarts {
@@ -337,9 +362,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				}
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
+	case sdl.K_e:
 		if isShiftPressed(eventT) {
 			for _, frame := range match.HalfStarts {
 				if curFrame < frame {
@@ -355,58 +379,87 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				}
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_h {
+	case sdl.K_h:
 		hidePlayerNames = !hidePlayerNames
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_0 {
+	case sdl.K_0:
 		copyPositionToClipboard(9, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_1 {
+	case sdl.K_1:
 		copyPositionToClipboard(0, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_2 {
+	case sdl.K_2:
 		copyPositionToClipboard(1, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_3 {
+	case sdl.K_3:
 		copyPositionToClipboard(2, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_4 {
+	case sdl.K_4:
 		copyPositionToClipboard(3, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_5 {
+	case sdl.K_5:
 		copyPositionToClipboard(4, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_6 {
+	case sdl.K_6:
 		copyPositionToClipboard(5, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_7 {
+	case sdl.K_7:
 		copyPositionToClipboard(6, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_8 {
+	case sdl.K_8:
 		copyPositionToClipboard(7, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
+	case sdl.K_9:
 		copyPositionToClipboard(8, match)
-	}
-	/*
-		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
-			fmt.Println("take screenshot")
-			fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
-			// using a renderer so window does not have a surface
-			screenshotSurface, err := window.GetSurface()
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-			err = img.SavePNG(screenshotSurface, fileName)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
+
+	case sdl.K_w:
+		if isShiftPressed(eventT) {
+			break
 		}
-	*/
+		switch staticPlaybackSpeedModifier {
+		case 0.25:
+			staticPlaybackSpeedModifier = 0.5
+		case 0.5:
+			staticPlaybackSpeedModifier = 1
+		case 1:
+			staticPlaybackSpeedModifier = 1.25
+		case 1.25:
+			staticPlaybackSpeedModifier = 1.5
+		case 1.5:
+			staticPlaybackSpeedModifier = 2
+		}
+
+	case sdl.K_s:
+		if isShiftPressed(eventT) {
+			break
+		}
+		switch staticPlaybackSpeedModifier {
+		case 0.5:
+			staticPlaybackSpeedModifier = 0.25
+		case 1:
+			staticPlaybackSpeedModifier = 0.5
+		case 1.25:
+			staticPlaybackSpeedModifier = 1
+		case 1.5:
+			staticPlaybackSpeedModifier = 1.25
+		case 2:
+			staticPlaybackSpeedModifier = 1.5
+		}
+
+	case sdl.K_r:
+		staticPlaybackSpeedModifier = 1
+
+	case sdl.K_k:
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
+
+		/*
+			case sdl.K_p:
+				fmt.Println("take screenshot")
+				fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
+				// using a renderer so window does not have a surface
+				screenshotSurface, err := window.GetSurface()
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+				err = img.SavePNG(screenshotSurface, fileName)
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+		*/
+	}
 }
 
 func copyPositionToClipboard(player int, match *match.Match) {
@@ -425,7 +478,7 @@ func copyPositionToClipboard(player int, match *match.Match) {
 		return players[i].ID < players[j].ID
 	})
 
-        clipboard.WriteAll("setpos " +
+	clipboard.WriteAll("setpos " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Z), 'f', 2, 32) +
@@ -491,6 +544,8 @@ func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, 
 			indexCT++
 		}
 	}
+
+	drawString(renderer, "k shows hotkeys", colorDarkGrey, mapXOffset+mapOverviewWidth+150, mapYOffset+mapOverviewHeight-40, font)
 
 	renderer.Present()
 }

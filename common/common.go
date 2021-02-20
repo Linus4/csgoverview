@@ -139,15 +139,15 @@ type MapInfo struct {
 var mapInfos = map[string]MapInfo{
 	"de_vertigo": MapInfo{"de_vertigo_lower.jpg", 11598},
 	"de_nuke":    MapInfo{"de_nuke_lower.jpg", -550},
+	"de_mirage":  MapInfo{"de_mirage.jpg", -335},
 }
 
 // MapHasAlternateVersion returns whether a map has an alternative overview image.
 func MapHasAlternateVersion(mapName string) bool {
 	if mapInfos[mapName].AlternateOverview != "" {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // MapGetAlternateVersion returns the filename for the alternate overview file.
@@ -158,4 +158,14 @@ func MapGetAlternateVersion(mapName string) string {
 // MapGetHeightThreshold returns the corresponding field of the specified map.
 func MapGetHeightThreshold(mapName string) float64 {
 	return mapInfos[mapName].HeightThreshold
+}
+
+// HasAwp returns whether the player has an AWP in their inventory.
+func (player *Player) HasAwp() bool {
+	for _, eq := range player.Inventory {
+		if eq == demoinfo.EqAWP {
+			return true
+		}
+	}
+	return false
 }

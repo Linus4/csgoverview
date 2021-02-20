@@ -6,9 +6,6 @@ Status: maintained
 
 [![GoDoc](https://godoc.org/github.com/Linus4/csgoverview?status.svg)](https://godoc.org/github.com/Linus4/csgoverview) [![Go Report Card](https://goreportcard.com/badge/github.com/linus4/csgoverview)](https://goreportcard.com/report/github.com/linus4/csgoverview)  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Linus4/csgoverview/blob/master/LICENSE) [![Paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.me/linuswbr)
 
-Check out the [Roadmap](https://github.com/Linus4/csgoverview/projects/1) where
-I keep track of ideas and todos.
-
 ## Chat
 
 I created a chatroom on Gitter so we have a place to talk about suggestions, problems and other questions.
@@ -31,17 +28,21 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * d -> 5 s forwards
 * A -> 10 s backwards
 * D -> 10 s forwards
-* w -> hold to speed up 5 x
-* s -> hold to slow down to 0.5 x
+* w -> increase playback speed
+* s -> decrease playback speed
+* r -> reset playback speed to x 1
+* W -> hold to speed up 5 x
+* S -> hold to slow down to 0.5 x
 * q -> round backwards
 * e -> round forwards
 * Q -> to start of previous half
 * E -> to start of next half
 * space -> toggle pause
 * mouse wheel -> scroll 1 second forwards/backwards
-* C -> switch to alternate overview image (normal / lower)
-* H -> hide player names on map
+* c -> switch to alternate overview image (normal / lower)
+* h -> hide player names on map
 * 0-9 -> copy players position and view angle to clipboard
+* k -> show hotkeys
 
 ## Tool recommendations
 

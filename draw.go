@@ -38,6 +38,7 @@ var (
 	colorSmoke                 = sdl.Color{153, 153, 153, 100}
 	colorEqHE                  = sdl.Color{85, 150, 0, 255}
 	colorDarkWhite             = sdl.Color{200, 200, 200, 255}
+	colorDarkGrey              = sdl.Color{125, 125, 125, 255}
 	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
 	colorAwpShot               = sdl.Color{255, 50, 0, 255}
 	hidePlayerNames            bool
@@ -66,7 +67,6 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			colorLOS.A = 100
 			colorC4.A = 100
 		}
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 
 		var name string
 		number := index + 1
@@ -83,7 +83,28 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		}
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
+		if player.Health == 100 {
+			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
+		} else {
+			// start == 0 is facing right
+			// health left
+			var healthArc int32 = int32(player.Health) * 360 / 100
+			start := 90 - (healthArc / 2)
+			end := 90 + (healthArc / 2)
+			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+			// health lost
+			color.R = uint8(float32(color.R) * 0.6)
+			color.G = uint8(float32(color.G) * 0.6)
+			color.B = uint8(float32(color.B) * 0.6)
+			start = -90 - ((360 - healthArc) / 2)
+			end = -90 + ((360 - healthArc) / 2)
+			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+		}
+
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
+		if player.HasAwp() {
+			colorLOS = colorAwpShot
+		}
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorLOS)
 		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorLOS)
@@ -281,6 +302,7 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	drawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
 	drawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
 	drawTimer(renderer, match.States[curFrame].Timer, 0, mapYOffset+600, font)
+	drawPlaybackSpeedModifier(renderer, 5, mapYOffset+630, font)
 }
 
 func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
@@ -423,6 +445,11 @@ func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	targetY := int32(scaledYInt) + int32(math.Sin(viewAngleRadian)*shotLength/float64(match.MapScale))
 
 	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
+}
+
+func drawPlaybackSpeedModifier(renderer *sdl.Renderer, x, y int32, font *ttf.Font) {
+	str := fmt.Sprintf("Playback-Speed: x %v", staticPlaybackSpeedModifier*playbackSpeedModifier)
+	drawString(renderer, str, colorDarkWhite, x, y, font)
 }
 
 func cropStringToN(s string, n int) string {
