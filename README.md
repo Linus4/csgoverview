@@ -28,10 +28,11 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 * d -> 5 s forwards
 * A -> 10 s backwards
 * D -> 10 s forwards
-* w -> hold to speed up 5 x
-* s -> hold to slow down to 0.5 x
-* W -> increase playback speed by 0.25
-* S -> decrease playback speed by 0.25
+* w -> increase playback speed
+* s -> decrease playback speed
+* r -> reset playback speed to x 1
+* W -> hold to speed up 5 x
+* S -> hold to slow down to 0.5 x
 * q -> round backwards
 * e -> round forwards
 * Q -> to start of previous half

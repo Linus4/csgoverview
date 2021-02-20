@@ -393,15 +393,21 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
 		copyPositionToClipboard(8, match)
 	}
+
 	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_w {
 		if staticPlaybackSpeedModifier <= 1.75 {
 			staticPlaybackSpeedModifier += 0.25
 		}
 	}
+
 	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_s {
 		if staticPlaybackSpeedModifier >= 0.5 {
 			staticPlaybackSpeedModifier -= 0.25
 		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_r {
+		staticPlaybackSpeedModifier = 1
 	}
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
