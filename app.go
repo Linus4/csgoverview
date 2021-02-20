@@ -31,9 +31,11 @@ const (
 )
 
 var (
-	paused              bool
-	curFrame            int
-	isOnNormalElevation bool = true
+	paused                      bool
+	curFrame                    int
+	isOnNormalElevation         bool    = true
+	playbackSpeedModifier       float64 = 1
+	staticPlaybackSpeedModifier float64 = 1
 )
 
 // Config contains information the application requires in order to run
@@ -220,19 +222,20 @@ func run(c *Config) error {
 
 		updateGraphics(renderer, match, font, mapTexture, mapRect)
 		updateWindowTitle(window, match)
-
-		var playbackSpeed float64 = 1
+		playbackSpeedModifier = 1
 
 		// frameDuration is in ms
 		frameDuration := float64(time.Since(frameStart) / 1000000)
 		keyboardState := sdl.GetKeyboardState()
-		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 {
-			playbackSpeed = 5
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 &&
+			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
+			playbackSpeedModifier = 5
 		}
-		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 {
-			playbackSpeed = 0.5
+		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 &&
+			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
+			playbackSpeedModifier = 0.5
 		}
-		delay := (1/playbackSpeed)*(1000/float64(match.FrameRateRounded)) - frameDuration
+		delay := (1/(playbackSpeedModifier*staticPlaybackSpeedModifier))*(1000/float64(match.FrameRateRounded)) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
@@ -389,6 +392,40 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
 		copyPositionToClipboard(8, match)
+	}
+
+	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_w {
+		switch staticPlaybackSpeedModifier {
+		case 0.25:
+			staticPlaybackSpeedModifier = 0.5
+		case 0.5:
+			staticPlaybackSpeedModifier = 1
+		case 1:
+			staticPlaybackSpeedModifier = 1.25
+		case 1.25:
+			staticPlaybackSpeedModifier = 1.5
+		case 1.5:
+			staticPlaybackSpeedModifier = 2
+		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_s {
+		switch staticPlaybackSpeedModifier {
+		case 0.5:
+			staticPlaybackSpeedModifier = 0.25
+		case 1:
+			staticPlaybackSpeedModifier = 0.5
+		case 1.25:
+			staticPlaybackSpeedModifier = 1
+		case 1.5:
+			staticPlaybackSpeedModifier = 1.25
+		case 2:
+			staticPlaybackSpeedModifier = 1.5
+		}
+	}
+
+	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_r {
+		staticPlaybackSpeedModifier = 1
 	}
 	/*
 		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
