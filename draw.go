@@ -74,6 +74,9 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			number = (number + 5) % 10
 		}
 		if !hidePlayerNames {
+			if (player.ActiveWeapon != nil) {
+				drawString(renderer, cropStringToN(player.ActiveWeapon.String(), 5), color, scaledXInt+15, scaledYInt-2, font)
+			}
 			name = fmt.Sprintf("%v %v", number, player.Name)
 		} else {
 			name = fmt.Sprintf("%v", number)
