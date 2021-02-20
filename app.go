@@ -201,8 +201,11 @@ func run(c *Config) error {
 				return err
 
 			case *sdl.KeyboardEvent:
+				if eventT.Type != sdl.KEYDOWN {
+					break
+				}
 				handleKeyboardEvents(eventT, window, match)
-				if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_c {
+				if eventT.Keysym.Sym == sdl.K_c {
 					if common.MapHasAlternateVersion(match.MapName) {
 						tmp := mapTexture
 						mapTexture = alternateMapTexture
@@ -269,11 +272,11 @@ func run(c *Config) error {
 }
 
 func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *match.Match) {
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_SPACE {
+	switch eventT.Keysym.Sym {
+	case sdl.K_SPACE:
 		paused = !paused
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_a {
+	case sdl.K_a:
 		if isShiftPressed(eventT) {
 			if curFrame < match.FrameRateRounded*10 {
 				curFrame = 0
@@ -287,9 +290,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame -= match.FrameRateRounded * 5
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_d {
+	case sdl.K_d:
 		if isShiftPressed(eventT) {
 			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
 				curFrame = len(match.States) - 1
@@ -303,9 +305,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame += match.FrameRateRounded * 5
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_q {
+	case sdl.K_q:
 		if isShiftPressed(eventT) {
 			set := false
 			for i, frame := range match.HalfStarts {
@@ -361,9 +362,8 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				}
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_e {
+	case sdl.K_e:
 		if isShiftPressed(eventT) {
 			for _, frame := range match.HalfStarts {
 				if curFrame < frame {
@@ -379,43 +379,34 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				}
 			}
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_h {
+	case sdl.K_h:
 		hidePlayerNames = !hidePlayerNames
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_0 {
+	case sdl.K_0:
 		copyPositionToClipboard(9, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_1 {
+	case sdl.K_1:
 		copyPositionToClipboard(0, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_2 {
+	case sdl.K_2:
 		copyPositionToClipboard(1, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_3 {
+	case sdl.K_3:
 		copyPositionToClipboard(2, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_4 {
+	case sdl.K_4:
 		copyPositionToClipboard(3, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_5 {
+	case sdl.K_5:
 		copyPositionToClipboard(4, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_6 {
+	case sdl.K_6:
 		copyPositionToClipboard(5, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_7 {
+	case sdl.K_7:
 		copyPositionToClipboard(6, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_8 {
+	case sdl.K_8:
 		copyPositionToClipboard(7, match)
-	}
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_9 {
+	case sdl.K_9:
 		copyPositionToClipboard(8, match)
-	}
 
-	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_w {
+	case sdl.K_w:
+		if isShiftPressed(eventT) {
+			break
+		}
 		switch staticPlaybackSpeedModifier {
 		case 0.25:
 			staticPlaybackSpeedModifier = 0.5
@@ -428,9 +419,11 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 		case 1.5:
 			staticPlaybackSpeedModifier = 2
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_s {
+	case sdl.K_s:
+		if isShiftPressed(eventT) {
+			break
+		}
 		switch staticPlaybackSpeedModifier {
 		case 0.5:
 			staticPlaybackSpeedModifier = 0.25
@@ -443,32 +436,30 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 		case 2:
 			staticPlaybackSpeedModifier = 1.5
 		}
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_r {
+	case sdl.K_r:
 		staticPlaybackSpeedModifier = 1
-	}
 
-	if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_k {
+	case sdl.K_k:
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
+
+		/*
+			case sdl.K_p:
+				fmt.Println("take screenshot")
+				fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
+				// using a renderer so window does not have a surface
+				screenshotSurface, err := window.GetSurface()
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+				err = img.SavePNG(screenshotSurface, fileName)
+				if err != nil {
+					log.Println(err)
+					return err
+				}
+		*/
 	}
-	/*
-		if eventT.Type == sdl.KEYDOWN && eventT.Keysym.Sym == sdl.K_p {
-			fmt.Println("take screenshot")
-			fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
-			// using a renderer so window does not have a surface
-			screenshotSurface, err := window.GetSurface()
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-			err = img.SavePNG(screenshotSurface, fileName)
-			if err != nil {
-				log.Println(err)
-				return err
-			}
-		}
-	*/
 }
 
 func copyPositionToClipboard(player int, match *match.Match) {
