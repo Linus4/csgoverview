@@ -395,14 +395,32 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 	}
 
 	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_w {
-		if staticPlaybackSpeedModifier <= 1.75 {
-			staticPlaybackSpeedModifier += 0.25
+		switch staticPlaybackSpeedModifier {
+		case 0.25:
+			staticPlaybackSpeedModifier = 0.5
+		case 0.5:
+			staticPlaybackSpeedModifier = 1
+		case 1:
+			staticPlaybackSpeedModifier = 1.25
+		case 1.25:
+			staticPlaybackSpeedModifier = 1.5
+		case 1.5:
+			staticPlaybackSpeedModifier = 2
 		}
 	}
 
 	if eventT.Type == sdl.KEYDOWN && !isShiftPressed(eventT) && eventT.Keysym.Sym == sdl.K_s {
-		if staticPlaybackSpeedModifier >= 0.5 {
-			staticPlaybackSpeedModifier -= 0.25
+		switch staticPlaybackSpeedModifier {
+		case 0.5:
+			staticPlaybackSpeedModifier = 0.25
+		case 1:
+			staticPlaybackSpeedModifier = 0.5
+		case 1.25:
+			staticPlaybackSpeedModifier = 1
+		case 1.5:
+			staticPlaybackSpeedModifier = 1.25
+		case 2:
+			staticPlaybackSpeedModifier = 1.5
 		}
 	}
 
