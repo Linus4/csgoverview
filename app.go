@@ -29,8 +29,8 @@ const (
 	infobarElementHeight int32  = 100
 	appVersion           string = "v1.0.0"
 	hotkeysString        string = `
-* a -> 5 s backwards
-* d -> 5 s forwards
+* a -> 3 s backwards
+* d -> 3 s forwards
 * A -> 10 s backwards
 * D -> 10 s forwards
 * w -> increase playback speed
@@ -284,10 +284,10 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame -= match.FrameRateRounded * 10
 			}
 		} else {
-			if curFrame < match.FrameRateRounded*5 {
+			if curFrame < match.FrameRateRounded*3 {
 				curFrame = 0
 			} else {
-				curFrame -= match.FrameRateRounded * 5
+				curFrame -= match.FrameRateRounded * 3
 			}
 		}
 
@@ -299,10 +299,10 @@ func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *
 				curFrame += match.FrameRateRounded * 10
 			}
 		} else {
-			if curFrame+match.FrameRateRounded*5 > len(match.States)-1 {
+			if curFrame+match.FrameRateRounded*3 > len(match.States)-1 {
 				curFrame = len(match.States) - 1
 			} else {
-				curFrame += match.FrameRateRounded * 5
+				curFrame += match.FrameRateRounded * 3
 			}
 		}
 

@@ -24,8 +24,8 @@ I created a chatroom on Gitter so we have a place to talk about suggestions, pro
 
 ## Keybinds
 
-* a -> 5 s backwards
-* d -> 5 s forwards
+* a -> 3 s backwards
+* d -> 3 s forwards
 * A -> 10 s backwards
 * D -> 10 s forwards
 * w -> increase playback speed
