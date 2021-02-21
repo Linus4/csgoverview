@@ -74,13 +74,38 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			number = (number + 5) % 10
 		}
 		if !hidePlayerNames {
-			if (player.ActiveWeapon != nil) {
-				drawString(renderer, cropStringToN(player.ActiveWeapon.String(), 5), color, scaledXInt+15, scaledYInt-2, font)
-			}
 			name = fmt.Sprintf("%v %v", number, player.Name)
 		} else {
 			name = fmt.Sprintf("%v", number)
 		}
+
+		switch player.ActiveWeapon {
+		case demoinfo.EqBomb:
+			gfx.BoxColor(renderer, scaledXInt+radiusPlayer+4, scaledYInt-2, scaledXInt+radiusPlayer+10, scaledYInt+2, colorC4)
+
+		case demoinfo.EqHE, demoinfo.EqFlash, demoinfo.EqSmoke, demoinfo.EqIncendiary, demoinfo.EqMolotov, demoinfo.EqDecoy:
+			var colorGrenade sdl.Color
+			switch player.ActiveWeapon {
+			case demoinfo.EqDecoy:
+				colorGrenade = colorEqDecoy
+			case demoinfo.EqMolotov:
+				colorGrenade = colorEqMolotov
+			case demoinfo.EqIncendiary:
+				colorGrenade = colorEqIncendiary
+			case demoinfo.EqFlash:
+				colorGrenade = colorEqFlash
+			case demoinfo.EqSmoke:
+				colorGrenade = colorEqSmoke
+			case demoinfo.EqHE:
+				colorGrenade = colorEqHE
+			}
+			if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
+				(player.IsOnNormalElevation && !isOnNormalElevation) {
+				colorGrenade.A = 100
+			}
+			gfx.BoxColor(renderer, scaledXInt+radiusPlayer+5, scaledYInt-3, scaledXInt+radiusPlayer+9, scaledYInt+3, colorGrenade)
+		}
+
 		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
 
 		if player.Health == 100 {

@@ -98,7 +98,7 @@ type Player struct {
 	FlashDuration       time.Duration
 	FlashTimeRemaining  time.Duration
 	Inventory           []demoinfo.EquipmentType
-	ActiveWeapon        *demoinfo.Equipment
+	ActiveWeapon        demoinfo.EquipmentType
 	Health              int16
 	Armor               int16
 	Money               int16

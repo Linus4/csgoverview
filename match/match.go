@@ -451,6 +451,14 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 					name = name[:len(name)-len(tPostfix)]
 				}
 			}
+			var activeWeapon demoinfo.EquipmentType
+			if p.ActiveWeapon() == nil {
+				// player is dead probably
+				activeWeapon = demoinfo.EqUnknown
+			} else {
+				activeWeapon = p.ActiveWeapon().Type
+			}
+
 			player := common.Player{
 				Name: name,
 				ID:   p.UserID,
@@ -469,7 +477,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				FlashDuration:       p.FlashDurationTime(),
 				FlashTimeRemaining:  p.FlashDurationTimeRemaining(),
 				Inventory:           inventory,
-				ActiveWeapon:        p.ActiveWeapon(),
+				ActiveWeapon:        activeWeapon,
 				Health:              int16(p.Health()),
 				Armor:               int16(p.Armor()),
 				Money:               int16(p.Money()),
