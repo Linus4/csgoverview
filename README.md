@@ -74,5 +74,6 @@ Thank you for helping me or contributing to the project!
   (Mac wiki and testing)
 * [xXxhaxmeister42xXx](https://github.com/xXxhaxmeister42xXx) (x64 Installer)
 * [langhillie](https://github.com/langhillie) (smoke team outlines, get player
-  view angle)
+  view angle, show currently held weapon)
+* [augustoccesar](https://github.com/augustoccesar) (headshot icon on killfeed)
 
