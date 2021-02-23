@@ -20,6 +20,7 @@ const (
 	radiusSmoke       float64 = 25
 	killfeedHeight    int32   = 15
 	shotLength        float64 = 1000
+	headshotRune      rune    = '\u205c'
 )
 
 var (
@@ -416,8 +417,11 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []common.Kill, x, y int32, fo
 		victimName := cropStringToN(kill.VictimName, 10)
 		weaponName := cropStringToN(kill.Weapon.String(), 10)
 		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
-		drawString(renderer, weaponName, colorDarkWhite, x+110, y+yOffset, font)
-		drawString(renderer, victimName, colorVictim, x+200, y+yOffset, font)
+		if kill.Headshot {
+			weaponName = weaponName + " " + string(headshotRune)
+		}
+		drawString(renderer, weaponName, colorDarkWhite, x+112, y+yOffset, font)
+		drawString(renderer, victimName, colorVictim, x+222, y+yOffset, font)
 		yOffset += killfeedHeight
 	}
 }
