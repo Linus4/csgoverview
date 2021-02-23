@@ -350,6 +350,7 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 			VictimName: victimName,
 			VictimTeam: victimTeam,
 			Weapon:     e.Weapon.Type,
+			Headshot:   e.IsHeadshot,
 		}
 
 		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {

@@ -56,6 +56,7 @@ type Kill struct {
 	VictimName string
 	VictimTeam demoinfo.Team
 	Weapon     demoinfo.EquipmentType
+	Headshot   bool
 }
 
 // Timer contains the time remaining in the current phase of the round.
