@@ -51,14 +51,6 @@ const (
 `
 )
 
-var (
-	paused                      bool
-	curFrame                    int
-	isOnNormalElevation         bool    = true
-	playbackSpeedModifier       float64 = 1
-	staticPlaybackSpeedModifier float64 = 1
-)
-
 // Config contains information the application requires in order to run
 type Config struct {
 	// Path to font file (.ttf)
@@ -81,6 +73,25 @@ type Config struct {
 var DefaultConfig = Config{
 	FrameRate: -1,
 	TickRate:  -1,
+}
+
+// App contains the state of the application.
+type app struct {
+	window              *sdl.Window
+	renderer            *sdl.Renderer
+	mapTexture          *sdl.Texture
+	alternateMapTexture *sdl.Texture
+	mapRect             *sdl.Rect
+	font                *ttf.Font
+	match               *match.Match
+	config              *Config
+
+	isPaused                    bool
+	curFrame                    int
+	isOnNormalElevation         bool
+	playbackSpeedModifier       float64
+	staticPlaybackSpeedModifier float64
+	hidePlayerNames             bool
 }
 
 func run(c *Config) error {
@@ -191,6 +202,34 @@ func run(c *Config) error {
 
 	mapRect := &sdl.Rect{mapXOffset, mapYOffset, mapOverviewWidth, mapOverviewHeight}
 
+	app := app{
+		window:                      window,
+		renderer:                    renderer,
+		mapTexture:                  mapTexture,
+		alternateMapTexture:         alternateMapTexture,
+		mapRect:                     mapRect,
+		font:                        font,
+		match:                       match,
+		config:                      c,
+		isPaused:                    false,
+		curFrame:                    0,
+		isOnNormalElevation:         true,
+		playbackSpeedModifier:       1,
+		staticPlaybackSpeedModifier: 1,
+		hidePlayerNames:             false,
+	}
+
+	err = app.run()
+	if err != nil {
+		errorString := fmt.Sprintf("while running the app:\n%v", err)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		return err
+	}
+	return nil
+}
+
+func (app *app) run() error {
+	m := app.match
 	// MAIN GAME LOOP
 	for {
 		frameStart := time.Now()
@@ -198,19 +237,19 @@ func run(c *Config) error {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch eventT := event.(type) {
 			case *sdl.QuitEvent:
-				return err
+				return nil
 
 			case *sdl.KeyboardEvent:
 				if eventT.Type != sdl.KEYDOWN {
 					break
 				}
-				handleKeyboardEvents(eventT, window, match)
+				app.handleKeyboardEvents(eventT)
 				if eventT.Keysym.Sym == sdl.K_c {
-					if common.MapHasAlternateVersion(match.MapName) {
-						tmp := mapTexture
-						mapTexture = alternateMapTexture
-						alternateMapTexture = tmp
-						isOnNormalElevation = !isOnNormalElevation
+					if common.MapHasAlternateVersion(m.MapName) {
+						tmp := app.mapTexture
+						app.mapTexture = app.alternateMapTexture
+						app.alternateMapTexture = tmp
+						app.isOnNormalElevation = !app.isOnNormalElevation
 					}
 				}
 
@@ -218,18 +257,18 @@ func run(c *Config) error {
 				// back
 				if eventT.Type == sdl.MOUSEWHEEL {
 					if eventT.Y > 0 {
-						if curFrame < match.FrameRateRounded*1 {
-							curFrame = 0
+						if app.curFrame < m.FrameRateRounded*1 {
+							app.curFrame = 0
 						} else {
-							curFrame -= match.FrameRateRounded * 1
+							app.curFrame -= m.FrameRateRounded * 1
 						}
 					}
 					if eventT.Y < 0 {
 						// forward
-						if curFrame+match.FrameRateRounded*1 > len(match.States)-1 {
-							curFrame = len(match.States) - 1
+						if app.curFrame+m.FrameRateRounded*1 > len(m.States)-1 {
+							app.curFrame = len(m.States) - 1
 						} else {
-							curFrame += match.FrameRateRounded * 1
+							app.curFrame += m.FrameRateRounded * 1
 						}
 					}
 				}
@@ -237,233 +276,218 @@ func run(c *Config) error {
 
 		}
 
-		if paused {
+		if app.isPaused {
 			sdl.Delay(32)
-			updateGraphics(renderer, match, font, mapTexture, mapRect)
-			updateWindowTitle(window, match)
+			app.updateGraphics()
+			app.updateWindowTitle()
 			continue
 		}
 
-		updateGraphics(renderer, match, font, mapTexture, mapRect)
-		updateWindowTitle(window, match)
-		playbackSpeedModifier = 1
+		app.updateGraphics()
+		app.updateWindowTitle()
+		app.playbackSpeedModifier = 1
 
 		// frameDuration is in ms
 		frameDuration := float64(time.Since(frameStart) / 1000000)
 		keyboardState := sdl.GetKeyboardState()
 		if keyboardState[sdl.GetScancodeFromKey(sdl.K_w)] != 0 &&
 			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
-			playbackSpeedModifier = 5
+			app.playbackSpeedModifier = 5
 		}
 		if keyboardState[sdl.GetScancodeFromKey(sdl.K_s)] != 0 &&
 			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
-			playbackSpeedModifier = 0.5
+			app.playbackSpeedModifier = 0.5
 		}
-		delay := (1/(playbackSpeedModifier*staticPlaybackSpeedModifier))*(1000/float64(match.FrameRateRounded)) - frameDuration
+		delay := (1/(app.playbackSpeedModifier*app.staticPlaybackSpeedModifier))*(1000/float64(m.FrameRateRounded)) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
 		sdl.Delay(uint32(delay))
-		if curFrame < len(match.States)-1 {
-			curFrame = curFrame + 1
+		if app.curFrame < len(m.States)-1 {
+			app.curFrame = app.curFrame + 1
 		}
 	}
 
 }
 
-func handleKeyboardEvents(eventT *sdl.KeyboardEvent, window *sdl.Window, match *match.Match) {
+func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
+	m := app.match
 	switch eventT.Keysym.Sym {
 	case sdl.K_SPACE:
-		paused = !paused
+		app.isPaused = !app.isPaused
 
 	case sdl.K_a:
 		if isShiftPressed(eventT) {
-			if curFrame < match.FrameRateRounded*10 {
-				curFrame = 0
+			if app.curFrame < m.FrameRateRounded*10 {
+				app.curFrame = 0
 			} else {
-				curFrame -= match.FrameRateRounded * 10
+				app.curFrame -= m.FrameRateRounded * 10
 			}
 		} else {
-			if curFrame < match.FrameRateRounded*3 {
-				curFrame = 0
+			if app.curFrame < m.FrameRateRounded*3 {
+				app.curFrame = 0
 			} else {
-				curFrame -= match.FrameRateRounded * 3
+				app.curFrame -= m.FrameRateRounded * 3
 			}
 		}
 
 	case sdl.K_d:
 		if isShiftPressed(eventT) {
-			if curFrame+match.FrameRateRounded*10 > len(match.States)-1 {
-				curFrame = len(match.States) - 1
+			if app.curFrame+m.FrameRateRounded*10 > len(m.States)-1 {
+				app.curFrame = len(m.States) - 1
 			} else {
-				curFrame += match.FrameRateRounded * 10
+				app.curFrame += m.FrameRateRounded * 10
 			}
 		} else {
-			if curFrame+match.FrameRateRounded*3 > len(match.States)-1 {
-				curFrame = len(match.States) - 1
+			if app.curFrame+m.FrameRateRounded*3 > len(m.States)-1 {
+				app.curFrame = len(m.States) - 1
 			} else {
-				curFrame += match.FrameRateRounded * 3
+				app.curFrame += m.FrameRateRounded * 3
 			}
 		}
 
 	case sdl.K_q:
 		if isShiftPressed(eventT) {
 			set := false
-			for i, frame := range match.HalfStarts {
-				if curFrame < frame {
-					if i > 1 && curFrame < match.HalfStarts[i-1]+match.FrameRateRounded/2 {
-						curFrame = match.HalfStarts[i-2]
+			for i, frame := range m.HalfStarts {
+				if app.curFrame < frame {
+					if i > 1 && app.curFrame < m.HalfStarts[i-1]+m.FrameRateRounded/2 {
+						app.curFrame = m.HalfStarts[i-2]
 						set = true
 						break
 					}
 					if i-1 < 0 {
-						curFrame = 0
+						app.curFrame = 0
 						set = true
 						break
 					}
-					curFrame = match.HalfStarts[i-1]
+					app.curFrame = m.HalfStarts[i-1]
 					set = true
 					break
 				}
 			}
 			// not set -> last round of match
 			if !set {
-				if len(match.HalfStarts) > 1 && curFrame < match.HalfStarts[len(match.HalfStarts)-1]+match.FrameRateRounded/2 {
-					curFrame = match.HalfStarts[len(match.HalfStarts)-2]
+				if len(m.HalfStarts) > 1 && app.curFrame < m.HalfStarts[len(m.HalfStarts)-1]+m.FrameRateRounded/2 {
+					app.curFrame = m.HalfStarts[len(m.HalfStarts)-2]
 				} else {
-					curFrame = match.HalfStarts[len(match.HalfStarts)-1]
+					app.curFrame = m.HalfStarts[len(m.HalfStarts)-1]
 				}
 			}
 		} else {
 			set := false
-			for i, frame := range match.RoundStarts {
-				if curFrame < frame {
-					if i > 1 && curFrame < match.RoundStarts[i-1]+match.FrameRateRounded/2 {
-						curFrame = match.RoundStarts[i-2]
+			for i, frame := range m.RoundStarts {
+				if app.curFrame < frame {
+					if i > 1 && app.curFrame < m.RoundStarts[i-1]+m.FrameRateRounded/2 {
+						app.curFrame = m.RoundStarts[i-2]
 						set = true
 						break
 					}
 					if i-1 < 0 {
-						curFrame = 0
+						app.curFrame = 0
 						set = true
 						break
 					}
-					curFrame = match.RoundStarts[i-1]
+					app.curFrame = m.RoundStarts[i-1]
 					set = true
 					break
 				}
 			}
 			// not set -> last round of match
 			if !set {
-				if len(match.RoundStarts) > 1 && curFrame < match.RoundStarts[len(match.RoundStarts)-1]+match.FrameRateRounded/2 {
-					curFrame = match.RoundStarts[len(match.RoundStarts)-2]
+				if len(m.RoundStarts) > 1 && app.curFrame < m.RoundStarts[len(m.RoundStarts)-1]+m.FrameRateRounded/2 {
+					app.curFrame = m.RoundStarts[len(m.RoundStarts)-2]
 				} else {
-					curFrame = match.RoundStarts[len(match.RoundStarts)-1]
+					app.curFrame = m.RoundStarts[len(m.RoundStarts)-1]
 				}
 			}
 		}
 
 	case sdl.K_e:
 		if isShiftPressed(eventT) {
-			for _, frame := range match.HalfStarts {
-				if curFrame < frame {
-					curFrame = frame
+			for _, frame := range m.HalfStarts {
+				if app.curFrame < frame {
+					app.curFrame = frame
 					break
 				}
 			}
 		} else {
-			for _, frame := range match.RoundStarts {
-				if curFrame < frame {
-					curFrame = frame
+			for _, frame := range m.RoundStarts {
+				if app.curFrame < frame {
+					app.curFrame = frame
 					break
 				}
 			}
 		}
 
 	case sdl.K_h:
-		hidePlayerNames = !hidePlayerNames
+		app.hidePlayerNames = !app.hidePlayerNames
 	case sdl.K_0:
-		copyPositionToClipboard(9, match)
+		app.copyPositionToClipboard(9)
 	case sdl.K_1:
-		copyPositionToClipboard(0, match)
+		app.copyPositionToClipboard(0)
 	case sdl.K_2:
-		copyPositionToClipboard(1, match)
+		app.copyPositionToClipboard(1)
 	case sdl.K_3:
-		copyPositionToClipboard(2, match)
+		app.copyPositionToClipboard(2)
 	case sdl.K_4:
-		copyPositionToClipboard(3, match)
+		app.copyPositionToClipboard(3)
 	case sdl.K_5:
-		copyPositionToClipboard(4, match)
+		app.copyPositionToClipboard(4)
 	case sdl.K_6:
-		copyPositionToClipboard(5, match)
+		app.copyPositionToClipboard(5)
 	case sdl.K_7:
-		copyPositionToClipboard(6, match)
+		app.copyPositionToClipboard(6)
 	case sdl.K_8:
-		copyPositionToClipboard(7, match)
+		app.copyPositionToClipboard(7)
 	case sdl.K_9:
-		copyPositionToClipboard(8, match)
+		app.copyPositionToClipboard(8)
 
 	case sdl.K_w:
 		if isShiftPressed(eventT) {
 			break
 		}
-		switch staticPlaybackSpeedModifier {
+		switch app.staticPlaybackSpeedModifier {
 		case 0.25:
-			staticPlaybackSpeedModifier = 0.5
+			app.staticPlaybackSpeedModifier = 0.5
 		case 0.5:
-			staticPlaybackSpeedModifier = 1
+			app.staticPlaybackSpeedModifier = 1
 		case 1:
-			staticPlaybackSpeedModifier = 1.25
+			app.staticPlaybackSpeedModifier = 1.25
 		case 1.25:
-			staticPlaybackSpeedModifier = 1.5
+			app.staticPlaybackSpeedModifier = 1.5
 		case 1.5:
-			staticPlaybackSpeedModifier = 2
+			app.staticPlaybackSpeedModifier = 2
 		}
 
 	case sdl.K_s:
 		if isShiftPressed(eventT) {
 			break
 		}
-		switch staticPlaybackSpeedModifier {
+		switch app.staticPlaybackSpeedModifier {
 		case 0.5:
-			staticPlaybackSpeedModifier = 0.25
+			app.staticPlaybackSpeedModifier = 0.25
 		case 1:
-			staticPlaybackSpeedModifier = 0.5
+			app.staticPlaybackSpeedModifier = 0.5
 		case 1.25:
-			staticPlaybackSpeedModifier = 1
+			app.staticPlaybackSpeedModifier = 1
 		case 1.5:
-			staticPlaybackSpeedModifier = 1.25
+			app.staticPlaybackSpeedModifier = 1.25
 		case 2:
-			staticPlaybackSpeedModifier = 1.5
+			app.staticPlaybackSpeedModifier = 1.5
 		}
 
 	case sdl.K_r:
-		staticPlaybackSpeedModifier = 1
+		app.staticPlaybackSpeedModifier = 1
 
 	case sdl.K_k:
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
-
-		/*
-			case sdl.K_p:
-				fmt.Println("take screenshot")
-				fileName := fmt.Sprintf("screenshot_"+demoFileName+"_%v", curFrame)
-				// using a renderer so window does not have a surface
-				screenshotSurface, err := window.GetSurface()
-				if err != nil {
-					log.Println(err)
-					return err
-				}
-				err = img.SavePNG(screenshotSurface, fileName)
-				if err != nil {
-					log.Println(err)
-					return err
-				}
-		*/
 	}
 }
 
-func copyPositionToClipboard(player int, match *match.Match) {
-	players := match.States[curFrame].Players
+func (app *app) copyPositionToClipboard(player int) {
+	m := app.match
+	players := m.States[app.curFrame].Players
 	if player >= len(players) {
 		return
 	}
@@ -479,17 +503,18 @@ func copyPositionToClipboard(player int, match *match.Match) {
 	})
 
 	clipboard.WriteAll("setpos " +
-		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
-		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
-		strconv.FormatFloat(float64(match.States[curFrame].Players[player].Position.Z), 'f', 2, 32) +
+		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.Z), 'f', 2, 32) +
 		";setang " +
-		strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " +
-		strconv.FormatFloat(float64(match.States[curFrame].Players[player].ViewDirectionX), 'f', 2, 32))
+		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " +
+		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].ViewDirectionX), 'f', 2, 32))
 }
 
-func updateWindowTitle(window *sdl.Window, match *match.Match) {
-	cts := match.States[curFrame].TeamCounterTerrorists
-	ts := match.States[curFrame].TeamTerrorists
+func (app *app) updateWindowTitle() {
+	m := app.match
+	cts := m.States[app.curFrame].TeamCounterTerrorists
+	ts := m.States[app.curFrame].TeamTerrorists
 	clanNameCTs := cts.ClanName
 	if clanNameCTs == "" {
 		clanNameCTs = "Counter Terrorists"
@@ -500,54 +525,55 @@ func updateWindowTitle(window *sdl.Window, match *match.Match) {
 	}
 	windowTitle := fmt.Sprintf("%s  [%d:%d]  %s - Round %d", clanNameCTs, cts.Score, ts.Score, clanNameTs, cts.Score+ts.Score+1)
 	// expensive?
-	window.SetTitle(windowTitle)
+	app.window.SetTitle(windowTitle)
 }
 
-func updateGraphics(renderer *sdl.Renderer, match *match.Match, font *ttf.Font, mapTexture *sdl.Texture, mapRect *sdl.Rect) {
-	renderer.SetDrawColor(10, 10, 10, 255)
-	renderer.Clear()
+func (app *app) updateGraphics() {
+	m := app.match
+	app.renderer.SetDrawColor(10, 10, 10, 255)
+	app.renderer.Clear()
 
-	drawInfobars(renderer, match, font)
-	renderer.Copy(mapTexture, nil, mapRect)
+	app.drawInfobars()
+	app.renderer.Copy(app.mapTexture, nil, app.mapRect)
 
-	shots := match.Shots[curFrame]
+	shots := m.Shots[app.curFrame]
 	for _, shot := range shots {
-		drawShot(renderer, &shot, match)
+		app.drawShot(&shot)
 	}
 
-	infernos := match.States[curFrame].Infernos
+	infernos := m.States[app.curFrame].Infernos
 	for _, inferno := range infernos {
-		drawInferno(renderer, &inferno, match)
+		app.drawInferno(&inferno)
 	}
 
-	effects := match.Effects[curFrame]
+	effects := m.Effects[app.curFrame]
 	for _, effect := range effects {
-		drawEffects(renderer, &effect, match)
+		app.drawEffects(&effect)
 	}
 
-	grenades := match.States[curFrame].Grenades
+	grenades := m.States[app.curFrame].Grenades
 	for _, grenade := range grenades {
-		drawGrenade(renderer, &grenade, match)
+		app.drawGrenade(&grenade)
 	}
 
-	bomb := match.States[curFrame].Bomb
-	drawBomb(renderer, &bomb, match)
+	bomb := m.States[app.curFrame].Bomb
+	app.drawBomb(&bomb)
 
-	players := match.States[curFrame].Players
+	players := m.States[app.curFrame].Players
 	var indexT, indexCT int
 	for _, player := range players {
 		if player.Team == demoinfo.TeamTerrorists {
-			drawPlayer(renderer, &player, font, indexT, match)
+			app.drawPlayer(&player, indexT)
 			indexT++
 		} else {
-			drawPlayer(renderer, &player, font, indexCT, match)
+			app.drawPlayer(&player, indexCT)
 			indexCT++
 		}
 	}
 
-	drawString(renderer, "k shows hotkeys", colorDarkGrey, mapXOffset+mapOverviewWidth+150, mapYOffset+mapOverviewHeight-40, font)
+	app.drawString("k shows hotkeys", colorDarkGrey, mapXOffset+mapOverviewWidth+150, mapYOffset+mapOverviewHeight-40)
 
-	renderer.Present()
+	app.renderer.Present()
 }
 
 func isShiftPressed(event *sdl.KeyboardEvent) bool {

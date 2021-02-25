@@ -7,11 +7,9 @@ import (
 	"sort"
 
 	common "github.com/linus4/csgoverview/common"
-	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
-	"github.com/veandco/go-sdl2/ttf"
 )
 
 const (
@@ -42,10 +40,10 @@ var (
 	colorDarkGrey              = sdl.Color{125, 125, 125, 255}
 	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
 	colorAwpShot               = sdl.Color{255, 50, 0, 255}
-	hidePlayerNames            bool
 )
 
-func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, index int, match *match.Match) {
+func (app *app) drawPlayer(player *common.Player, index int) {
+	m := app.match
 	var color sdl.Color
 	if player.Team == demoinfo.TeamTerrorists {
 		color = colorTerror
@@ -58,12 +56,12 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 	if player.IsAlive {
 		pos := player.Position
 
-		scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+		scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-		if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
-			(player.IsOnNormalElevation && !isOnNormalElevation) {
+		if common.MapHasAlternateVersion(m.MapName) && (!player.IsOnNormalElevation && app.isOnNormalElevation) ||
+			(player.IsOnNormalElevation && !app.isOnNormalElevation) {
 			color.A = 100
 			colorLOS.A = 100
 			colorC4.A = 100
@@ -74,7 +72,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 		if player.Team == demoinfo.TeamTerrorists {
 			number = (number + 5) % 10
 		}
-		if !hidePlayerNames {
+		if !app.hidePlayerNames {
 			name = fmt.Sprintf("%v %v", number, player.Name)
 		} else {
 			name = fmt.Sprintf("%v", number)
@@ -82,7 +80,7 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 
 		switch player.ActiveWeapon {
 		case demoinfo.EqBomb:
-			gfx.BoxColor(renderer, scaledXInt+radiusPlayer+4, scaledYInt-2, scaledXInt+radiusPlayer+10, scaledYInt+2, colorC4)
+			gfx.BoxColor(app.renderer, scaledXInt+radiusPlayer+4, scaledYInt-2, scaledXInt+radiusPlayer+10, scaledYInt+2, colorC4)
 
 		case demoinfo.EqHE, demoinfo.EqFlash, demoinfo.EqSmoke, demoinfo.EqIncendiary, demoinfo.EqMolotov, demoinfo.EqDecoy:
 			var colorGrenade sdl.Color
@@ -100,40 +98,40 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			case demoinfo.EqHE:
 				colorGrenade = colorEqHE
 			}
-			if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
-				(player.IsOnNormalElevation && !isOnNormalElevation) {
+			if common.MapHasAlternateVersion(m.MapName) && (!player.IsOnNormalElevation && app.isOnNormalElevation) ||
+				(player.IsOnNormalElevation && !app.isOnNormalElevation) {
 				colorGrenade.A = 100
 			}
-			gfx.BoxColor(renderer, scaledXInt+radiusPlayer+5, scaledYInt-3, scaledXInt+radiusPlayer+9, scaledYInt+3, colorGrenade)
+			gfx.BoxColor(app.renderer, scaledXInt+radiusPlayer+5, scaledYInt-3, scaledXInt+radiusPlayer+9, scaledYInt+3, colorGrenade)
 		}
 
-		drawString(renderer, cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10, font)
+		app.drawString(cropStringToN(name, 12), color, scaledXInt+10, scaledYInt+10)
 
 		if player.Health == 100 {
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer, color)
+			gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer, color)
 		} else {
 			// start == 0 is facing right
 			// health left
 			var healthArc int32 = int32(player.Health) * 360 / 100
 			start := 90 - (healthArc / 2)
 			end := 90 + (healthArc / 2)
-			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+			gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
 			// health lost
 			color.R = uint8(float32(color.R) * 0.6)
 			color.G = uint8(float32(color.G) * 0.6)
 			color.B = uint8(float32(color.B) * 0.6)
 			start = -90 - ((360 - healthArc) / 2)
 			end = -90 + ((360 - healthArc) / 2)
-			gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
+			gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer, start, end, color)
 		}
 
 		viewAngle := -int32(player.ViewDirectionX) // negated because of sdl
 		if player.HasAwp() {
 			colorLOS = colorAwpShot
 		}
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorLOS)
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorLOS)
+		gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer+1, viewAngle-20, viewAngle+20, colorLOS)
+		gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer+2, viewAngle-10, viewAngle+10, colorLOS)
+		gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer+3, viewAngle-5, viewAngle+5, colorLOS)
 
 		colorFlash := colorFlashEffect
 		if player.FlashDuration.Seconds() > 0.5 {
@@ -143,39 +141,40 @@ func drawPlayer(renderer *sdl.Renderer, player *common.Player, font *ttf.Font, i
 			} else {
 				colorFlash.A = uint8((remaining.Seconds() * 255) / 3.1)
 			}
-			if common.MapHasAlternateVersion(match.MapName) && (!player.IsOnNormalElevation && isOnNormalElevation) ||
-				(player.IsOnNormalElevation && !isOnNormalElevation) {
+			if common.MapHasAlternateVersion(m.MapName) && (!player.IsOnNormalElevation && app.isOnNormalElevation) ||
+				(player.IsOnNormalElevation && !app.isOnNormalElevation) {
 				colorFlash.A /= 2
 			}
-			gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlash)
+			gfx.FilledCircleColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer-5, colorFlash)
 		}
 
 		if player.HasBomb {
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorC4)
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorC4)
+			gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer-1, colorC4)
+			gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, radiusPlayer-2, colorC4)
 		}
 
 		if player.IsDefusing {
 			color.A -= 55
-			gfx.CharacterColor(renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', color)
+			gfx.CharacterColor(app.renderer, scaledXInt-radiusPlayer/4, scaledYInt-radiusPlayer/4, 'D', color)
 			color.A += 55
 		}
 	} else {
 		pos := player.LastAlivePosition
 
-		scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+		scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 		var scaledXInt int32 = int32(scaledX) + mapXOffset
 		var scaledYInt int32 = int32(scaledY) + mapYOffset
 
 		color.A -= 105
-		gfx.CharacterColor(renderer, scaledXInt, scaledYInt, 'X', color)
+		gfx.CharacterColor(app.renderer, scaledXInt, scaledYInt, 'X', color)
 	}
 }
 
-func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, match *match.Match) {
+func (app *app) drawGrenade(grenade *common.GrenadeProjectile) {
 	pos := grenade.Position
+	m := app.match
 
-	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var color sdl.Color
@@ -194,23 +193,24 @@ func drawGrenade(renderer *sdl.Renderer, grenade *common.GrenadeProjectile, matc
 	case demoinfo.EqHE:
 		color = colorEqHE
 	}
-	if common.MapHasAlternateVersion(match.MapName) && (!grenade.IsOnNormalElevation && isOnNormalElevation) ||
-		(grenade.IsOnNormalElevation && !isOnNormalElevation) {
+	if common.MapHasAlternateVersion(m.MapName) && (!grenade.IsOnNormalElevation && app.isOnNormalElevation) ||
+		(grenade.IsOnNormalElevation && !app.isOnNormalElevation) {
 		color.A = 100
 	}
 
-	gfx.BoxColor(renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
+	gfx.BoxColor(app.renderer, scaledXInt-2, scaledYInt-3, scaledXInt+2, scaledYInt+3, color)
 }
 
-func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Match) {
+func (app *app) drawEffects(effect *common.Effect) {
+	m := app.match
 	pos := effect.Position
 
-	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	var alphaModifier uint8
-	if common.MapHasAlternateVersion(match.MapName) && (!effect.IsOnNormalElevation && isOnNormalElevation) ||
-		(effect.IsOnNormalElevation && !isOnNormalElevation) {
+	if common.MapHasAlternateVersion(m.MapName) && (!effect.IsOnNormalElevation && app.isOnNormalElevation) ||
+		(effect.IsOnNormalElevation && !app.isOnNormalElevation) {
 		alphaModifier = 2
 	} else {
 		alphaModifier = 1
@@ -220,82 +220,84 @@ func drawEffects(renderer *sdl.Renderer, effect *common.Effect, match *match.Mat
 	case demoinfo.EqFlash:
 		color := colorEqFlash
 		color.A /= alphaModifier
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
+		gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
 	case demoinfo.EqHE:
 		color := colorEqHE
 		color.A /= alphaModifier
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
+		gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, effect.Lifetime, color)
 	case demoinfo.EqSmoke:
 		color := colorSmoke
 		color.A /= alphaModifier
 		colorCircles := colorDarkWhite
 		colorCircles.A /= alphaModifier
 		// 4.9 is the reference on Inferno for the value for radiusSmoke
-		scaledRadiusSmoke := int32(radiusSmoke * 4.9 / float64(match.MapScale))
-		gfx.FilledCircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, color)
+		scaledRadiusSmoke := int32(radiusSmoke * 4.9 / float64(m.MapScale))
+		gfx.FilledCircleColor(app.renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, color)
 		// only draw the outline if the smoke is not fading
-		if effect.Lifetime < 15*match.SmokeEffectLifetime/18 {
+		if effect.Lifetime < 15*m.SmokeEffectLifetime/18 {
 			var smokeOutlineColor = colorEqSmokeOutlineTerror
 			if effect.Team == demoinfo.TeamCounterTerrorists {
 				smokeOutlineColor = colorEqSmokeOutlineCounter
 			}
-			gfx.AACircleColor(renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, smokeOutlineColor)
+			gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, scaledRadiusSmoke, smokeOutlineColor)
 		}
-		gfx.ArcColor(renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/match.SmokeEffectLifetime, 630, colorCircles)
+		gfx.ArcColor(app.renderer, scaledXInt, scaledYInt, 10, 270+effect.Lifetime*360/m.SmokeEffectLifetime, 630, colorCircles)
 	case demoinfo.EqDefuseKit:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorMoney)
+		gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, effect.Lifetime, colorMoney)
 	case demoinfo.EqBomb:
-		gfx.AACircleColor(renderer, scaledXInt, scaledYInt, effect.Lifetime, colorBomb)
+		gfx.AACircleColor(app.renderer, scaledXInt, scaledYInt, effect.Lifetime, colorBomb)
 	}
 }
 
-func drawInferno(renderer *sdl.Renderer, inferno *common.Inferno, match *match.Match) {
+func (app *app) drawInferno(inferno *common.Inferno) {
+	m := app.match
 	hull := inferno.ConvexHull2D
 	color := colorInferno
 	xCoordinates := make([]int16, 0)
 	yCoordinates := make([]int16, 0)
 
 	for _, v := range hull {
-		scaledX, scaledY := match.TranslateScale(v.X, v.Y)
+		scaledX, scaledY := m.TranslateScale(v.X, v.Y)
 		scaledXInt := int16(scaledX) + int16(mapXOffset)
 		scaledYInt := int16(scaledY) + int16(mapYOffset)
 		xCoordinates = append(xCoordinates, scaledXInt)
 		yCoordinates = append(yCoordinates, scaledYInt)
 	}
-	if common.MapHasAlternateVersion(match.MapName) && (!inferno.IsOnNormalElevation && isOnNormalElevation) ||
-		(inferno.IsOnNormalElevation && !isOnNormalElevation) {
+	if common.MapHasAlternateVersion(m.MapName) && (!inferno.IsOnNormalElevation && app.isOnNormalElevation) ||
+		(inferno.IsOnNormalElevation && !app.isOnNormalElevation) {
 		color.A /= 2
 	}
 
-	gfx.FilledPolygonColor(renderer, xCoordinates, yCoordinates, color)
-	gfx.AAPolygonColor(renderer, xCoordinates, yCoordinates, color)
+	gfx.FilledPolygonColor(app.renderer, xCoordinates, yCoordinates, color)
+	gfx.AAPolygonColor(app.renderer, xCoordinates, yCoordinates, color)
 }
 
-func drawBomb(renderer *sdl.Renderer, bomb *common.Bomb, match *match.Match) {
+func (app *app) drawBomb(bomb *common.Bomb) {
+	m := app.match
 	pos := bomb.Position
 	if bomb.IsBeingCarried {
 		return
 	}
 
-	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 	color := colorBomb
-	if common.MapHasAlternateVersion(match.MapName) && (!bomb.IsOnNormalElevation && isOnNormalElevation) ||
-		(bomb.IsOnNormalElevation && !isOnNormalElevation) {
+	if common.MapHasAlternateVersion(m.MapName) && (!bomb.IsOnNormalElevation && app.isOnNormalElevation) ||
+		(bomb.IsOnNormalElevation && !app.isOnNormalElevation) {
 		color.A = 100
 	}
 
-	gfx.BoxColor(renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, color)
+	gfx.BoxColor(app.renderer, scaledXInt-3, scaledYInt-2, scaledXInt+3, scaledYInt+2, color)
 }
 
-func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32, font *ttf.Font) {
-	textSurface, err := font.RenderUTF8Blended(text, color)
+func (app *app) drawString(text string, color sdl.Color, x, y int32) {
+	textSurface, err := app.font.RenderUTF8Blended(text, color)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer textSurface.Free()
-	textTexture, err := renderer.CreateTextureFromSurface(textSurface)
+	textTexture, err := app.renderer.CreateTextureFromSurface(textSurface)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -306,15 +308,16 @@ func drawString(renderer *sdl.Renderer, text string, color sdl.Color, x, y int32
 		W: textSurface.W,
 		H: textSurface.H,
 	}
-	err = renderer.Copy(textTexture, nil, textRect)
+	err = app.renderer.Copy(textTexture, nil, textRect)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
+func (app *app) drawInfobars() {
+	m := app.match
 	var cts, ts []common.Player
-	for _, player := range match.States[curFrame].Players {
+	for _, player := range m.States[app.curFrame].Players {
 		if player.Team == demoinfo.TeamCounterTerrorists {
 			cts = append(cts, player)
 
@@ -324,18 +327,18 @@ func drawInfobars(renderer *sdl.Renderer, match *match.Match, font *ttf.Font) {
 	}
 	sort.Slice(cts, func(i, j int) bool { return cts[i].ID < cts[j].ID })
 	sort.Slice(ts, func(i, j int) bool { return ts[i].ID < ts[j].ID })
-	drawInfobar(renderer, cts, 0, mapYOffset, colorCounter, font)
-	drawInfobar(renderer, ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror, font)
-	drawKillfeed(renderer, match.Killfeed[curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600, font)
-	drawTimer(renderer, match.States[curFrame].Timer, 0, mapYOffset+600, font)
-	drawPlaybackSpeedModifier(renderer, 5, mapYOffset+630, font)
+	app.drawInfobar(cts, 0, mapYOffset, colorCounter)
+	app.drawInfobar(ts, mapXOffset+mapOverviewWidth, mapYOffset, colorTerror)
+	app.drawKillfeed(m.Killfeed[app.curFrame], mapXOffset+mapOverviewWidth, mapYOffset+600)
+	app.drawTimer(m.States[app.curFrame].Timer, 0, mapYOffset+600)
+	app.drawPlaybackSpeedModifier(5, mapYOffset+630)
 }
 
-func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, color sdl.Color, font *ttf.Font) {
+func (app *app) drawInfobar(players []common.Player, x, y int32, color sdl.Color) {
 	var yOffset int32
 	for i, player := range players {
 		if player.IsAlive {
-			gfx.BoxColor(renderer, x+int32(player.Health)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
+			gfx.BoxColor(app.renderer, x+int32(player.Health)*(mapXOffset/infobarElementHeight), yOffset, x, yOffset+5, color)
 		}
 		if !player.IsAlive {
 			color.A = 150
@@ -345,26 +348,26 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 			number = (number + 5) % 10
 		}
 		name := fmt.Sprintf("%v %v", number, player.Name)
-		drawString(renderer, cropStringToN(name, 20), color, x+85, yOffset+10, font)
+		app.drawString(cropStringToN(name, 20), color, x+85, yOffset+10)
 		color.A = 255
-		drawString(renderer, fmt.Sprintf("%v", player.Health), color, x+5, yOffset+10, font)
+		app.drawString(fmt.Sprintf("%v", player.Health), color, x+5, yOffset+10)
 		if player.Armor > 0 && player.HasHelmet {
-			drawString(renderer, "H", color, x+35, yOffset+10, font)
+			app.drawString("H", color, x+35, yOffset+10)
 		} else if player.Armor > 0 {
-			drawString(renderer, "A", color, x+35, yOffset+10, font)
+			app.drawString("A", color, x+35, yOffset+10)
 		}
 		if player.HasDefuseKit {
-			drawString(renderer, "D", color, x+50, yOffset+10, font)
+			app.drawString("D", color, x+50, yOffset+10)
 		}
-		drawString(renderer, fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25, font)
+		app.drawString(fmt.Sprintf("%v $", player.Money), colorMoney, x+5, yOffset+25)
 		var nadeCounter int32
 		inventory := player.Inventory
 		for _, w := range inventory {
 			if w.Class() == demoinfo.EqClassSMG || w.Class() == demoinfo.EqClassHeavy || w.Class() == demoinfo.EqClassRifle {
-				drawString(renderer, w.String(), color, x+150, yOffset+25, font)
+				app.drawString(w.String(), color, x+150, yOffset+25)
 			}
 			if w.Class() == demoinfo.EqClassPistols {
-				drawString(renderer, w.String(), color, x+150, yOffset+40, font)
+				app.drawString(w.String(), color, x+150, yOffset+40)
 			}
 			if w.Class() == demoinfo.EqClassGrenade {
 				var nadeColor sdl.Color
@@ -383,21 +386,21 @@ func drawInfobar(renderer *sdl.Renderer, players []common.Player, x, y int32, co
 					nadeColor = colorEqHE
 				}
 
-				gfx.BoxColor(renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
+				gfx.BoxColor(app.renderer, x+150+nadeCounter*12, yOffset+60, x+150+nadeCounter*12+6, yOffset+60+9, nadeColor)
 				nadeCounter++
 			}
 			if player.HasBomb {
-				gfx.BoxColor(renderer, x+50, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
+				gfx.BoxColor(app.renderer, x+50, yOffset+12, x+45+12, yOffset+12+9, colorBomb)
 			}
 		}
 		kdaInfo := fmt.Sprintf("%v / %v / %v", player.Kills, player.Assists, player.Deaths)
-		drawString(renderer, kdaInfo, color, x+5, yOffset+40, font)
+		app.drawString(kdaInfo, color, x+5, yOffset+40)
 
 		yOffset += infobarElementHeight
 	}
 }
 
-func drawKillfeed(renderer *sdl.Renderer, killfeed []common.Kill, x, y int32, font *ttf.Font) {
+func (app *app) drawKillfeed(killfeed []common.Kill, x, y int32) {
 	var yOffset int32
 	for _, kill := range killfeed {
 		var colorKiller, colorVictim sdl.Color
@@ -416,19 +419,19 @@ func drawKillfeed(renderer *sdl.Renderer, killfeed []common.Kill, x, y int32, fo
 		killerName := cropStringToN(kill.KillerName, 10)
 		victimName := cropStringToN(kill.VictimName, 10)
 		weaponName := cropStringToN(kill.Weapon.String(), 10)
-		drawString(renderer, killerName, colorKiller, x+5, y+yOffset, font)
+		app.drawString(killerName, colorKiller, x+5, y+yOffset)
 		if kill.Headshot {
 			weaponName = weaponName + " " + string(headshotRune)
 		}
-		drawString(renderer, weaponName, colorDarkWhite, x+112, y+yOffset, font)
-		drawString(renderer, victimName, colorVictim, x+222, y+yOffset, font)
+		app.drawString(weaponName, colorDarkWhite, x+112, y+yOffset)
+		app.drawString(victimName, colorVictim, x+222, y+yOffset)
 		yOffset += killfeedHeight
 	}
 }
 
-func drawTimer(renderer *sdl.Renderer, timer common.Timer, x, y int32, font *ttf.Font) {
+func (app *app) drawTimer(timer common.Timer, x, y int32) {
 	if timer.Phase == common.PhaseWarmup {
-		drawString(renderer, "Warmup", colorDarkWhite, x+5, y, font)
+		app.drawString("Warmup", colorDarkWhite, x+5, y)
 	} else {
 		minutes := int(timer.TimeRemaining.Minutes())
 		seconds := int(timer.TimeRemaining.Seconds()) - 60*minutes
@@ -447,11 +450,12 @@ func drawTimer(renderer *sdl.Renderer, timer common.Timer, x, y int32, font *ttf
 		} else {
 			color = colorDarkWhite
 		}
-		drawString(renderer, timeString, color, x+5, y, font)
+		app.drawString(timeString, color, x+5, y)
 	}
 }
 
-func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
+func (app *app) drawShot(shot *common.Shot) {
+	m := app.match
 	pos := shot.Position
 	viewAngleDegrees := -shot.ViewDirectionX // negated because of sdl
 	viewAngleRadian := float64(viewAngleDegrees * math.Pi / 180)
@@ -459,26 +463,26 @@ func drawShot(renderer *sdl.Renderer, shot *common.Shot, match *match.Match) {
 	if shot.IsAwpShot {
 		color = colorAwpShot
 	}
-	if common.MapHasAlternateVersion(match.MapName) && (!shot.IsOnNormalElevation && isOnNormalElevation) ||
-		(shot.IsOnNormalElevation && !isOnNormalElevation) {
+	if common.MapHasAlternateVersion(m.MapName) && (!shot.IsOnNormalElevation && app.isOnNormalElevation) ||
+		(shot.IsOnNormalElevation && !app.isOnNormalElevation) {
 		color.A = 100
 	}
 
-	scaledX, scaledY := match.TranslateScale(pos.X, pos.Y)
+	scaledX, scaledY := m.TranslateScale(pos.X, pos.Y)
 	scaledX += float32(math.Cos(viewAngleRadian) * radiusPlayerFloat)
 	scaledY += float32(math.Sin(viewAngleRadian) * radiusPlayerFloat)
 	var scaledXInt int32 = int32(scaledX) + mapXOffset
 	var scaledYInt int32 = int32(scaledY) + mapYOffset
 
-	targetX := int32(scaledXInt) + int32(math.Cos(viewAngleRadian)*shotLength/float64(match.MapScale))
-	targetY := int32(scaledYInt) + int32(math.Sin(viewAngleRadian)*shotLength/float64(match.MapScale))
+	targetX := int32(scaledXInt) + int32(math.Cos(viewAngleRadian)*shotLength/float64(m.MapScale))
+	targetY := int32(scaledYInt) + int32(math.Sin(viewAngleRadian)*shotLength/float64(m.MapScale))
 
-	gfx.AALineColor(renderer, scaledXInt, scaledYInt, targetX, targetY, color)
+	gfx.AALineColor(app.renderer, scaledXInt, scaledYInt, targetX, targetY, color)
 }
 
-func drawPlaybackSpeedModifier(renderer *sdl.Renderer, x, y int32, font *ttf.Font) {
-	str := fmt.Sprintf("Playback-Speed: x %v", staticPlaybackSpeedModifier*playbackSpeedModifier)
-	drawString(renderer, str, colorDarkWhite, x, y, font)
+func (app *app) drawPlaybackSpeedModifier(x, y int32) {
+	str := fmt.Sprintf("Playback-Speed: x %v", app.staticPlaybackSpeedModifier*app.playbackSpeedModifier)
+	app.drawString(str, colorDarkWhite, x, y)
 }
 
 func cropStringToN(s string, n int) string {
