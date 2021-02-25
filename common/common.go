@@ -138,9 +138,9 @@ type MapInfo struct {
 
 // Golang Maps return default values for keys that are not in a map.
 var mapInfos = map[string]MapInfo{
-	"de_vertigo": MapInfo{"de_vertigo_lower.jpg", 11598},
-	"de_nuke":    MapInfo{"de_nuke_lower.jpg", -550},
-	"de_mirage":  MapInfo{"de_mirage.jpg", -335},
+	"de_vertigo": {"de_vertigo_lower.jpg", 11598},
+	"de_nuke":    {"de_nuke_lower.jpg", -550},
+	"de_mirage":  {"de_mirage.jpg", -335},
 }
 
 // MapHasAlternateVersion returns whether a map has an alternative overview image.

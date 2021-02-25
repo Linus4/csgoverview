@@ -82,27 +82,27 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	if math.IsNaN(match.FrameRate) || match.FrameRate == 0 {
 		if fallbackFrameRate == -1 {
 			messageBoxButtonData := []sdl.MessageBoxButtonData{
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 0,
 					Text:     "128",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 1,
 					Text:     "64",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 2,
 					Text:     "32",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 3,
 					Text:     "24",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 4,
 					Text:     "Cancel",
@@ -140,17 +140,17 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	if math.IsNaN(match.TickRate) || match.TickRate == 0 {
 		if fallbackTickRate == -1 {
 			messageBoxButtonData := []sdl.MessageBoxButtonData{
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 0,
 					Text:     "128",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 1,
 					Text:     "64",
 				},
-				sdl.MessageBoxButtonData{
+				{
 					Flags:    0,
 					ButtonID: 2,
 					Text:     "Cancel",
