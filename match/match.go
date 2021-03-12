@@ -2,7 +2,6 @@
 package match
 
 import (
-	"errors"
 	"log"
 	"math"
 	"os"
@@ -15,7 +14,6 @@ import (
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
@@ -79,128 +77,45 @@ func NewMatch(demoFileName string, fallbackFrameRate, fallbackTickRate float64) 
 	}
 
 	match.FrameRate = header.FrameRate()
-	if math.IsNaN(match.FrameRate) || match.FrameRate == 0 {
-		if fallbackFrameRate == -1 {
-			messageBoxButtonData := []sdl.MessageBoxButtonData{
-				{
-					Flags:    0,
-					ButtonID: 0,
-					Text:     "128",
-				},
-				{
-					Flags:    0,
-					ButtonID: 1,
-					Text:     "64",
-				},
-				{
-					Flags:    0,
-					ButtonID: 2,
-					Text:     "32",
-				},
-				{
-					Flags:    0,
-					ButtonID: 3,
-					Text:     "24",
-				},
-				{
-					Flags:    0,
-					ButtonID: 4,
-					Text:     "Cancel",
-				},
-			}
-			messageBoxData := sdl.MessageBoxData{
-				Flags:  sdl.MESSAGEBOX_ERROR,
-				Window: nil,
-				Title:  "Error",
-				Message: "Could not parse GOTV framerate from demo." +
-					" Please choose framerate from options below.",
-				Buttons:     messageBoxButtonData,
-				ColorScheme: nil,
-			}
-			buttonid, _ := sdl.ShowMessageBox(&messageBoxData)
-			switch buttonid {
-			case 0:
-				match.FrameRate = 128
-			case 1:
-				match.FrameRate = 64
-			case 2:
-				match.FrameRate = 32
-			case 3:
-				match.FrameRate = 24
-			case 4:
-				err := errors.New("could not parse Framerate from demo." +
-					" Please provide a fallback value (command-line option -framerate)")
-				return nil, err
-			}
-		} else {
-			match.FrameRate = fallbackFrameRate
-		}
-	}
 	match.TickRate = parser.TickRate()
-	if math.IsNaN(match.TickRate) || match.TickRate == 0 {
-		if fallbackTickRate == -1 {
-			messageBoxButtonData := []sdl.MessageBoxButtonData{
-				{
-					Flags:    0,
-					ButtonID: 0,
-					Text:     "128",
-				},
-				{
-					Flags:    0,
-					ButtonID: 1,
-					Text:     "64",
-				},
-				{
-					Flags:    0,
-					ButtonID: 2,
-					Text:     "Cancel",
-				},
-			}
-			messageBoxData := sdl.MessageBoxData{
-				Flags:  sdl.MESSAGEBOX_ERROR,
-				Window: nil,
-				Title:  "Error",
-				Message: "Could not parse server tickrate from demo." +
-					" Please choose tickrate from options below.",
-				Buttons:     messageBoxButtonData,
-				ColorScheme: nil,
-			}
-			buttonid, _ := sdl.ShowMessageBox(&messageBoxData)
-			switch buttonid {
-			case 0:
-				match.TickRate = 128
-			case 1:
-				match.TickRate = 64
-			case 2:
-				err := errors.New("could not parse Tickrate from demo." +
-					"Please provide a fallback value (command-line option -tickrate)")
-				return nil, err
-			}
-		} else {
-			match.TickRate = fallbackTickRate
-		}
-	}
-	match.FrameRateRounded = int(math.Round(match.FrameRate))
-	if match.FrameRateRounded == 128 {
-		match.takeNthFrame = 4
-		match.FrameRateRounded = 32
-	}
-	if match.FrameRateRounded == 64 {
-		match.takeNthFrame = 2
-		match.FrameRateRounded = 32
-	}
 	match.MapName = header.MapName
 	match.MapPZero = common.Point{
 		X: float32(meta.MapNameToMap[match.MapName].PZero.X),
 		Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
 	}
 	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
-	match.SmokeEffectLifetime = int32(18 * match.FrameRateRounded)
 
 	registerEventHandlers(parser, match)
 	match.States = parseGameStates(parser, match)
 
 	return match, nil
+}
+
+func ratesCalc(parser *dem.Parser, match *Match) {
+	if math.IsNaN(match.TickRate) || match.TickRate == 0 {
+		match.TickRate = (*parser).TickRate()
+	}
+
+	if math.IsNaN(match.FrameRate) || match.FrameRate == 0 {
+		if val, ok := (*parser).GameState().ConVars()["tv_snapshotrate"]; ok {
+			match.FrameRate, _ = strconv.ParseFloat(val, 64)
+		} else {
+			match.FrameRate = 32
+		}
+	}
+
+	if match.FrameRateRounded == 0 {
+		match.FrameRateRounded = int(math.Round(match.FrameRate))
+		if match.FrameRateRounded == 128 {
+			match.takeNthFrame = 4
+			match.FrameRateRounded = 32
+		}
+		if match.FrameRateRounded == 64 {
+			match.takeNthFrame = 2
+			match.FrameRateRounded = 32
+		}
+		match.SmokeEffectLifetime = int32(18 * match.FrameRateRounded)
+	}
 }
 
 func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
@@ -403,6 +318,9 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			// return here or not?
 			continue
 		}
+
+		ratesCalc(&parser, match)
+
 		if parser.CurrentFrame()%match.takeNthFrame != 0 {
 			continue
 		}
