@@ -62,9 +62,6 @@ type Config struct {
 	// Fallback GOTV Framerate
 	FrameRate float64
 
-	// Fallback Gameserver Tickrate
-	TickRate float64
-
 	// Whether to just print the version number
 	PrintVersion bool
 }
@@ -72,7 +69,6 @@ type Config struct {
 // DefaultConfig contains standard parameters for the application.
 var DefaultConfig = Config{
 	FrameRate: -1,
-	TickRate:  -1,
 }
 
 // App contains the state of the application.
@@ -153,7 +149,7 @@ func run(c *Config) error {
 	defer renderer.Destroy()
 	renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
 
-	match, err := match.NewMatch(demoFileName, c.FrameRate, c.TickRate)
+	match, err := match.NewMatch(demoFileName, c.FrameRate)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to parse demo file:\n%v", err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
