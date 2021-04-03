@@ -49,9 +49,7 @@ type Match struct {
 
 // NewMatch parses the demo at the specified path in the argument and returns a
 // match.Match containing all relevant data from the demo.
-// fallbackFrameRate and fallbackTickRate are used in case the values cannot be
-// parsed from the demo. If they are not set, they must be -1.
-func NewMatch(demoFileName string, fallbackFrameRate float64) (*Match, error) {
+func NewMatch(demoFileName string) (*Match, error) {
 	demo, err := os.Open(demoFileName)
 	if err != nil {
 		return nil, err
@@ -75,11 +73,7 @@ func NewMatch(demoFileName string, fallbackFrameRate float64) (*Match, error) {
 		takeNthFrame: 1,
 	}
 
-	if fallbackFrameRate == -1 {
-		match.FrameRate = header.FrameRate()
-	} else {
-		match.FrameRate = fallbackFrameRate
-	}
+	match.FrameRate = header.FrameRate()
 	if !math.IsNaN(match.FrameRate) || !(match.FrameRate == 0) {
 		match.calculateRates()
 	}

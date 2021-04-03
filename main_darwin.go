@@ -16,7 +16,6 @@ const (
 func main() {
 	conf := DefaultConfig
 	flag.BoolVar(&conf.PrintVersion, "version", false, "Print version number")
-	flag.Float64Var(&conf.FrameRate, "framerate", conf.FrameRate, "Fallback GOTV Framerate")
 	cmd := fmt.Sprintf("fc-list | grep %v.ttf", fontName)
 	fontPathsB, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
