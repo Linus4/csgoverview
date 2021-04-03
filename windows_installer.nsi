@@ -4,7 +4,7 @@ Unicode True
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
 Icon "csgoverview.ico"
-OutFile "${APP_NAME}_windows_v1.0.0_install.exe"
+OutFile "${APP_NAME}_windows_v1.1.0_install.exe"
 LicenseData "LICENSE"
 RequestExecutionLevel admin
 ; Set default InstallDir
