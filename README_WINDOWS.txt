@@ -17,6 +17,7 @@ Checksums
 =========
 
 v1.0.0: 87f439d4e1097d534e799d576213b653a744e77b97b62cf3225e0dde614e1cfa
+v1.1.0: 517f4199dc2030fe25e3ba9cebef0ec776f05a0dc3df0bfe20095e8e5a9a7e46
 
 
 Updates
