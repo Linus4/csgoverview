@@ -74,4 +74,5 @@ Thank you for helping me or contributing to the project!
 * [langhillie](https://github.com/langhillie) (smoke team outlines, get player
   view angle, show currently held weapon)
 * [augustoccesar](https://github.com/augustoccesar) (headshot icon on killfeed)
+* [r0ma](https://github.com/r0ma) (framerate autodetection)
 
