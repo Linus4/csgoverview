@@ -34,8 +34,7 @@ type Match struct {
 	HalfStarts           []int
 	RoundStarts          []int
 	Effects              map[int][]common.Effect
-	FrameRate            float64
-	FrameRateRounded     int
+	FrameRate            int
 	States               []common.OverviewState
 	SmokeEffectLifetime  int32
 	Killfeed             map[int][]common.Kill
@@ -73,10 +72,6 @@ func NewMatch(demoFileName string) (*Match, error) {
 		takeNthFrame: 1,
 	}
 
-	match.FrameRate = header.FrameRate()
-	if !math.IsNaN(match.FrameRate) || !(match.FrameRate == 0) {
-		match.calculateRates()
-	}
 	match.MapName = header.MapName
 	match.MapPZero = common.Point{
 		X: float32(meta.MapNameToMap[match.MapName].PZero.X),
@@ -88,19 +83,6 @@ func NewMatch(demoFileName string) (*Match, error) {
 	match.States = parseGameStates(parser, match)
 
 	return match, nil
-}
-
-func (match *Match) calculateRates() {
-	match.FrameRateRounded = int(math.Round(match.FrameRate))
-	if match.FrameRateRounded == 128 {
-		match.takeNthFrame = 4
-		match.FrameRateRounded = 32
-	}
-	if match.FrameRateRounded == 64 {
-		match.takeNthFrame = 2
-		match.FrameRateRounded = 32
-	}
-	match.SmokeEffectLifetime = int32(18 * match.FrameRateRounded)
 }
 
 func grenadeEventHandler(lifetime int32, e event.GrenadeEvent, match *Match) {
@@ -253,7 +235,7 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 			Headshot:   e.IsHeadshot,
 		}
 
-		for i := 0; i < match.FrameRateRounded*killfeedLifetime; i++ {
+		for i := 0; i < match.FrameRate*killfeedLifetime; i++ {
 			kills, ok := match.Killfeed[match.currentFrame+i]
 			if ok {
 				if len(kills) > 5 {
@@ -304,15 +286,25 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 			continue
 		}
 
-		// if header is broken
-		if math.IsNaN(match.FrameRate) || match.FrameRate == 0 {
+		// do this only once
+		if match.FrameRate == 0 {
 			if val, ok := parser.GameState().ConVars()["tv_snapshotrate"]; ok {
-				match.FrameRate, _ = strconv.ParseFloat(val, 64)
+				floatVal, _ := strconv.ParseFloat(val, 64)
+				match.FrameRate = int(math.Round(floatVal))
 			} else {
 				// if !ok the variable has the default value
 				match.FrameRate = 32
 			}
-			match.calculateRates()
+
+			if match.FrameRate == 128 {
+				match.takeNthFrame = 4
+				match.FrameRate = 32
+			}
+			if match.FrameRate == 64 {
+				match.takeNthFrame = 2
+				match.FrameRate = 32
+			}
+			match.SmokeEffectLifetime = int32(18 * match.FrameRate)
 		}
 
 		if parser.CurrentFrame()%match.takeNthFrame != 0 {

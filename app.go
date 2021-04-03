@@ -248,18 +248,18 @@ func (app *app) run() error {
 				// back
 				if eventT.Type == sdl.MOUSEWHEEL {
 					if eventT.Y > 0 {
-						if app.curFrame < m.FrameRateRounded*1 {
+						if app.curFrame < m.FrameRate*1 {
 							app.curFrame = 0
 						} else {
-							app.curFrame -= m.FrameRateRounded * 1
+							app.curFrame -= m.FrameRate * 1
 						}
 					}
 					if eventT.Y < 0 {
 						// forward
-						if app.curFrame+m.FrameRateRounded*1 > len(m.States)-1 {
+						if app.curFrame+m.FrameRate*1 > len(m.States)-1 {
 							app.curFrame = len(m.States) - 1
 						} else {
-							app.curFrame += m.FrameRateRounded * 1
+							app.curFrame += m.FrameRate * 1
 						}
 					}
 				}
@@ -289,7 +289,7 @@ func (app *app) run() error {
 			keyboardState[sdl.GetScancodeFromKey(sdl.K_LSHIFT)] != 0 {
 			app.playbackSpeedModifier = 0.5
 		}
-		delay := (1/(app.playbackSpeedModifier*app.staticPlaybackSpeedModifier))*(1000/float64(m.FrameRateRounded)) - frameDuration
+		delay := (1/(app.playbackSpeedModifier*app.staticPlaybackSpeedModifier))*(1000/float64(m.FrameRate)) - frameDuration
 		if delay < 0 {
 			delay = 0
 		}
@@ -309,31 +309,31 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 
 	case sdl.K_a:
 		if isShiftPressed(eventT) {
-			if app.curFrame < m.FrameRateRounded*10 {
+			if app.curFrame < m.FrameRate*10 {
 				app.curFrame = 0
 			} else {
-				app.curFrame -= m.FrameRateRounded * 10
+				app.curFrame -= m.FrameRate * 10
 			}
 		} else {
-			if app.curFrame < m.FrameRateRounded*3 {
+			if app.curFrame < m.FrameRate*3 {
 				app.curFrame = 0
 			} else {
-				app.curFrame -= m.FrameRateRounded * 3
+				app.curFrame -= m.FrameRate * 3
 			}
 		}
 
 	case sdl.K_d:
 		if isShiftPressed(eventT) {
-			if app.curFrame+m.FrameRateRounded*10 > len(m.States)-1 {
+			if app.curFrame+m.FrameRate*10 > len(m.States)-1 {
 				app.curFrame = len(m.States) - 1
 			} else {
-				app.curFrame += m.FrameRateRounded * 10
+				app.curFrame += m.FrameRate * 10
 			}
 		} else {
-			if app.curFrame+m.FrameRateRounded*3 > len(m.States)-1 {
+			if app.curFrame+m.FrameRate*3 > len(m.States)-1 {
 				app.curFrame = len(m.States) - 1
 			} else {
-				app.curFrame += m.FrameRateRounded * 3
+				app.curFrame += m.FrameRate * 3
 			}
 		}
 
@@ -342,7 +342,7 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			set := false
 			for i, frame := range m.HalfStarts {
 				if app.curFrame < frame {
-					if i > 1 && app.curFrame < m.HalfStarts[i-1]+m.FrameRateRounded/2 {
+					if i > 1 && app.curFrame < m.HalfStarts[i-1]+m.FrameRate/2 {
 						app.curFrame = m.HalfStarts[i-2]
 						set = true
 						break
@@ -359,7 +359,7 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			}
 			// not set -> last round of match
 			if !set {
-				if len(m.HalfStarts) > 1 && app.curFrame < m.HalfStarts[len(m.HalfStarts)-1]+m.FrameRateRounded/2 {
+				if len(m.HalfStarts) > 1 && app.curFrame < m.HalfStarts[len(m.HalfStarts)-1]+m.FrameRate/2 {
 					app.curFrame = m.HalfStarts[len(m.HalfStarts)-2]
 				} else {
 					app.curFrame = m.HalfStarts[len(m.HalfStarts)-1]
@@ -369,7 +369,7 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			set := false
 			for i, frame := range m.RoundStarts {
 				if app.curFrame < frame {
-					if i > 1 && app.curFrame < m.RoundStarts[i-1]+m.FrameRateRounded/2 {
+					if i > 1 && app.curFrame < m.RoundStarts[i-1]+m.FrameRate/2 {
 						app.curFrame = m.RoundStarts[i-2]
 						set = true
 						break
@@ -386,7 +386,7 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 			}
 			// not set -> last round of match
 			if !set {
-				if len(m.RoundStarts) > 1 && app.curFrame < m.RoundStarts[len(m.RoundStarts)-1]+m.FrameRateRounded/2 {
+				if len(m.RoundStarts) > 1 && app.curFrame < m.RoundStarts[len(m.RoundStarts)-1]+m.FrameRate/2 {
 					app.curFrame = m.RoundStarts[len(m.RoundStarts)-2]
 				} else {
 					app.curFrame = m.RoundStarts[len(m.RoundStarts)-1]
