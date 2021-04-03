@@ -2,7 +2,6 @@
 package match
 
 import (
-	"errors"
 	"log"
 	"math"
 	"os"
@@ -15,7 +14,6 @@ import (
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
 	event "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 	meta "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
-	"github.com/veandco/go-sdl2/sdl"
 )
 
 const (
@@ -93,10 +91,7 @@ func NewMatch(demoFileName string, fallbackFrameRate float64) (*Match, error) {
 	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
 
 	registerEventHandlers(parser, match)
-	match.States, err = parseGameStates(parser, match)
-	if err != nil {
-		return nil, err
-	}
+	match.States = parseGameStates(parser, match)
 
 	return match, nil
 }
@@ -304,7 +299,7 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 }
 
 // parse demo and save GameStates in slice
-func parseGameStates(parser dem.Parser, match *Match) ([]common.OverviewState, error) {
+func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 	playbackFrames := parser.Header().PlaybackFrames
 	states := make([]common.OverviewState, 0, playbackFrames)
 
@@ -320,57 +315,8 @@ func parseGameStates(parser dem.Parser, match *Match) ([]common.OverviewState, e
 			if val, ok := parser.GameState().ConVars()["tv_snapshotrate"]; ok {
 				match.FrameRate, _ = strconv.ParseFloat(val, 64)
 			} else {
-				messageBoxButtonData := []sdl.MessageBoxButtonData{
-					{
-						Flags:    0,
-						ButtonID: 0,
-						Text:     "128",
-					},
-					{
-						Flags:    0,
-						ButtonID: 1,
-						Text:     "64",
-					},
-					{
-						Flags:    0,
-						ButtonID: 2,
-						Text:     "32",
-					},
-					{
-						Flags:    0,
-						ButtonID: 3,
-						Text:     "24",
-					},
-					{
-						Flags:    0,
-						ButtonID: 4,
-						Text:     "Cancel",
-					},
-				}
-				messageBoxData := sdl.MessageBoxData{
-					Flags:  sdl.MESSAGEBOX_ERROR,
-					Window: nil,
-					Title:  "Error",
-					Message: "Could not parse GOTV framerate from demo." +
-						" Please choose framerate from options below.",
-					Buttons:     messageBoxButtonData,
-					ColorScheme: nil,
-				}
-				buttonid, _ := sdl.ShowMessageBox(&messageBoxData)
-				switch buttonid {
-				case 0:
-					match.FrameRate = 128
-				case 1:
-					match.FrameRate = 64
-				case 2:
-					match.FrameRate = 32
-				case 3:
-					match.FrameRate = 24
-				case 4:
-					err := errors.New("could not parse Framerate from demo." +
-						" Please provide a fallback value (command-line option -framerate)")
-					return nil, err
-				}
+				// if !ok the variable has the default value
+				match.FrameRate = 32
 			}
 			match.calculateRates()
 		}
@@ -609,7 +555,7 @@ func parseGameStates(parser dem.Parser, match *Match) ([]common.OverviewState, e
 		states = append(states, state)
 	}
 
-	return states, nil
+	return states
 }
 
 func isWeaponOrGrenade(e demoinfo.EquipmentType) bool {
