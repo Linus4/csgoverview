@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
+	"github.com/cheggaaa/pb/v3"
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
@@ -86,6 +87,12 @@ type app struct {
 }
 
 func run(c *Config) error {
+	// Progress Bar template
+	pbTmpl := `{{string . "step" | green}} {{ bar . "[" "#" (cycle . "⬒" "⬔" "⬓" "⬕" ) "." "]"}} {{percent .}}`
+	pbInstance := pb.ProgressBarTemplate(pbTmpl).Start(8)
+	pbInstance.Set("step", "Starting...")
+	pbInstance.Start()
+
 	var demoFileName string
 	if c.PrintVersion {
 		fmt.Println(appVersion)
@@ -102,6 +109,7 @@ func run(c *Config) error {
 		demoFileName = flag.Args()[0]
 	}
 
+	pbInstance.Set("step", "Initializing SDL")
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to initialize SDL:\n%v", err)
@@ -109,7 +117,9 @@ func run(c *Config) error {
 		return err
 	}
 	defer sdl.Quit()
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Initializing TTF lib")
 	err = ttf.Init()
 	if err != nil {
 		errorString := fmt.Sprintf("trying to initialize the TTF lib:\n%v", err)
@@ -117,7 +127,9 @@ func run(c *Config) error {
 		return err
 	}
 	defer ttf.Quit()
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Opening font file")
 	font, err := ttf.OpenFont(c.FontPath, nameMapFontSize)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to open font file (system):\n%v", err)
@@ -125,7 +137,9 @@ func run(c *Config) error {
 		return err
 	}
 	defer font.Close()
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Creating SDL window")
 	window, err := sdl.CreateWindow("csgoverview", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
@@ -134,7 +148,9 @@ func run(c *Config) error {
 		return err
 	}
 	defer window.Destroy()
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Creating SDL renderer")
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_SOFTWARE)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create SDL renderer:\n%v", err)
@@ -143,14 +159,18 @@ func run(c *Config) error {
 	}
 	defer renderer.Destroy()
 	renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
+	pbInstance.Increment()
 
-	match, err := match.NewMatch(demoFileName)
+	pbInstance.Set("step", "Parsing demo file")
+	match, err := match.NewMatch(demoFileName, pbInstance)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to parse demo file:\n%v", err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Loading map overview surface")
 	mapSurface, err := img.Load(filepath.Join(c.OverviewDir, fmt.Sprintf("%v.jpg", match.MapName)))
 	if err != nil {
 		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
@@ -160,7 +180,9 @@ func run(c *Config) error {
 		return err
 	}
 	defer mapSurface.Free()
+	pbInstance.Increment()
 
+	pbInstance.Set("step", "Creating texture from surface")
 	mapTexture, err := renderer.CreateTextureFromSurface(mapSurface)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create mapTexture from Surface:\n%v", err)
@@ -190,6 +212,7 @@ func run(c *Config) error {
 		}
 		defer alternateMapTexture.Destroy()
 	}
+	pbInstance.Increment()
 
 	mapRect := &sdl.Rect{mapXOffset, mapYOffset, mapOverviewWidth, mapOverviewHeight}
 
@@ -210,12 +233,16 @@ func run(c *Config) error {
 		hidePlayerNames:             false,
 	}
 
+	pbInstance.Set("step", "Starting app")
+	pbInstance.Finish()
+
 	err = app.run()
 	if err != nil {
 		errorString := fmt.Sprintf("while running the app:\n%v", err)
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
+
 	return nil
 }
 
