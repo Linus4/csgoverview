@@ -280,7 +280,6 @@ func parseGameStates(parser dem.Parser, match *Match, pb *pb.ProgressBar) []comm
 	playbackFrames := parser.Header().PlaybackFrames
 	states := make([]common.OverviewState, 0, playbackFrames)
 
-	pb.SetTotal(pb.Total() + (int64(playbackFrames) / 4))
 	for ok, err := parser.ParseNextFrame(); ok; ok, err = parser.ParseNextFrame() {
 		if err != nil {
 			log.Println(err)
@@ -307,6 +306,8 @@ func parseGameStates(parser dem.Parser, match *Match, pb *pb.ProgressBar) []comm
 				match.FrameRate = 32
 			}
 			match.SmokeEffectLifetime = int32(18 * match.FrameRate)
+
+			pb.SetTotal(pb.Total() + int64(playbackFrames/match.takeNthFrame))
 		}
 
 		if parser.CurrentFrame()%match.takeNthFrame != 0 {
