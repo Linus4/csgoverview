@@ -451,7 +451,7 @@ func (app *app) drawTimer(timer common.Timer, x, y int32) {
 		}
 		*/
 		var color sdl.Color
-		if app.lastDraw.Second()%2 == 0 && app.isPaused {
+		if app.lastDrawnAt.Second()%2 == 0 && app.isPaused {
 			color = colorDarkGrey
 		} else if timer.Phase == common.PhasePlanted {
 			color = colorBomb
