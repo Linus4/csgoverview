@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cheggaaa/pb/v3"
 	common "github.com/linus4/csgoverview/common"
 	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
 	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
@@ -48,7 +49,7 @@ type Match struct {
 
 // NewMatch parses the demo at the specified path in the argument and returns a
 // match.Match containing all relevant data from the demo.
-func NewMatch(demoFileName string) (*Match, error) {
+func NewMatch(demoFileName string, pb *pb.ProgressBar) (*Match, error) {
 	demo, err := os.Open(demoFileName)
 	if err != nil {
 		return nil, err
@@ -80,7 +81,7 @@ func NewMatch(demoFileName string) (*Match, error) {
 	match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
 
 	registerEventHandlers(parser, match)
-	match.States = parseGameStates(parser, match)
+	match.States = parseGameStates(parser, match, pb)
 
 	return match, nil
 }
@@ -275,7 +276,7 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 }
 
 // parse demo and save GameStates in slice
-func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
+func parseGameStates(parser dem.Parser, match *Match, pb *pb.ProgressBar) []common.OverviewState {
 	playbackFrames := parser.Header().PlaybackFrames
 	states := make([]common.OverviewState, 0, playbackFrames)
 
@@ -305,6 +306,8 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 				match.FrameRate = 32
 			}
 			match.SmokeEffectLifetime = int32(18 * match.FrameRate)
+
+			pb.SetTotal(pb.Total() + int64(playbackFrames/match.takeNthFrame))
 		}
 
 		if parser.CurrentFrame()%match.takeNthFrame != 0 {
@@ -539,6 +542,7 @@ func parseGameStates(parser dem.Parser, match *Match) []common.OverviewState {
 		}
 
 		states = append(states, state)
+		pb.Increment()
 	}
 
 	return states
