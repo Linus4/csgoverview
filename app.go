@@ -77,6 +77,7 @@ type app struct {
 	match               *match.Match
 	config              *Config
 
+	lastDrawnAt                 time.Time
 	isPaused                    bool
 	curFrame                    int
 	isOnNormalElevation         bool
@@ -202,6 +203,7 @@ func run(c *Config) error {
 		font:                        font,
 		match:                       match,
 		config:                      c,
+		lastDrawnAt:                 time.Now().UTC(),
 		isPaused:                    false,
 		curFrame:                    0,
 		isOnNormalElevation:         true,
@@ -523,6 +525,7 @@ func (app *app) updateGraphics() {
 	m := app.match
 	app.renderer.SetDrawColor(10, 10, 10, 255)
 	app.renderer.Clear()
+	app.lastDrawnAt = time.Now().UTC()
 
 	app.drawInfobars()
 	app.renderer.Copy(app.mapTexture, nil, app.mapRect)

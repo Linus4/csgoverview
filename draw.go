@@ -12,6 +12,11 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+type PlaybackIcon struct {
+	Icon    rune
+	YOffset int32
+}
+
 const (
 	radiusPlayer      int32   = 10
 	radiusPlayerFloat float64 = float64(radiusPlayer)
@@ -40,6 +45,9 @@ var (
 	colorDarkGrey              = sdl.Color{125, 125, 125, 255}
 	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
 	colorAwpShot               = sdl.Color{255, 50, 0, 255}
+
+	pauseIcon PlaybackIcon = PlaybackIcon{Icon: '\u1426', YOffset: 2}
+	playIcon  PlaybackIcon = PlaybackIcon{Icon: '\u2023', YOffset: 0}
 )
 
 func (app *app) drawPlayer(player *common.Player, index int) {
@@ -443,14 +451,23 @@ func (app *app) drawTimer(timer common.Timer, x, y int32) {
 		}
 		*/
 		var color sdl.Color
-		if timer.Phase == common.PhasePlanted {
+		if app.lastDrawnAt.Second()%2 == 0 && app.isPaused {
+			color = colorDarkGrey
+		} else if timer.Phase == common.PhasePlanted {
 			color = colorBomb
 		} else if timer.Phase == common.PhaseRestart {
 			color = colorEqHE
 		} else {
 			color = colorDarkWhite
 		}
-		app.drawString(timeString, color, x+5, y)
+
+		playbackIcon := playIcon
+		if app.isPaused {
+			playbackIcon = pauseIcon
+		}
+
+		app.drawString(string(playbackIcon.Icon), color, x+5, y+playbackIcon.YOffset)
+		app.drawString(timeString, color, x+15, y)
 	}
 }
 
