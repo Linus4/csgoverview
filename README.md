@@ -73,6 +73,7 @@ Thank you for helping me or contributing to the project!
 * [xXxhaxmeister42xXx](https://github.com/xXxhaxmeister42xXx) (x64 Installer)
 * [langhillie](https://github.com/langhillie) (smoke team outlines, get player
   view angle, show currently held weapon)
-* [augustoccesar](https://github.com/augustoccesar) (headshot icon on killfeed)
+* [augustoccesar](https://github.com/augustoccesar) (headshot icon on killfeed,
+  loading screen feedback, playback icon)
 * [r0ma](https://github.com/r0ma) (framerate autodetection)
 
