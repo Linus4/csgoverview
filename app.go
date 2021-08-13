@@ -28,7 +28,7 @@ const (
 	mapXOffset           int32  = 300
 	mapYOffset           int32  = 0
 	infobarElementHeight int32  = 100
-	appVersion           string = "v1.1.0"
+	appVersion           string = "v1.2.0"
 	hotkeysString        string = `
 * a -> 3 s backwards
 * d -> 3 s forwards
