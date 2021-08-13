@@ -4,7 +4,7 @@ Unicode True
 !define APP_NAME "csgoverview"
 Name "${APP_NAME}"
 Icon "csgoverview.ico"
-OutFile "${APP_NAME}_windows_v1.1.0_install.exe"
+OutFile "${APP_NAME}_windows_v1.2.0_install.exe"
 LicenseData "LICENSE"
 RequestExecutionLevel admin
 ; Set default InstallDir
@@ -64,16 +64,17 @@ Section "Download Maps" SecMaps
     SetOutPath "$INSTDIR\assets\maps"
 
     ; DOWNLOADS
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_overpass.jpg" de_overpass.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_mirage.jpg" de_mirage.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo.jpg" de_vertigo.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_vertigo_lower.jpg" de_vertigo_lower.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke.jpg" de_nuke.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_nuke_lower.jpg" de_nuke_lower.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_cache.jpg" de_cache.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_inferno.jpg" de_inferno.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_train.jpg" de_train.jpg
-    inetc::get "https://raw.githubusercontent.com/zoidbergwill/csgo-overviews/master/overviews/de_dust2.jpg" de_dust2.jpg
+    inetc::get "https://i.imgur.com/VHWIjSB.jpeg" de_overpass.jpg
+    inetc::get "https://i.imgur.com/6HLCCp1.jpeg" de_mirage.jpg
+    inetc::get "https://i.imgur.com/q8HmCHN.jpeg" de_vertigo.jpg
+    inetc::get "https://i.imgur.com/qCbHmJ2.jpeg" de_vertigo_lower.jpg
+    inetc::get "https://i.imgur.com/frbUQtK.jpeg" de_nuke.jpg
+    inetc::get "https://i.imgur.com/vaF05M5.jpeg" de_nuke_lower.jpg
+    inetc::get "https://i.imgur.com/KqtNKUc.jpeg" de_cache.jpg
+    inetc::get "https://i.imgur.com/MW7Kp7f.jpeg" de_inferno.jpg
+    inetc::get "https://i.imgur.com/FSLMR6V.jpeg" de_train.jpg
+    inetc::get "https://i.imgur.com/OrsYdDq.jpeg" de_dust2.jpg
+    inetc::get "https://i.imgur.com/2ZWUOt3.jpeg" de_ancient.jpg
 
 SectionEnd
 
@@ -93,6 +94,7 @@ Section "un.Uninstall"
     Delete "$INSTDIR\assets\maps\de_inferno.jpg"
     Delete "$INSTDIR\assets\maps\de_train.jpg"
     Delete "$INSTDIR\assets\maps\de_dust2.jpg"
+    Delete "$INSTDIR\assets\maps\de_ancient.jpg"
 
     RMDIR "$INSTDIR\assets\maps"
     RMDIR "$INSTDIR\assets"
