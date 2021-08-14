@@ -27,24 +27,24 @@ const (
 )
 
 var (
-	colorTerror                = sdl.Color{252, 176, 12, 255}
-	colorCounter               = sdl.Color{89, 206, 200, 255}
-	colorMoney                 = sdl.Color{45, 135, 45, 255}
-	colorBomb                  = sdl.Color{255, 0, 0, 255}
-	colorEqDecoy               = sdl.Color{102, 34, 0, 255}
-	colorEqMolotov             = sdl.Color{255, 153, 0, 255}
-	colorEqIncendiary          = sdl.Color{255, 153, 0, 255}
-	colorInferno               = sdl.Color{255, 153, 0, 100}
-	colorEqFlash               = sdl.Color{128, 170, 255, 255}
-	colorEqSmoke               = sdl.Color{153, 153, 153, 255}
-	colorEqSmokeOutlineTerror  = sdl.Color{252, 176, 12, 120}
-	colorEqSmokeOutlineCounter = sdl.Color{89, 206, 200, 120}
-	colorSmoke                 = sdl.Color{153, 153, 153, 100}
-	colorEqHE                  = sdl.Color{85, 150, 0, 255}
-	colorDarkWhite             = sdl.Color{200, 200, 200, 255}
-	colorDarkGrey              = sdl.Color{125, 125, 125, 255}
-	colorFlashEffect           = sdl.Color{200, 200, 200, 180}
-	colorAwpShot               = sdl.Color{255, 50, 0, 255}
+	colorTerror                = sdl.Color{R: 252, G: 176, B: 12, A: 255}
+	colorCounter               = sdl.Color{R: 89, G: 206, B: 200, A: 255}
+	colorMoney                 = sdl.Color{R: 45, G: 135, B: 45, A: 255}
+	colorBomb                  = sdl.Color{R: 255, G: 0, B: 0, A: 255}
+	colorEqDecoy               = sdl.Color{R: 102, G: 34, B: 0, A: 255}
+	colorEqMolotov             = sdl.Color{R: 255, G: 153, B: 0, A: 255}
+	colorEqIncendiary          = sdl.Color{R: 255, G: 153, B: 0, A: 255}
+	colorInferno               = sdl.Color{R: 255, G: 153, B: 0, A: 100}
+	colorEqFlash               = sdl.Color{R: 128, G: 170, B: 255, A: 255}
+	colorEqSmoke               = sdl.Color{R: 153, G: 153, B: 153, A: 255}
+	colorEqSmokeOutlineTerror  = sdl.Color{R: 252, G: 176, B: 12, A: 120}
+	colorEqSmokeOutlineCounter = sdl.Color{R: 89, G: 206, B: 200, A: 120}
+	colorSmoke                 = sdl.Color{R: 153, G: 153, B: 153, A: 100}
+	colorEqHE                  = sdl.Color{R: 85, G: 150, B: 0, A: 255}
+	colorDarkWhite             = sdl.Color{R: 200, G: 200, B: 200, A: 255}
+	colorDarkGrey              = sdl.Color{R: 125, G: 125, B: 125, A: 255}
+	colorFlashEffect           = sdl.Color{R: 200, G: 200, B: 200, A: 180}
+	colorAwpShot               = sdl.Color{R: 255, G: 50, B: 0, A: 255}
 
 	pauseIcon PlaybackIcon = PlaybackIcon{Icon: '\u1426', YOffset: 2}
 	playIcon  PlaybackIcon = PlaybackIcon{Icon: '\u2023', YOffset: 0}

@@ -215,7 +215,7 @@ func run(c *Config) error {
 	}
 	pbInstance.Increment()
 
-	mapRect := &sdl.Rect{mapXOffset, mapYOffset, mapOverviewWidth, mapOverviewHeight}
+	mapRect := &sdl.Rect{X: mapXOffset, Y: mapYOffset, W: mapOverviewWidth, H: mapOverviewHeight}
 
 	app := app{
 		window:                      window,
