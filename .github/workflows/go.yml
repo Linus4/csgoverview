@@ -39,7 +39,7 @@ jobs:
       with:
         version: v1.41
         github-token: ${{ secrets.github_token }}
-        args: --timeout 5m0s
+        args: --timeout 5m0s --print-issued-lines
         
   build:
     runs-on: ubuntu-latest
