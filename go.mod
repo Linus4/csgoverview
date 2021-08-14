@@ -13,6 +13,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/geo v0.0.0-20210211234256-740aa86cb551
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
+	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/markus-wa/demoinfocs-golang v1.11.0 // indirect
 	github.com/markus-wa/demoinfocs-golang/v2 v2.10.1
 	github.com/markus-wa/quickhull-go v0.0.0-20190116183559-9fb9702adbda // indirect
@@ -27,7 +28,9 @@ require (
 	github.com/tsenart/deadcode v0.0.0-20160724212837-210d2dc333e9 // indirect
 	github.com/veandco/go-sdl2 v0.4.8
 	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
+	golang.org/x/mod v0.5.0 // indirect
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
+	golang.org/x/tools v0.1.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.6 // indirect

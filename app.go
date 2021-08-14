@@ -114,7 +114,7 @@ func run(c *Config) error {
 	err := sdl.Init(sdl.INIT_VIDEO | sdl.INIT_EVENTS)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to initialize SDL:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer sdl.Quit()
@@ -124,7 +124,7 @@ func run(c *Config) error {
 	err = ttf.Init()
 	if err != nil {
 		errorString := fmt.Sprintf("trying to initialize the TTF lib:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer ttf.Quit()
@@ -134,7 +134,7 @@ func run(c *Config) error {
 	font, err := ttf.OpenFont(c.FontPath, nameMapFontSize)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to open font file (system):\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer font.Close()
@@ -145,7 +145,7 @@ func run(c *Config) error {
 		winWidth, winHeight, sdl.WINDOW_SHOWN|sdl.WINDOW_RESIZABLE)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create SDL window:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 	defer window.Destroy()
@@ -155,7 +155,7 @@ func run(c *Config) error {
 	renderer, err := sdl.CreateRenderer(window, -1, sdl.RENDERER_SOFTWARE)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create SDL renderer:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer renderer.Destroy()
@@ -166,7 +166,7 @@ func run(c *Config) error {
 	match, err := match.NewMatch(demoFileName, pbInstance)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to parse demo file:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	pbInstance.Increment()
@@ -177,7 +177,7 @@ func run(c *Config) error {
 		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
 			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
 			"to place the overview images in this directory.", c.OverviewDir, err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer mapSurface.Free()
@@ -187,7 +187,7 @@ func run(c *Config) error {
 	mapTexture, err := renderer.CreateTextureFromSurface(mapSurface)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to create mapTexture from Surface:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer mapTexture.Destroy()
@@ -200,7 +200,7 @@ func run(c *Config) error {
 			errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
 				"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
 				"to place the overview images in this directory.", c.OverviewDir, err)
-			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+			_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 			return err
 		}
 		defer alternateMapSurface.Free()
@@ -208,7 +208,7 @@ func run(c *Config) error {
 		alternateMapTexture, err = renderer.CreateTextureFromSurface(alternateMapSurface)
 		if err != nil {
 			errorString := fmt.Sprintf("trying to create alternateMapTexture from Surface:\n%v", err)
-			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+			_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 			return err
 		}
 		defer alternateMapTexture.Destroy()
@@ -241,7 +241,7 @@ func run(c *Config) error {
 	err = app.run()
 	if err != nil {
 		errorString := fmt.Sprintf("while running the app:\n%v", err)
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
 
@@ -501,7 +501,7 @@ func (app *app) handleKeyboardEvents(eventT *sdl.KeyboardEvent) {
 		app.staticPlaybackSpeedModifier = 1
 
 	case sdl.K_k:
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_INFORMATION, "Hotkeys", hotkeysString, nil)
 	}
 }
 
