@@ -39,8 +39,8 @@ jobs:
       with:
         version: v1.41
         github-token: ${{ secrets.github_token }}
-        args: --timeout 300
-
+        args: --timeout 5m0s
+        
   build:
     runs-on: ubuntu-latest
     steps:
