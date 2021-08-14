@@ -600,8 +600,5 @@ func (app *app) updateGraphics() {
 func isShiftPressed(event *sdl.KeyboardEvent) bool {
 	pressed := event.Keysym.Mod & sdl.KMOD_SHIFT
 
-	if pressed > 0 {
-		return true
-	}
-	return false
+	return pressed > 0
 }

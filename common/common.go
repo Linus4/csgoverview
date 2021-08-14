@@ -145,10 +145,7 @@ var mapInfos = map[string]MapInfo{
 
 // MapHasAlternateVersion returns whether a map has an alternative overview image.
 func MapHasAlternateVersion(mapName string) bool {
-	if mapInfos[mapName].AlternateOverview != "" {
-		return true
-	}
-	return false
+	return mapInfos[mapName].AlternateOverview != ""
 }
 
 // MapGetAlternateVersion returns the filename for the alternate overview file.
