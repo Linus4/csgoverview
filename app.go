@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -159,7 +160,12 @@ func run(c *Config) error {
 		return err
 	}
 	defer renderer.Destroy()
-	renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
+	err = renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
+	if err != nil {
+		errorString := fmt.Sprintf("trying to set logical size on renderer:\n%v", err)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		return err
+	}
 	pbInstance.Increment()
 
 	pbInstance.Set("step", "Parsing demo file")
@@ -522,13 +528,17 @@ func (app *app) copyPositionToClipboard(player int) {
 		return players[i].ID < players[j].ID
 	})
 
-	clipboard.WriteAll("setpos " +
+	err := clipboard.WriteAll("setpos " +
 		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.X), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.Y), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].Position.Z), 'f', 2, 32) +
 		";setang " +
 		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].ViewDirectionY), 'f', 2, 32) + " " +
 		strconv.FormatFloat(float64(m.States[app.curFrame].Players[player].ViewDirectionX), 'f', 2, 32))
+	if err != nil {
+		errorString := fmt.Sprintf("Trying to write to clipboard:\n%v", err)
+		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
+	}
 }
 
 func (app *app) updateWindowTitle() {
@@ -550,12 +560,21 @@ func (app *app) updateWindowTitle() {
 
 func (app *app) updateGraphics() {
 	m := app.match
-	app.renderer.SetDrawColor(10, 10, 10, 255)
-	app.renderer.Clear()
+	err := app.renderer.SetDrawColor(10, 10, 10, 255)
+	if err != nil {
+		log.Println("Trying to set draw color: " + err.Error())
+	}
+	err = app.renderer.Clear()
+	if err != nil {
+		log.Println("Trying to clear renderer: " + err.Error())
+	}
 	app.lastDrawnAt = time.Now().UTC()
 
 	app.drawInfobars()
-	app.renderer.Copy(app.mapTexture, nil, app.mapRect)
+	err = app.renderer.Copy(app.mapTexture, nil, app.mapRect)
+	if err != nil {
+		log.Println("Trying to copy texture to renderer: " + err.Error())
+	}
 
 	shots := m.Shots[app.curFrame]
 	for _, shot := range shots {
