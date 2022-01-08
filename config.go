@@ -21,11 +21,19 @@ func parseArgs(defaultFontPath string, defaultOverviewDirectory string) *Config 
 	flag.Parse()
 
 	if conf.FontPath == "" {
-		log.Fatalln("fontpath must be set")
+		log.Fatalln("fontpath must be set.")
+	}
+	_, err := os.Stat(conf.FontPath)
+	if os.IsNotExist(err) {
+		log.Fatalf("Font file '%v' does not exist.", conf.FontPath)
 	}
 
 	if conf.OverviewDir == "" {
 		log.Fatalln("overviewdir must be set")
+	}
+	_, err = os.Stat(conf.OverviewDir)
+	if os.IsNotExist(err) {
+		log.Fatalf("Directory with overviews '%v' does not exist.", conf.OverviewDir)
 	}
 
 	return conf
