@@ -65,9 +65,6 @@ type Config struct {
 	PrintVersion bool
 }
 
-// DefaultConfig contains standard parameters for the application.
-var DefaultConfig = Config{}
-
 // App contains the state of the application.
 type app struct {
 	window              *sdl.Window
