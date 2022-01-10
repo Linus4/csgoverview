@@ -13,11 +13,10 @@ const (
 	fontName string = "DejaVuSans"
 )
 
-func parseArgs(defaults *Config) *Config {
-	conf := defaults
-	flag.StringVar(&conf.FontPath, "fontpath", defaults.FontPath, "Path to font file (.ttf)")
-	flag.StringVar(&conf.OverviewDir, "overviewdir", defaults.OverviewDir, "Path to overview directory")
-	flag.BoolVar(&conf.PrintVersion, "version", defaults.PrintVersion, "Print version number")
+func parseArgs(conf *Config) *Config {
+	flag.StringVar(&conf.FontPath, "fontpath", conf.FontPath, "Path to font file (.ttf)")
+	flag.StringVar(&conf.OverviewDir, "overviewdir", conf.OverviewDir, "Path to overview directory")
+	flag.BoolVar(&conf.PrintVersion, "version", conf.PrintVersion, "Print version number")
 	flag.Parse()
 
 	if conf.FontPath == "" {
