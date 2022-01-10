@@ -15,7 +15,10 @@ func main() {
 		defaultFontPath = fmt.Sprintf("%v\\%v.ttf", instDir, fontName)
 		defaultOverviewDirectory = fmt.Sprintf("%v\\assets\\maps\\", instDir)
 	}
-	conf := parseArgs(defaultFontPath, defaultOverviewDirectory)
+	conf := parseArgs(&Config{
+		FontPath:    defaultFontPath,
+		OverviewDir: defaultOverviewDirectory,
+	})
 
 	err := run(conf)
 	if err != nil {

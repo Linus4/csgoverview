@@ -5,8 +5,11 @@ import (
 )
 
 func main() {
-	conf := parseArgs(unixDefaultFontPath(), unixDefaultOverviewDirectory())
-	err = run(&conf)
+	conf := parseArgs(&Config{
+		FontPath:    unixDefaultFontPath(),
+		OverviewDir: unixDefaultOverviewDirectory(),
+	})
+	err := run(conf)
 	if err != nil {
 		log.Fatalln(err)
 	}
