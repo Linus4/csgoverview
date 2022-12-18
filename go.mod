@@ -25,13 +25,9 @@ require (
 	github.com/mibk/dupl v1.0.0 // indirect
 	github.com/phpdave11/gofpdi v1.0.11 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tsenart/deadcode v0.0.0-20160724212837-210d2dc333e9 // indirect
 	github.com/veandco/go-sdl2 v0.4.27
-	golang.org/x/image v0.0.0-20200119044424-58c23975cae1 // indirect
-	golang.org/x/mod v0.5.0 // indirect
-	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
-	golang.org/x/tools v0.1.5 // indirect
+	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
