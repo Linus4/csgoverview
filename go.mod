@@ -2,11 +2,8 @@ module github.com/linus4/csgoverview
 
 require (
 	github.com/VividCortex/ewma v1.2.0 // indirect
-	github.com/alecthomas/gocyclo v0.0.0-20150208221726-aa8f8b160214 // indirect
-	github.com/alexkohler/nakedret v1.0.0 // indirect
 	github.com/atotto/clipboard v0.1.4
 	github.com/cheggaaa/pb/v3 v3.0.8
-	github.com/client9/misspell v0.3.4 // indirect
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/go-gl/gl v0.0.0-20190320180904-bf2b1f2f34d7 // indirect
 	github.com/go-gl/glfw v0.0.0-20200222043503-6f7a984d4dc4 // indirect
@@ -32,10 +29,6 @@ require (
 	golang.org/x/sys v0.0.0-20210809222454-d867a43fc93e
 	golang.org/x/tools v0.1.5 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
-	gopkg.in/yaml.v2 v2.2.8 // indirect
-	honnef.co/go/tools v0.0.1-2020.1.6 // indirect
-	mvdan.cc/interfacer v0.0.0-20180901003855-c20040233aed // indirect
-	mvdan.cc/lint v0.0.0-20170908181259-adc824a0674b // indirect
 )
 
 go 1.13

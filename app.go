@@ -14,7 +14,7 @@ import (
 	"github.com/cheggaaa/pb/v3"
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
-	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
