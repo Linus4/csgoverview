@@ -3,10 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	radar_overviews "github.com/linus4/csgoverview/pkg/csgoverview/radar-overviews"
-	"os"
-	"log"
 	"github.com/linus4/csgoverview/internal/mapinfo"
+	"log"
 	"os/exec"
 	"path/filepath"
 	"sort"
