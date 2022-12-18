@@ -6,6 +6,7 @@ import (
 	radar_overviews "github.com/linus4/csgoverview/pkg/csgoverview/radar-overviews"
 	"os"
 	"log"
+	"github.com/linus4/csgoverview/internal/mapinfo"
 	"os/exec"
 	"path/filepath"
 	"sort"
@@ -179,44 +180,22 @@ func run(c *Config) error {
 	}
 	pbInstance.Increment()
 
-	mapDataClient, err := radar_overviews.NewClient()
-	if err != nil {
-		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
-		return err
-	}
-
 	pbInstance.Set("step", "Loading map overview surface")
-	mapDataFolder := filepath.Join(c.OverviewDir, match.MapName, match.MapCRC)
-	if _, err := os.Stat(mapDataFolder); err != nil {
-		if err := mapDataClient.DownloadMapInfo(match.MapName, match.MapCRC); err != nil {
-			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
-			return err
-		}
-
-		if err := mapDataClient.DownloadMapPNG(match.MapName, match.MapCRC); err != nil {
-			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
-			return err
-		}
-	}
-
-	mapInfo, err := mapDataClient.ReadMapInfo(match.MapName, match.MapCRC)
+	mapInfo, err := mapinfo.ResolveMapInfo(match.MapName, match.MapCRC)
 	if err != nil {
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
 		return err
 	}
+	match.UpdateMapInfo(mapInfo)
 
-	match.MapPZero = common.Point{
-		X: mapInfo.PosX,
-		Y: mapInfo.PosY,
-	}
-	match.MapScale = mapInfo.Scale
-
-	mapSurface, err := img.Load(fmt.Sprintf("%s/radar.jpg", mapDataFolder))
+	mapSurface, err := img.Load(mapInfo.RadarImagePath)
 	if err != nil {
-		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
-			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
-			"to place the overview images in this directory.", c.OverviewDir, err)
-		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		errorString := fmt.Sprintf(
+			"trying to load map overview image from %s: \n%v",
+			mapInfo.RadarImagePath,
+			err,
+		)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer mapSurface.Free()

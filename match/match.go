@@ -2,6 +2,7 @@
 package match
 
 import (
+	"github.com/linus4/csgoverview/internal/mapinfo"
 	"log"
 	"math"
 	"os"
@@ -570,6 +571,14 @@ func (m Match) Translate(x, y float32) (float32, float32) {
 func (m Match) TranslateScale(x, y float32) (float32, float32) {
 	x, y = m.Translate(x, y)
 	return x / m.MapScale, y / m.MapScale
+}
+
+func (m *Match) UpdateMapInfo(mapInfo *mapinfo.MapInfo) {
+	m.MapPZero = common.Point{
+		X: mapInfo.PosX,
+		Y: mapInfo.PosY,
+	}
+	m.MapScale = mapInfo.Scale
 }
 
 // getTeamXfixes checks for common pre- and postfixes in player names and returns both the CT and T prefixes
