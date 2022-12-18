@@ -30,6 +30,7 @@ const (
 // data from every tick of the demo that will be displayed.
 type Match struct {
 	MapName              string
+	MapCRC               string
 	MapPZero             common.Point
 	MapScale             float32
 	HalfStarts           []int
@@ -74,14 +75,10 @@ func NewMatch(demoFileName string, pb *pb.ProgressBar) (*Match, error) {
 	}
 
 	match.MapName = header.MapName
-	// TODO(augustoccesar)[2022-12-18]: Find another way to get this info
-	//match.MapPZero = common.Point{
-	//	X: float32(meta.MapNameToMap[match.MapName].PZero.X),
-	//	Y: float32(meta.MapNameToMap[match.MapName].PZero.Y),
-	//}
-	//match.MapScale = float32(meta.MapNameToMap[match.MapName].Scale)
 
 	registerEventHandlers(parser, match)
+	registerNetMessageHandlers(parser, match)
+
 	match.States = parseGameStates(parser, match, pb)
 
 	return match, nil
@@ -273,6 +270,12 @@ func registerEventHandlers(parser dem.Parser, match *Match) {
 		for i := 1; i < int(match.SmokeEffectLifetime); i++ {
 			match.Effects[match.currentFrame+i] = make([]common.Effect, 0)
 		}
+	})
+}
+
+func registerNetMessageHandlers(parser dem.Parser, match *Match) {
+	parser.RegisterNetMessageHandler(func(info *msg.CSVCMsg_ServerInfo) {
+		match.MapCRC = strconv.FormatUint(uint64(*info.MapCrc), 10)
 	})
 }
 

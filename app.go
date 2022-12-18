@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	radar_overviews "github.com/linus4/csgoverview/pkg/csgoverview/radar-overviews"
+	"os"
 	"log"
 	"os/exec"
 	"path/filepath"
@@ -177,8 +179,39 @@ func run(c *Config) error {
 	}
 	pbInstance.Increment()
 
+	mapDataClient, err := radar_overviews.NewClient()
+	if err != nil {
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
+		return err
+	}
+
 	pbInstance.Set("step", "Loading map overview surface")
-	mapSurface, err := img.Load(filepath.Join(c.OverviewDir, fmt.Sprintf("%v.jpg", match.MapName)))
+	mapDataFolder := filepath.Join(c.OverviewDir, match.MapName, match.MapCRC)
+	if _, err := os.Stat(mapDataFolder); err != nil {
+		if err := mapDataClient.DownloadMapInfo(match.MapName, match.MapCRC); err != nil {
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
+			return err
+		}
+
+		if err := mapDataClient.DownloadMapPNG(match.MapName, match.MapCRC); err != nil {
+			sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
+			return err
+		}
+	}
+
+	mapInfo, err := mapDataClient.ReadMapInfo(match.MapName, match.MapCRC)
+	if err != nil {
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
+		return err
+	}
+
+	match.MapPZero = common.Point{
+		X: mapInfo.PosX,
+		Y: mapInfo.PosY,
+	}
+	match.MapScale = mapInfo.Scale
+
+	mapSurface, err := img.Load(fmt.Sprintf("%s/radar.jpg", mapDataFolder))
 	if err != nil {
 		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
 			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
