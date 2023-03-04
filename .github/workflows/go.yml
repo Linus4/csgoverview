@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16
+        go-version: 1.18
         
     - uses: Jerome1337/gofmt-action@v1.0.4
       with:
@@ -30,26 +30,26 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: 1.16
+        go-version: 1.18
     
     - name: Set up dependencies
       run: sudo apt install libsdl2{,-gfx,-image,-ttf}-dev fonts-dejavu
       
-    - uses: golangci/golangci-lint-action@master
+    - uses: golangci/golangci-lint-action@v3
       with:
-        version: v1.41
+        version: latest
         github-token: ${{ secrets.github_token }}
         args: --timeout=5m0s --exclude-use-default=false
         
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
-        go-version: 1.16
+        go-version: 1.18
         
     - name: Set up dependencies
       run: sudo apt install libsdl2{,-gfx,-image,-ttf}-dev fonts-dejavu

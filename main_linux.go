@@ -10,6 +10,7 @@ func main() {
 		OverviewDir: unixDefaultOverviewDirectory(),
 	})
 	err := run(conf)
+
 	if err != nil {
 		log.Fatalln(err)
 	}

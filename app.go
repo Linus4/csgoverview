@@ -146,7 +146,12 @@ func run(c *Config) error {
 		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, nil)
 		return err
 	}
-	defer window.Destroy()
+	defer func() {
+		err = window.Destroy()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
 	pbInstance.Increment()
 
 	pbInstance.Set("step", "Creating SDL renderer")
@@ -156,7 +161,12 @@ func run(c *Config) error {
 		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
-	defer renderer.Destroy()
+	defer func() {
+		err = renderer.Destroy()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
 	err = renderer.SetLogicalSize(mapOverviewWidth+2*mapXOffset, mapOverviewHeight+mapYOffset)
 	if err != nil {
 		errorString := fmt.Sprintf("trying to set logical size on renderer:\n%v", err)
@@ -193,7 +203,12 @@ func run(c *Config) error {
 		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
-	defer mapTexture.Destroy()
+	defer func() {
+		err = mapTexture.Destroy()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
 
 	var alternateMapTexture *sdl.Texture
 	if common.MapHasAlternateVersion(match.MapName) {
@@ -214,7 +229,12 @@ func run(c *Config) error {
 			_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 			return err
 		}
-		defer alternateMapTexture.Destroy()
+		defer func() {
+			err = alternateMapTexture.Destroy()
+			if err != nil {
+				log.Fatalln(err)
+			}
+		}()
 	}
 	pbInstance.Increment()
 
