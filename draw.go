@@ -309,7 +309,12 @@ func (app *app) drawString(text string, color sdl.Color, x, y int32) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer textTexture.Destroy()
+	defer func() {
+		err = textTexture.Destroy()
+		if err != nil {
+			log.Fatalln(err)
+		}
+	}()
 	textRect := &sdl.Rect{
 		X: x,
 		Y: y,
