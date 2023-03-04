@@ -14,3 +14,10 @@ csgoverview
 
 # vim session file
 Session.vim
+
+# Jetbrains IDE
+.idea
+*.iml
+
+# overviews folder
+overviews/
