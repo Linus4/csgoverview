@@ -35,9 +35,9 @@ jobs:
     - name: Set up dependencies
       run: sudo apt install libsdl2{,-gfx,-image,-ttf}-dev fonts-dejavu
       
-    - uses: golangci/golangci-lint-action@master
+    - uses: golangci/golangci-lint-action@v3
       with:
-        version: v1.41
+        version: latest
         github-token: ${{ secrets.github_token }}
         args: --timeout=5m0s --exclude-use-default=false
         
