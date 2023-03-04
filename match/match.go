@@ -54,12 +54,7 @@ func NewMatch(demoFileName string, pb *pb.ProgressBar) (*Match, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		err = demo.Close()
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}()
+	// demo is closed by parser.Close()
 
 	parser := dem.NewParser(demo)
 	defer func() {
