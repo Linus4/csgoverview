@@ -19,7 +19,7 @@ func main() {
 	cmd := fmt.Sprintf("fc-list | grep %v.ttf", fontName)
 	fontPathsB, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
-		log.Println(fmt.Sprintf("trying to find path to font: %v.ttf not installed on system", fontName))
+		log.Printf("trying to find path to font: %v.ttf not installed on system\n", fontName)
 	}
 	defaultFontPath := strings.Split(string(fontPathsB), ":")[0]
 	flag.StringVar(&conf.FontPath, "fontpath", defaultFontPath, "Path to font file (.ttf)")
