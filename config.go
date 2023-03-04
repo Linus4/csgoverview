@@ -42,7 +42,7 @@ func unixDefaultFontPath() string {
 	cmd := fmt.Sprintf("fc-list | grep %v.ttf", fontName)
 	fontPathsB, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
-		log.Println(fmt.Sprintf("trying to find path to font: %v.ttf not installed on system", fontName))
+		log.Printf("trying to find path to font: %v.ttf not installed on system\n", fontName)
 	}
 	return strings.Split(string(fontPathsB), ":")[0]
 }
