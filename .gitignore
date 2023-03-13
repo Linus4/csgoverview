@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+csgoverview
 
 # Test binary, build with `go test -c`
 *.test
@@ -13,3 +14,10 @@
 
 # vim session file
 Session.vim
+
+# Jetbrains IDE
+.idea
+*.iml
+
+# overviews folder
+overviews/
