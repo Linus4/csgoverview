@@ -119,8 +119,7 @@ func fetchFile(sourcePath string, targetPath string) error {
 	if err != nil {
 		return err
 	}
-	// TODO(augustoccesar)[2022-12-18]: Change to original repo path (or another user agent for better identification)
-	req.Header.Add("User-Agent", "github.com/augustoccesar/csgoverview")
+	req.Header.Add("User-Agent", "github.com/Linus4/csgoverview")
 
 	client := http.Client{}
 	resp, err := client.Do(req)
