@@ -20,8 +20,8 @@ type MapProvider interface {
 
 func ResolveMapProvider() MapProvider {
 	// TODO: Maybe resolve to default or Saiko based on network?
-	// return NewDefaultMapProvider()
-	return NewSaikoTechMapProvider()
+	return NewDefaultMapProvider()
+	// return NewSaikoTechMapProvider()
 }
 
 func MapFilesDir(mapName string, crc string) (string, error) {
