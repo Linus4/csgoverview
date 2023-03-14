@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/linus4/csgoverview/internal/mapinfo"
 	"log"
 	"os/exec"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/linus4/csgoverview/internal/mapinfo"
 
 	"github.com/atotto/clipboard"
 	"github.com/cheggaaa/pb/v3"
@@ -186,7 +187,7 @@ func run(c *Config) error {
 	pbInstance.Increment()
 
 	pbInstance.Set("step", "Loading map overview surface")
-	mapInfo, err := mapinfo.ResolveMapInfo(match.MapName, match.MapCRC)
+	mapInfo, err := mapinfo.ResolveMapProvider().RetrieveInfo(match.MapName, match.MapCRC)
 	if err != nil {
 		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
 		return err
