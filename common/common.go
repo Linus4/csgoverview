@@ -4,7 +4,7 @@ package common
 import (
 	"time"
 
-	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/common"
 )
 
 // Phase corresponds to a phase of a round.

@@ -10,14 +10,18 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/linus4/csgoverview/internal/mapinfo"
+
 	"github.com/atotto/clipboard"
 	"github.com/cheggaaa/pb/v3"
 	"github.com/linus4/csgoverview/common"
 	"github.com/linus4/csgoverview/match"
-	demoinfo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	demoinfo "github.com/markus-wa/demoinfocs-golang/v3/pkg/demoinfocs/common"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
+
+	_ "embed"
 )
 
 const (
@@ -185,12 +189,21 @@ func run(c *Config) error {
 	pbInstance.Increment()
 
 	pbInstance.Set("step", "Loading map overview surface")
-	mapSurface, err := img.Load(filepath.Join(c.OverviewDir, fmt.Sprintf("%v.jpg", match.MapName)))
+	mapInfo, err := mapinfo.ResolveMapProvider().RetrieveInfo(match.MapName, match.MapCRC)
 	if err != nil {
-		errorString := fmt.Sprintf("trying to load map overview image from %v: \n"+
-			"%v \nFollow the instructions on https://github.com/linus4/csgoverview "+
-			"to place the overview images in this directory.", c.OverviewDir, err)
-		_ = sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", err.Error(), window)
+		return err
+	}
+	match.UpdateMapInfo(mapInfo)
+
+	mapSurface, err := img.Load(mapInfo.RadarImagePath)
+	if err != nil {
+		errorString := fmt.Sprintf(
+			"trying to load map overview image from %s: \n%v",
+			mapInfo.RadarImagePath,
+			err,
+		)
+		sdl.ShowSimpleMessageBox(sdl.MESSAGEBOX_ERROR, "Error", errorString, window)
 		return err
 	}
 	defer mapSurface.Free()
